@@ -1,9 +1,9 @@
 <?php
 
 foreach (glob("include/*.php") as $filename) {
-    include $filename;
+    include_once $filename;
 }
-
+include_once("include/html2fpdf/html2fpdf.php");
 $onlineScripts = array("code.jquery.com/jquery-2.0.2.min");
 $offlineScripts = array("jquery.dataTables" , "jquery.flot", 
 "jquery.flot.time.min", "jquery.flot.selection.min","jquery.flot.stack", "base64", "canvas2image", "jquery.flot.saveAsImage",

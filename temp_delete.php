@@ -1,19 +1,10 @@
 <?php
-include_once "include_all.php";
-$sourceList = ORM::for_table('osdb_Sources') -> order_by_asc('Institution') -> find_many();
 
+$pdf=new HTML2FPDF();
+$pdf->AddPage();
+$pdf->SetDisplayMode('fullpage');
+$pdf->WriteHTML('<p>This is your first PDF File</p>');
+$pdf->SetDisplayMode('fullpage');
+$pdf->Output("sample.pdf", 'D');
 
-
-foreach ($sourceList as $source) {
-    $sourceArray = Helper::csvstring_to_array($source->SemiTidyData);
-    $header = $sourceArray[0];
-    
-   
-    foreach ($header as $col) {
-        echo $col . ", " ;
-        
-    }
-    
-}
 ?>
-</form>

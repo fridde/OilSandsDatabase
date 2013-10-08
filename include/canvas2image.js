@@ -33,7 +33,7 @@ var Canvas2Image = (function() {
 		var iWidth = parseInt(oCanvas.width);
 		var iHeight = parseInt(oCanvas.height);
 		return oCanvas.getContext("2d").getImageData(0,0,iWidth,iHeight);
-	}
+	};
 
 	// base64 encodes either a string or an array of charcodes
 	var encodeData = function(data) {
@@ -47,7 +47,7 @@ var Canvas2Image = (function() {
 			}
 		}
 		return btoa(strData);
-	}
+	};
 
 	// creates a base64 encoded string containing BMP data
 	// takes an imagedata object as argument
@@ -140,24 +140,24 @@ var Canvas2Image = (function() {
 		var strEncoded = encodeData(aHeader.concat(aInfoHeader)) + encodeData(strPixelData);
 
 		return strEncoded;
-	}
+	};
 
 
 	// sends the generated file to the client
 	var saveFile = function(strData) {
 		document.location.href = strData;
-	}
+	};
 
 	var makeDataURI = function(strData, strMime) {
 		return "data:" + strMime + ";base64," + strData;
-	}
+	};
 
 	// generates a <img> object containing the imagedata
 	var makeImageObject = function(strSource) {
 		var oImgElement = document.createElement("img");
 		oImgElement.src = strSource;
 		return oImgElement;
-	}
+	};
 
 	var scaleCanvas = function(oCanvas, iWidth, iHeight) {
 		if (iWidth && iHeight) {
@@ -173,7 +173,7 @@ var Canvas2Image = (function() {
 			return oSaveCanvas;
 		}
 		return oCanvas;
-	}
+	};
 
 	return {
 
@@ -231,5 +231,6 @@ var Canvas2Image = (function() {
 			return true;
 		}
 	};
+	
 
 })();

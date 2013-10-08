@@ -7,25 +7,37 @@ include_once "include/idiorm_conf.php";
 $chosenCompilationIdArray = $_REQUEST["compilationId"];
 $shortNameArray = $_REQUEST["shortNameId"];
 $plotType = $_REQUEST["plotType"];
-$returnArray = array("plotType"=>$plotType);
+$returnArray = array("plotType" => $plotType);
 
-foreach ($chosenCompilationIdArray as $key=>$compilationId) {
-    $array = ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) 
-    -> select_many("Date", "Value") ->order_by_asc('Date')-> find_array();
-  
-   $compilationName = $shortNameArray[$key];
-  
+
+$plotAccuracy = 1;
+if (count($chosenCompilationIdArray) > 5) {
+    $plotAccuracy = 7;
+}
+if (count($chosenCompilationIdArray) > 15) {
+    $plotAccuracy = 30;
+}
+
+foreach ($chosenCompilationIdArray as $key => $compilationId) {
+
+    $array = ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) -> select_many("Date", "Value") -> order_by_asc('Date') -> find_array();
+
+    $compilationName = $shortNameArray[$key];
+
     $currentArray = array();
+    $i = 0;
     foreach ($array as $rowKey => $row) {
-        
-        $row["Date"] = strtotime($row["Date"]) * 1000;
-        
-        $row["Value"] = floatval($row["Value"]);
-        $currentArray[] = array_values($row);
+        $i++;
+        if ($i % $plotAccuracy == 0) {
+            $row["Date"] = strtotime($row["Date"]) * 1000;
 
+            $row["Value"] = floatval($row["Value"]);
+            $currentArray[] = array_values($row);
+        }
     }
-    
+
     $returnArray[$compilationName] = $currentArray;
+
 }
 //echo print_r($returnArray) . "<br><br>";
 header("Content-Type: application/json", true);

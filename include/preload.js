@@ -26,13 +26,13 @@ $(document).ready(function() {
 	});
 
 	var compilationIdList = "compilationId[]=" + compilationIdArray.join("&compilationId[]=");
-	
+
 	var shortNameIdArray = [];
 	$("#shortName li").each(function() {
 		shortNameIdArray.push($(this).text());
 	});
 	var plotType = $("#plotType").text();
-	
+
 	var shortNameIdList = "shortNameId[]=" + shortNameIdArray.join("&shortNameId[]=");
 	var postdata = compilationIdList + "&" + shortNameIdList + "&plotType=" + plotType;
 
@@ -44,7 +44,7 @@ $(document).ready(function() {
 		success : function(bigArray) {
 
 			var data = [];
-			
+
 			$.each(bigArray, function(index, value) {
 				if (index == "plotType") {
 					plotType = value;
@@ -77,7 +77,7 @@ $(document).ready(function() {
 					}
 				},
 				xaxis : {
-					ticks: 5,
+					ticks : 5,
 					mode : "time",
 					timeformat : "%b %Y",
 					autoscaleMargin : 0.05
@@ -132,8 +132,9 @@ $(document).ready(function() {
 			// series are turned on/off
 			var i = 0;
 			$.each(data, function(key, val) {
-				val.color = i; ++i;
-				
+				val.color = i;
+				++i;
+
 			});
 
 			// insert checkboxes
@@ -156,6 +157,7 @@ $(document).ready(function() {
 					$.plot($("#graph"), newdata, graphoptions);
 				//$("#graph").UseTooltip();
 			}
+
 			// $("#graph").text(data);
 			plotAccordingToChoices();
 
@@ -184,8 +186,19 @@ $(document).ready(function() {
 
 		}
 	});
-	
 
-	
+	$("#graph").click(function() {
+		var content = "content=" + $("graph").html();
+		$("body").css("background-color: black;");
+		$.ajax({
+			url : 'draw_graphs.php',
+			type : "POST",
+			data : content
+			//dataType : 'text',
+			//success : function() {
+
+		});
+	});
+
 });
 
