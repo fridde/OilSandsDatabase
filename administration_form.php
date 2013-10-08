@@ -1,0 +1,30 @@
+<?php
+
+echo '<form action="index.php?page=refine_tables" method="post">
+<p>
+<select name="Table">';
+$Tables = ORM::for_table("information_schema.tables") -> where("TABLE_SCHEMA", "a5399891_db") -> find_array();
+foreach ($Tables as $Table) {
+    echo '<option value="' . $Table["TABLE_NAME"] . '">' . $Table["TABLE_NAME"] . '</option>';
+}
+echo '</select>
+<input type="submit" name="choice" value="Remove duplicates">
+</p>';
+?>
+<p><h2>Add synonyms or abbreviations</h2></p>
+<p><input type="submit" name="choice" value="Add synonyms">
+<input type="radio" name="synonym_type" value="Synonym" id="synonym" checked>
+<label for="synonym">Synonym</label>
+<input type="radio" name="synonym_type" value="Abbreviation" id="abbreviation">
+<label for="abbreviation">Abbreviation</label>
+</p>
+<table class="short_table">
+    <tr><th>Synonym</th><th>Replacement</th></tr>
+<?php
+for ($i=0; $i < 15 ; $i++) { 
+	echo '<tr id="synonyms"><td><input type="text" name="synonym[]"></td>
+	<td><input type="text" name="replacement[]"></td></tr>';
+}
+ ?>    
+</table>
+</form>
