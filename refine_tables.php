@@ -25,7 +25,7 @@ switch ($_REQUEST["choice"]) {
         foreach ($_REQUEST["checked_source"] as $sourceId) {
             Helper::interpolate_table($sourceId);
         }
-         redirect("index.php?page=working_tables_form&table_type=working");
+        redirect("index.php?page=working_tables_form&table_type=working");
         break;
 
     case "Add synonyms" :
@@ -40,16 +40,24 @@ switch ($_REQUEST["choice"]) {
         }
         break;
     case "Combine" :
-        //echo print_r($_REQUEST["compilationId"]);
-        Helper::combine_data($_REQUEST["compilationId"], $_REQUEST["method"], $_REQUEST["newName"], $_REQUEST["changeArray"]);
-        //redirect("index.php?page=compilations");
-        break;
+        if ($_REQUEST["method"] == "Calculate error statistics") {
+            Helper::calculate_error_statistics($_REQUEST["compilationId"], $_REQUEST["mainComp"], $_REQUEST["newName"]);
+            //redirect("index.php?page=compilations");
+            break;
+        } else {
+            if(!(isset($_REQUEST["changeArray"]))){
+                $_REQUEST["changeArray"] = FALSE;
+            }
+            Helper::combine_data($_REQUEST["compilationId"], $_REQUEST["method"], $_REQUEST["newName"], $_REQUEST["changeArray"], $_REQUEST["onlyCommonDates"]);
+            redirect("index.php?page=compilations");
+            break;
+        }
 
     case "AddTag" :
         if (!isset($_REQUEST["tags"])) {
             $_REQUEST["tags"] = array();
         }
-        
+
         Helper::add_tags($_REQUEST["compilationId"], $_REQUEST["tags"], $_REQUEST["newTags"]);
         redirect("index.php?page=compilations");
         break;

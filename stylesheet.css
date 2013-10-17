@@ -22,6 +22,7 @@ div {
 }
 
 #header {
+	/*background: red;*/
 	background: linear-gradient(to bottom, #1e5799 0%, #7db9e8 100%);
 	padding: 5px 10px;
 }
@@ -33,7 +34,7 @@ div {
 }
 
 #navbar {
-
+	/*background: red;*/
 	background: linear-gradient(to bottom, #4876FF 0%, #FFFFFF 100%);
 	padding: 10px;
 	margin-right: 10px;
@@ -133,9 +134,13 @@ table.odd {
 	background: #cc9;
 }
 
+.mainComp {
+	display: none;
+}
+
 #choices {
 	word-wrap: break-word;
-	width: 250px;
+	width: 220px;
 	border: 1px dotted black;
 	float: left;
 	margin-top: 10px;
@@ -162,9 +167,14 @@ table.odd {
 
 	background: white;
 	width: 600px;
+	padding: 30px;
 	/*right: 600px;*/
 	height: 300px;
 	/*margin-left: -100%;*/
+}
+
+.yAxis .tickLabel{
+	margin-top: -20px;
 }
 
 #right {

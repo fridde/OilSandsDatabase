@@ -1,5 +1,17 @@
 <?php
 
+function echop($array) {
+    foreach ($array as $element) {
+        if (gettype($element) == "string") {
+            echo $element . "<br>";
+        } else {
+            echo print_r($element) . "<br>";
+        }
+    }
+    echo "<br>";
+
+}
+
 function make_comparer() {
     // Normalize criteria up front so that the comparer finds everything tidy
     $criteria = func_get_args();
@@ -1383,15 +1395,18 @@ class Helper {
         return $sqlColumns;
     }
 
-    public static function add_or_subtract($array, $method) {
+    public static function add_or_subtract($array, $method, $onlyCommonDates = TRUE) {
 
         $commonDates = Helper::sql_select_columns(reset($array), "Date");
-        $i = 0;
-        foreach ($array as $compilationId => $rowsBelongingToCompilation) {
-            $i++;
-            if ($i > 1) {
-                $newDates = Helper::sql_select_columns($rowsBelongingToCompilation, "Date");
-                $commonDates = array_intersect($commonDates, $newDates);
+
+        if ($onlyCommonDates == "TRUE" || $onlyCommonDates) {
+            $i = 0;
+            foreach ($array as $compilationId => $rowsBelongingToCompilation) {
+                $i++;
+                if ($i > 1) {
+                    $newDates = Helper::sql_select_columns($rowsBelongingToCompilation, "Date");
+                    $commonDates = array_intersect($commonDates, $newDates);
+                }
             }
         }
 
@@ -1450,7 +1465,7 @@ class Helper {
         return $newArray;
     }
 
-    public static function combine_data($compilationIdArray, $method, $newName, $changeArray) {
+    public static function combine_data($compilationIdArray, $method, $newName, $changeArray, $onlyCommonDates) {
 
         //creating a subgroup with only the relevant compilations
         foreach ($compilationIdArray as $compilationId) {
@@ -1467,7 +1482,7 @@ class Helper {
         $newCompilationId = $newCompilation -> id();
 
         if (in_array($method, array("Add", "Subtract"))) {
-            $newDateAndValues = Helper::add_or_subtract($array, $method);
+            $newDateAndValues = Helper::add_or_subtract($array, $method, $onlyCommonDates);
 
         } elseif ($method == "Concatenate") {
             $newDateAndValues = Helper::concat_time_series($array);
@@ -1596,6 +1611,64 @@ class Helper {
         usort($array, make_comparer(array($column, $order)));
 
         return $array;
+    }
+
+    public static function calculate_error_statistics($compilationIdArray, $mainId, $newName) {
+
+        $compilationIdArray = array_diff($compilationIdArray, array($mainId));
+        $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
+        $mainDates = Helper::sql_select_columns($mainArray, "Date");
+
+        foreach ($compilationIdArray as $compilationId) {
+            $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
+            $firstRow = reset($array);
+            $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
+            $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
+            $publicationDate = new DateTime($publicationDate);
+
+            //echo count($prognosisDates) . "<br><br>" ;
+            //echo count($xValues) . "<br><br>" ;
+            //$yValues = Helper::filter_for_value($array, "Date", $prognosisDates);
+
+            //echo count($yValues) . "<br><br>"  ;
+            $errorArray = array();
+            foreach ($prognosisDates as $date) {
+                $yRow = reset(Helper::filter_for_value($array, "Date", $date));
+                if ($yRow != NULL) {
+                    $xRow = reset(Helper::filter_for_value($mainArray, "Date", $date));
+                    $errorRow["Date"] = $xRow["Date"];
+                    $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
+                    $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
+
+                    $xDate = new DateTime($xRow["Date"]);
+                    $diff = $xDate -> diff($publicationDate);
+
+                    $errorRow["Day"] = $diff -> format('%a');
+
+                    $errorRow["Main_Id"] = $mainId;
+                    $errorRow["Compilation_Id"] = $compilationId;
+
+                    $errorArray[] = $errorRow;
+                }
+
+            }
+            echop($errorArray);
+            //Helper::sql_insert_array($errorArray, "osdb_errors");
+        }
+
+    }
+
+    public static function filter_dates($dates, $constantDate, $after = TRUE) {
+
+        $returnDates = array();
+        foreach ($dates as $dateToCheck) {
+            $dateIsAfter = strtotime($dateToCheck) > strtotime($constantDate);
+            if ($after == $dateIsAfter) {
+                $returnDates[] = $dateToCheck;
+            }
+
+        }
+        return $returnDates;
     }
 
 }

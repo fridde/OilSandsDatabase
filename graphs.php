@@ -26,7 +26,7 @@ echo '<p hidden id="plotType">' .  $_REQUEST["plotType"] . '</p>';
 	<div id="graph" class="column"></div>
 
 		<div id="labeler" class="column"></div>
-		<div id="choices">Show:</div>
+		<div id="choices" class="column">Show:</div>
 	
 </div>
 

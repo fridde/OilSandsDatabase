@@ -25,15 +25,20 @@ echo '<form action="index.php?page=graphs" method="post">
 <label for="lines">Lines</label>
 <input type="radio" name="plotType" value="stacked" id="stacked">
 <label for="stacked">Stacked</label>
-</p><p>
+</p>
+
+<p>
 <input type="button" value="Combine compilations" onClick="this.form.action=\'index.php?page=refine_tables&choice=Combine\';this.form.submit()">
 <input type="radio" name="method" value="Add" id="Add" checked>
 <label for="Add">Add</label>
-<input type="radio" name="method" value="Subtract" id="Subtract">
+<input type="radio" name="method" value="Subtract" class="showbutton" id="Subtract">
 <label for="Subtract">Subtract</label>
 <input type="radio" name="method" value="Concatenate" id="Concatenate">
-<label for="Concatenate">Concatenate</label><br>
-
+<label for="Concatenate">Concatenate</label>
+<input type="radio" id="showbutton" class="showbutton" name="method" value="Calculate error statistics">
+<label for="showbutton">Calculate error statistics</label><br>
+<input type="checkbox" id="onlyCommonDates" name="onlyCommonDates" value="TRUE">
+<label for="onlyCommonDates">Only combine common dates</label><br>
 </p>
 <table>
 <tr><th colspan="2">Values for the new Compilation</th></tr>';
@@ -68,7 +73,7 @@ link_for("index.php?page=compilations", "Show all compilations", "box");
 echo '</p>';
 // CAUTION: Change back unsortable to sortable when going to production!!!
 echo '<table id="un-sortable">';
-echo '<thead><tr><th><input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">Select All</th>
+echo '<thead><tr><th></th><th><input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">Select All</th>
 <th>Compilation</th><th>Label in graph</th>';
 for ($i = 0; $i < $maxTags; $i++) {
     echo '<th>#</th>';
@@ -83,6 +88,7 @@ foreach ($compilationList as $key => $compilation) {
     if (count($tagsToShow) == 0 || count(array_intersect($associatedTags, $tagsToShow)) == count($tagsToShow)) {
         $associatedTags = array_pad($associatedTags, $maxTags, " ");
         echo '<tr>';
+        echo '<td><input type="radio" class="mainComp" name="mainComp" value="' . $compilation["id"] . '"></td>';
         echo '<td><input type="checkbox" name="compilationId[]" value="' . $compilation["id"] . '"></td>
     <td>' . $compilation["Name"] . '</td>
     <td><input type="text" name="compilationShortNames[]" value="' . $compilationShortNames[$key] . '"></td>';

@@ -1,5 +1,5 @@
 function SelectDeselect() {
-	if (document.getElementById('chkSelectDeselectAll').checked) {
+	if ($('#chkSelectDeselectAll').checked) {
 		$("INPUT[type='checkbox']").attr('checked', true);
 	} else {
 		$("INPUT[type='checkbox']").attr('checked', false);
@@ -16,6 +16,14 @@ function sendToPage(page, formId) {
 
 $(document).ready(function() {
 
+	$(".showbutton").on("change", function() {
+		$(".mainComp").show();
+	});
+	
+	$(':radio:not(".showbutton"):not(".mainComp")').on("change", function() {
+		$(".mainComp").hide();
+	});
+	
 	$("#sortable").dataTable({
 		"bPaginate" : false
 	});
@@ -132,8 +140,7 @@ $(document).ready(function() {
 			// series are turned on/off
 			var i = 0;
 			$.each(data, function(key, val) {
-				val.color = i;
-				++i;
+				val.color = i; ++i;
 
 			});
 
