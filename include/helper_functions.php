@@ -1352,14 +1352,19 @@ class Helper {
 
         if (gettype($values) != "array") {
             $values = array($values);
+            // $functionText = 'return (is_array($arrayRow) && $arrayRow["' . $key . '"] == ' . $values . ');';
         }
+        // else {
+        // $functionText = 'return (is_array($arrayRow) && in_array($arrayRow["' . $key . '"], array("' . implode('","', $values) . '")));';
+        // }
+        // $filterFunction = create_function('$arrayRow', $functionText);
 
-        $newArray = array();
-        foreach ($array as $rowKey => $row) {
-            if (in_array($row[$key], $values)) {
-                $newArray[$rowKey] = $row;
-            }
-        }
+        // $newArray = array_filter($array, $filterFunction);
+
+        $newArray = array_filter($array, function($arrayRow) use ($key, $values) {
+            return (is_array($arrayRow) && in_array($arrayRow[$key], $values));
+        });
+
         return $newArray;
     }
 
@@ -1618,27 +1623,34 @@ class Helper {
         $compilationIdArray = array_diff($compilationIdArray, array($mainId));
         $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
         $mainDates = Helper::sql_select_columns($mainArray, "Date");
-
         foreach ($compilationIdArray as $compilationId) {
+
             $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
             $firstRow = reset($array);
             $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
             $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
             $publicationDate = new DateTime($publicationDate);
+            echop($prognosisDates);
 
-            //echo count($prognosisDates) . "<br><br>" ;
-            //echo count($xValues) . "<br><br>" ;
-            //$yValues = Helper::filter_for_value($array, "Date", $prognosisDates);
-
-            //echo count($yValues) . "<br><br>"  ;
             $errorArray = array();
+
             foreach ($prognosisDates as $date) {
+                $time1 = microtime(TRUE);
                 $yRow = reset(Helper::filter_for_value($array, "Date", $date));
+                $time2 = microtime(TRUE);
+                echo $time2 - $time1;
+                echo "<br>";
                 if ($yRow != NULL) {
+
                     $xRow = reset(Helper::filter_for_value($mainArray, "Date", $date));
+
                     $errorRow["Date"] = $xRow["Date"];
                     $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
-                    $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
+                    if ($xRow["Value"] != 0) {
+                        $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
+                    } else {
+                        $errorRow["ErrorPercentage"] = "";
+                    }
 
                     $xDate = new DateTime($xRow["Date"]);
                     $diff = $xDate -> diff($publicationDate);
@@ -1649,11 +1661,13 @@ class Helper {
                     $errorRow["Compilation_Id"] = $compilationId;
 
                     $errorArray[] = $errorRow;
+
                 }
 
             }
-            echop($errorArray);
+            // echop($errorArray);
             //Helper::sql_insert_array($errorArray, "osdb_errors");
+
         }
 
     }
@@ -1669,6 +1683,29 @@ class Helper {
 
         }
         return $returnDates;
+    }
+
+    public static function rebuild_keys($array, $key) {
+            // rebuilds a two-dimensional array to have a certain value from each "row" as each key
+            //usage: $array = array([0]=>array("Fruit"=>"Banana", "Taste"=>"good"), 
+            //[1]=>array("Fruit"=>"Apple", "Taste"=>"boring"));
+            // $newArray = rebuild_keys($array, "Fruit");
+            
+        $newArray = array();
+        foreach ($array as $key => $arrayRow) {
+            if (isset($newArray[$arrayRow[$key]])) {
+                $duplicate[] = $key;
+            } else {
+                $newArray[$arrayRow[$key]] = $arrayRow;
+            }
+        }
+    if(isset($duplicate)){
+        echo "Error: The key you specified is not unique. Some values appear at least twice. Invalid keys at row " 
+        . implode(", ", $duplicate);
+    }
+    else {
+        return $newArray;
+    }
     }
 
 }
