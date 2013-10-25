@@ -48,8 +48,9 @@ switch ($_REQUEST["choice"]) {
             if(!(isset($_REQUEST["changeArray"]))){
                 $_REQUEST["changeArray"] = FALSE;
             }
-            Helper::combine_data($_REQUEST["compilationId"], $_REQUEST["method"], $_REQUEST["newName"], $_REQUEST["changeArray"], $_REQUEST["onlyCommonDates"]);
-            redirect("index.php?page=compilations");
+            if(!isset($_REQUEST["onlyCommonDates"])){$onlyCommonDates = FALSE;} 
+            Helper::combine_data($_REQUEST["compilationId"], $_REQUEST["method"], $_REQUEST["newName"], $_REQUEST["changeArray"], $onlyCommonDates);
+            // redirect("index.php?page=compilations");
             break;
         }
 
@@ -61,6 +62,11 @@ switch ($_REQUEST["choice"]) {
         Helper::add_tags($_REQUEST["compilationId"], $_REQUEST["tags"], $_REQUEST["newTags"]);
         redirect("index.php?page=compilations");
         break;
+
+    case "Recalculate Ranking":
+    Helper::calculate_ranking();
+    // redirect("index.php?page=ranking");
+    break;
 
     default :
         break;
