@@ -15,7 +15,7 @@ Good tools to use are (in order of importance)
 * Click on submit while pressing the ctrl-key
 * Download every file as an excel-file into the same folder
 * Convert all files into csv-format using [a converter](http://xls2csv.genxcrowd.com/download).
-* Merge these files into on single file by opening your console, navigating to your folder using `cd "path\to\folder"`, and then entering `copy *.csv collected.txt`
+* Merge these files into one single file by opening your console, navigating to your folder using `cd "path\to\folder"`, and then entering `copy *.csv collected.txt`
 * Copy and paste
 
 ### OilSandsReview
