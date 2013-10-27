@@ -28,4 +28,4 @@ Good tools to use are (in order of importance)
 * Open your console, navigate to the folder using `cd "path\to\folder"`, and merge all files into one using `copy *.html collected.txt`
 
 ---
-[How to edit](http://bywordapp.com/markdown/syntax.html)
+[How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
