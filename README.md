@@ -26,3 +26,6 @@ Good tools to use are (in order of importance)
 * Choose _Production by Project_
 * Download _all_ pages as `html` into one folder
 * Open your console, navigate to the folder using `cd "path\to\folder"`, and merge all files into one using `copy *.html collected.txt`
+
+
+[How to edit](http://bywordapp.com/markdown/syntax.html)
