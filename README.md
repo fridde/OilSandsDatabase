@@ -1,8 +1,8 @@
-Oil Sands Database
-=====================
+#Oil Sands Database
 
-Adding or updating content
----------------------
+
+## Adding or updating content
+
 Good tools to use are (in order of importance)
 * [Notepad++](http://notepad-plus-plus.org/download)
 * [OpenRefine](http://openrefine.org/)
