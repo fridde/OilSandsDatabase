@@ -8,7 +8,7 @@ $chosenCompilationIdArray = $_REQUEST["compilationId"];
 $shortNameArray = $_REQUEST["shortNameId"];
 $plotType = $_REQUEST["plotType"];
 $returnArray = array("plotType" => $plotType);
-
+$dateOf1970 = date_create("1970-01-01");
 
 $plotAccuracy = 1;
 if (count($chosenCompilationIdArray) > 5) {
@@ -26,11 +26,17 @@ foreach ($chosenCompilationIdArray as $key => $compilationId) {
 
     $currentArray = array();
     $i = 0;
+    if (count($array) > 10000) {
+        $plotAccuracy = 30;
+    }
     foreach ($array as $rowKey => $row) {
         $i++;
         if ($i % $plotAccuracy == 0) {
-            $row["Date"] = strtotime($row["Date"]) * 1000;
+            $today = date_create($row["Date"]);
+            $interval = $dateOf1970->diff($today);
 
+           $row["Date"] = $interval ->format('%a'); 
+           $row["Date"] =$row["Date"] * 24 * 60 * 60 * 1000;
             $row["Value"] = floatval($row["Value"]);
             $currentArray[] = array_values($row);
         }

@@ -84,7 +84,7 @@ a.box{
 	margin: 5px;
 	border-collapse: collapse;
 	border: 1px solid green;
-	width: 700px;
+	width: 900px;
 }
 
 #main th {
@@ -168,9 +168,9 @@ table.odd {
 	background: white;
 	width: 600px;
 	padding: 30px;
-	/*right: 600px;*/
+	
 	height: 300px;
-	/*margin-left: -100%;*/
+	
 }
 
 .yAxis .tickLabel{

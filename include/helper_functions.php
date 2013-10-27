@@ -1080,7 +1080,6 @@ class Helper {
         $query .= "RENAME TABLE " . $sqlTable . " TO deleteme, tmp TO " . $sqlTable . " ; ";
         $query .= " ALTER TABLE " . $sqlTable . " DROP COLUMN tmp_col ; ";
         $query .= "DROP TABLE deleteme ;";
-        echo $query;
         ORM::for_table($sqlTable) -> raw_execute($query);
 
         $rowsAfter = ORM::for_table($sqlTable) -> count();
@@ -1712,6 +1711,7 @@ class Helper {
         $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
         $mainArray = Helper::rebuild_keys($mainArray, "Date");
         $mainDates = Helper::sql_select_columns($mainArray, "Date");
+        echop($mainDates);
         foreach ($compilationIdArray as $compilationId) {
 
             $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
@@ -1752,7 +1752,7 @@ class Helper {
                 }
 
             }
-            Helper::sql_insert_array($errorArray, "osdb_errors");
+            // Helper::sql_insert_array($errorArray, "osdb_errors");
 
         }
 
@@ -1793,8 +1793,7 @@ class Helper {
     }
 
     public static function calculate_ranking() {
-        // $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-        // echop($combinationIdArray);
+        $foo = ORM::for_table("osdb_ranking")->raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
         // echop($combinationIdArray);
         foreach ($combinationIdArray as $combination) {
@@ -1804,7 +1803,7 @@ class Helper {
         $maxArray = array_unique($maxArray);
         sort($maxArray);
 
-         echop($maxArray);
+        echop($maxArray);
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
         // echop($mainIdArray);
         // echop($mainIdArray);
@@ -1817,7 +1816,7 @@ class Helper {
                 array_walk($compilationsToCompare, "sort");
                 $compilationsToCompare = array_filter($compilationsToCompare, create_function('$v', 'return count($v) == 2 ;'));
                 $compilationsToCompare = array_unique($compilationsToCompare, SORT_REGULAR);
-                // echop($compilationsToCompare);
+                echop($compilationsToCompare);
                 $queryArray = array();
                 foreach ($compilationsToCompare as $combination) {
                     $firstCompilation = ORM::for_table('osdb_errors') -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
@@ -1829,13 +1828,13 @@ class Helper {
                     $errorDiff = array();
                     while ($day <= max($maxArray)) {
                         if (isset($firstCompilation[$day]) && isset($secondCompilation[$day])) {
-                            $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"] - $secondCompilation[$day]["ErrorPercentage"], 2);
+                            $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"], 2) - pow($secondCompilation[$day]["ErrorPercentage"], 2);
                         }
                         if (count($errorDiff) > 1 && in_array($day, $maxArray)) {
                             $meanDifferential = array_sum($errorDiff) / count($errorDiff);
                             $autocovariance = Helper::autocovariance($errorDiff);
                             $errorStatistic = $meanDifferential / sqrt($autocovariance);
-                            $arrayToAdd = array("Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => count($errorDiff), "ErrorStatistic" => $errorStatistic);
+                            $arrayToAdd = array("Main_Id" => $mainId, "Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => count($errorDiff), "ErrorStatistic" => $errorStatistic);
                             if (!in_array($arrayToAdd, $queryArray)) {
                                 $queryArray[] = $arrayToAdd;
                             }
@@ -1848,6 +1847,7 @@ class Helper {
 
         }
         Helper::sql_insert_array($queryArray, "osdb_ranking");
+        Helper::sql_remove_duplicates("osdb_ranking");
     }
 
     public static function autocovariance($array, $stepSize = 1) {
@@ -1859,6 +1859,29 @@ class Helper {
         }
         $covariance = $sum / count($array);
         return $covariance;
+    }
+
+    public static function create_tournament_ranking($array) {
+        $returnArray = array();
+
+        foreach ($array as $row) {
+            $c1 = $row["Compilation_1"];
+            $c2 = $row["Compilation_2"];
+
+            if (!isset($returnArray[$c1])) {
+                $returnArray[$c1] = 0;
+            }
+            if (!isset($returnArray[$c2])) {
+                $returnArray[$c2] = 0;
+            }
+            if ($row["ErrorStatistic"] > 0) {
+                $returnArray[$c1] = $returnArray[$c1] + 1;
+            } else {
+                $returnArray[$c2] = $returnArray[$c2] + 1;
+            }
+        }
+        arsort($returnArray);
+        return $returnArray;
     }
 
 }
