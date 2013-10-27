@@ -7,7 +7,7 @@ Adding or updating content
 ### Environment Alberta
 
 * Open [a multiple tab opener](http://www.openurls.eu/)
-* Add the links from this file, 20 at a time, into the textfield
+* Add the links from [this file](https://github.com/fridde/OilSandsDatabase/blob/master/helper_files/Environment%20Alberta%20Sources.txt), 20 at a time, into the textfield
 * Click on submit while pressing the ctrl-key
 * Download every file as an excel-file into the same folder
 * Convert all files into csv-format using [a converter](http://xls2csv.genxcrowd.com/download).
