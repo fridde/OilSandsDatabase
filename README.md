@@ -6,6 +6,7 @@
 Good tools to use are (in order of importance)
 * [Notepad++](http://notepad-plus-plus.org/download)
 * [OpenRefine](http://openrefine.org/)
+* [Text Mechanic](http://textmechanic.com/)
 
 ### Environment Alberta
 
@@ -15,6 +16,7 @@ Good tools to use are (in order of importance)
 * Download every file as an excel-file into the same folder
 * Convert all files into csv-format using [a converter](http://xls2csv.genxcrowd.com/download).
 * Merge these files into one single file by opening your console, navigating to your folder using `cd "path\to\folder"`, and then entering `copy *.csv collected.txt`
+* Make sure all projects mentioned at the end of [this file](https://github.com/fridde/OilSandsDatabase/blob/master/helper_files/Environment%20Alberta%20Sources.txt) are included
 * Copy and paste
 
 ### OilSandsReview
