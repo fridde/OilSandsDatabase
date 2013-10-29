@@ -70,7 +70,8 @@ Contains the name for every compilation of data
 ###Working
 
 ##Things to do
-* "Remove tag" function
-* "Remove Source" function to remove from all tables
+
+* _Remove tag_ function
+* _Remove Source_ function to remove all data associated with a certain task from all tables
 ---
 [How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
