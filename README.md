@@ -69,5 +69,8 @@ Contains the name for every compilation of data
 ###Tags
 ###Working
 
+##Things to do
+* "Remove tag" function
+* "Remove Source" function to remove from all tables
 ---
 [How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
