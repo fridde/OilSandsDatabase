@@ -48,7 +48,7 @@ $col_rows = Helper::count_col_row($bigArray);
 $rowKeys = range(0, $col_rows["col"] - 1);
 $currentSourceld = $bigArray["Source_Id"][0];
 foreach ($rowKeys as $k => $rowNumber) {
-    $tableRow = ORM::for_table('osdb_Data') -> create();
+    $tableRow = ORM::for_table('osdb_data') -> create();
 
     foreach ($bigArray as $header => $values) {
         $tableRow -> $header = $values[$rowNumber];
@@ -59,7 +59,7 @@ foreach ($rowKeys as $k => $rowNumber) {
     if ($currentSourceld != $tableRow -> Source_Id) {
     echo "
     <p>
-    The source <strong>" . ORM::for_table('osdb_Sources') -> find_one($currentSourceld) -> SourceName . " </strong> has been transferred to the database.
+    The source <strong>" . ORM::for_table('osdb_sources') -> find_one($currentSourceld) -> SourceName . " </strong> has been transferred to the database.
     </p> ";
     $currentSourceld = $tableRow -> Source_Id;
     }

@@ -48,11 +48,9 @@ if ($button === "ResetTable") {
     $text = $func($text, $par1, $par2);
     
     
-    //phpinfo();
     $table -> SemiTidyDataRecent = $table -> SemiTidyData;
      $table -> SemiTidyData = $text;
      $table -> save();
-    
      redirect("index.php?page=sources&source=" . $source_id);
      
 }

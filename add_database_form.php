@@ -5,7 +5,7 @@ $sourceList = ORM::for_table('osdb_Sources') -> order_by_asc('Institution') -> f
 //echo '<form action="action.php" method="post">' .
 echo '<form action="index.php?page=add_database" method="post">
 <p><input type="submit" name="action" value="Send data to database"></p>';
-
+echo '<input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">(De-)Select all';
 foreach ($sourceList as $source) {
     $sourceArray = Helper::csvstring_to_array($source -> SemiTidyData);
     $header = $sourceArray[0];

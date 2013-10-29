@@ -434,7 +434,6 @@ class Helper {
     }
 
     public static function create_html_from_array($array) {
-
         $col_row = Helper::count_col_row($array);
         $cols = $col_row["col"];
         $rows = $col_row["row"];
@@ -453,6 +452,9 @@ class Helper {
     }
 
     public static function jump($array, $pivotColumn, $copy) {
+        /* sends the content of the cell in a certain column, the pivotColumn,
+         * to the last column available if its cell to the right is empty or "copy" is set to true
+         * */
         if ($pivotColumn == "") {
             $pivotColumn = 0;
         }
@@ -474,22 +476,25 @@ class Helper {
     }
 
     public static function copy_column($array, $column) {
-
+        /* will copy the content of a column to the last column */
         return Helper::jump($array, $column, $copy = "TRUE");
     }
 
     public static function remove_whitelines($array) {
+
         foreach ($array as $key => $row) {
-            if (strlen(implode($row)) == 0) {
+            if (strlen(trim(implode($row))) == 0) {
                 $array[$key] = NULL;
             }
         }
         $array = array_filter($array);
-
         return $array;
     }
 
     public static function fill_from_above($array, $pivotCols, $pivotRows) {
+        /* will choose the specified rows in the specified column and copy onto the cells below all the way down
+         * until the next specified row is reached
+         *  */
         $cols_rows = Helper::count_col_row($array);
         if ($pivotCols == "") {
             $pivotCols = array("0");
@@ -503,13 +508,14 @@ class Helper {
             $pivotRows = array();
             foreach ($pivotCols as $col) {
                 foreach ($array as $rowKey => $row) {
-                    if (!(empty($row[$col]))) {
+                    if (trim($row[$col]) != "") {
                         $pivotRows[] = $rowKey;
                     }
+
                 }
             }
         }
-
+        // echop($pivotRows);
         foreach ($array as $rowKey => $row) {
             if (!(in_array($rowKey, $pivotRows))) {
                 foreach ($row as $colKey => $cellValue) {
@@ -519,7 +525,7 @@ class Helper {
                 }
             }
         }
-
+        // echop($array);
         return $array;
     }
 
@@ -591,7 +597,7 @@ class Helper {
         foreach ($columns as $colKey => $col) {
             $colArray = array();
             foreach ($array as $rowKey => $row) {
-                if (!(empty($array[$rowKey][$colKey]))) {
+                if (trim($array[$rowKey][$colKey]) != "") {
                     $colArray[] = $array[$rowKey][$colKey];
                 }
             }
@@ -959,6 +965,7 @@ class Helper {
     }
 
     public static function remove_lines_where($array, $regex, $col) {
+
         $linesToRemove = Helper::find_rows($array, $regex, $col);
 
         $array = Helper::remove_lines($array, $linesToRemove);
@@ -1282,19 +1289,17 @@ class Helper {
 
     public static function interpolate_table($sourceId) {
 
-        // chooses all rows of a given source from the table osdb_data, interpolates the values with a step
-        // length of one day and inserts these values into osdb_working
+        /* chooses all rows of a given source from the table osdb_data, interpolates the values with a step
+         length of one day and inserts these values into osdb_working
 
-        // since every source may contain series for several different subgrupts (scenario, products or both),
-        // the interpolation has to be done for each subgroup individually
+         since every source may contain series for several different subgrupts (scenario, products or both),
+         the interpolation has to be done for each subgroup individually
 
-        // All columns that are not within $ignoreArray (the standard columns) are considered to contain subgroups
+         All columns that are not within $ignoreArray (the standard columns) are considered to contain subgroups */
         $ignoreArray = array("id", "Source_Id", "Date", "Value");
 
         $ORMArray = ORM::for_table('osdb_data') -> find_array();
         $ORMArray = Helper::filter_for_value($ORMArray, "Source_Id", $sourceId);
-
-        //echo print_r($ORMArray) . "<br><br>";
 
         $subGroupHeaders = array_keys(array_filter(reset($ORMArray)));
         // creates an array of all non-standard column headers
@@ -1310,19 +1315,18 @@ class Helper {
             $subGroupArray = array(NULL);
         }
         $workingTableHeaders = Helper::sql_get_columns("osdb_working");
-        // each row of $subGroupArray now contains  the names of a different dataset that should or could
-        // be interpolated
-        //echo print_r($workingTableHeaders) . "<br><br>";
+        /* each row of $subGroupArray now contains  the names of a different dataset that should or could
+         be interpolated
 
-        //now the interpolation begins
+         now the interpolation begins */
         foreach ($subGroupArray as $subGroup) {
             $queryArray = array();
             $currentORM = $ORMArray;
             $currentCompilationName = ORM::for_table('osdb_sources') -> find_one($sourceId);
             $currentCompilationName = $currentCompilationName -> ShortName;
 
-            // removes all element that are not part of the current Subgroup
-            // filtering is not required if the table only contains one type of data
+            /* removes all element that are not part of the current Subgroup
+             filtering is not required if the table only contains one type of data */
             if ($subGroup != NULL) {
                 foreach ($subGroup as $key => $element) {
                     $currentORM = Helper::filter_for_value($currentORM, $key, $element);
@@ -1333,7 +1337,6 @@ class Helper {
                     }
                 }
             }
-            //echo print_r($currentORM) . "<br><br>";
             // interpolation is only applicable if there is more than one datapoint to start from
             if (count($currentORM) > 1) {
                 // At the same time, a new Compilation has to be defined for this subgroup
@@ -1346,11 +1349,6 @@ class Helper {
                 // since $currentORM is still in the form of [Data_row_Id]=>array(), we only filter out the values
                 $currentORM = Helper::sort_by($currentORM, "Date");
                 $currentORM = array_values($currentORM);
-
-                // if ($compilationId == 210) {
-                //echo print_r($currentCompilationName) . "<br>";
-                //echo print_r($currentORM) . "<br><br>";
-                // }
 
                 foreach ($currentORM as $rowKey => $row) {
 
@@ -1391,19 +1389,13 @@ class Helper {
                             }
 
                             $queryArray[] = $newRow;
-                            // if(!(isset($stop))){
-                            // echo implode(", ", array_keys($newRow)) . "<br>";
-                            // $stop = 1;
-                            // }
-                            // echo implode(", ", $newRow) . "<br>";
+
                             // preparing for the next step
                             $currentDay = $currentDay -> modify('+ 1 day');
                             $timeFraction = $timeFraction + (1 / $intInterval);
                         }
                     }
                 }
-                //echo $compilationId . "<br>";
-                //echo print_r($queryArray) . "<br>" ;
                 Helper::sql_insert_array($queryArray, "osdb_working");
 
             }
@@ -1793,7 +1785,7 @@ class Helper {
     }
 
     public static function calculate_ranking() {
-        $foo = ORM::for_table("osdb_ranking")->raw_execute("TRUNCATE TABLE osdb_ranking;");
+        $foo = ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
         // echop($combinationIdArray);
         foreach ($combinationIdArray as $combination) {
@@ -1834,7 +1826,7 @@ class Helper {
                             $meanDifferential = array_sum($errorDiff) / count($errorDiff);
                             $autocovariance = Helper::autocovariance($errorDiff);
                             $errorStatistic = $meanDifferential / sqrt($autocovariance);
-                            $arrayToAdd = array("Main_Id" => $mainId, "Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => count($errorDiff), "ErrorStatistic" => $errorStatistic);
+                            $arrayToAdd = array("Main_Id" => $mainId, "Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => count($errorDiff), "Mean_Differential" => $meanDifferential, "ErrorStatistic" => $errorStatistic);
                             if (!in_array($arrayToAdd, $queryArray)) {
                                 $queryArray[] = $arrayToAdd;
                             }
@@ -1882,6 +1874,17 @@ class Helper {
         }
         arsort($returnArray);
         return $returnArray;
+    }
+
+    public static function archive_source($sourceId){
+    /* Compilations (Source_Id)
+     Data (Source_Id)
+     Errors (Main_Id, Compilation_Id)
+     Ranking (Main_Id, Compilation_Id)
+     Sources -> change Archived to 1
+     Tags (Compilation_Id)
+     Working (Source_Id) */
+     
     }
 
 }

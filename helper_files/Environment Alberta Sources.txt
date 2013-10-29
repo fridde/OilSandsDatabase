@@ -31,4 +31,31 @@ http://environment.alberta.ca/apps/OSIPDL/Dataset/Details/45?ProjectId=51
 http://environment.alberta.ca/apps/OSIPDL/Dataset/Details/45?ProjectId=63
 http://environment.alberta.ca/apps/OSIPDL/Dataset/Details/45?ProjectId=94
 
-
+Baytex Energy - Cliffdale
+BlackPearl Resources - Blackrod
+Canadian Natural Resources Ltd. - East Primrose and
+Canadian Natural Resources Ltd. - Horizon
+Canadian Natural Resources Ltd. - Primrose
+Cenovus Energy - Foster Creek
+Cenovus Energy - Pelican Lake Grand Rapids
+CNOOC - Long Lake
+Connacher Oil and Gas - Great Divide
+ConocoPhillips Canada Resources - Surmont
+Devon Canada - Jackfish
+Husky Energy-Tucker
+Imperial Oil - Cold Lake Operations
+Japan Canada Oil Sands - Hangingstone
+Pengrowth Energy - Lindbergh
+Penn West Petroleum - Seal
+Shell - Jackpine Mine
+Shell - Muskeg River Mine
+Shell - Orion
+Shell - Peace River
+Shell - Scotford Upgrader
+Southern Pacific Resource Corp. - STP McKs
+Statoil - Leismer
+Suncor- Base Operations
+Suncor - Firebag
+Suncor - MacKay River
+Syncrude - Aurora North
+Syncrude - Mildred Lake

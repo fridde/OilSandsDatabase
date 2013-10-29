@@ -1,5 +1,5 @@
 <?php
-
+$headersToExclude = array("id", "Source_Id", "Compilation_Id");
 $tableType = "osdb_data";
 if(isset($_GET["table_type"])){
     $tableType = "osdb_" . $_GET["table_type"];
@@ -10,6 +10,7 @@ $sourceIdList = ORM::for_table($tableType) -> distinct() -> select('Source_Id') 
 echo '<form action="index.php?page=refine_tables" method="post">
 <input type="submit" name="choice" value="Interpolate data">
 </p>';
+echo '<input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">(De-)Select all';
 $i = 0;
 foreach ($sourceIdList as $SourceRow) {
         $i++;
@@ -40,7 +41,7 @@ foreach ($sourceIdList as $SourceRow) {
         $headersToShow = array_merge($headersToShow, array_keys(array_filter($row)));
         $headersToShow = array_unique($headersToShow);
     }
-    $headersToExclude = array("id", "Source_Id");
+    
     foreach ($headersToShow as $header) {
         if (!(in_array($header, $headersToExclude))) {
             echo '<td>' . $header . '</td>';

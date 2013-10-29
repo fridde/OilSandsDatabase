@@ -2,7 +2,7 @@ function SelectDeselect() {
 	if ($('#chkSelectDeselectAll').checked) {
 		$("INPUT[type='checkbox']").attr('checked', true);
 	} else {
-		$("INPUT[type='checkbox']").attr('checked', false);
+		$("INPUT[type='checkbox']:not(#chkSelectDeselectAll)").attr('checked', false);
 	}
 }
 
