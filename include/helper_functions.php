@@ -1246,16 +1246,17 @@ class Helper {
 
         $ORM = ORM::for_table($dataTable) -> where("Source_Id", $sourceId) -> find_many();
 
-        foreach ($ORM as $row) {
-
-            $unit = $row -> Unit;
-            $value = $row -> Value;
-
             $barrel_per_cubic_meter = 1 / 0.158987295;
             $thousand = 1000;
             $one_per_thousand = 1 / 1000;
             $days_per_year = 365;
             $years_per_day = 1 / $days_per_year;
+            $months_per_day = 1/30.417;
+
+        foreach ($ORM as $row) {
+
+            $unit = $row -> Unit;
+            $value = $row -> Value;
 
             switch ($unit) {
                 case 'Thousand Cubic Metres per year' :
@@ -1275,6 +1276,10 @@ class Helper {
                     break;
                 case 'Thousand Cubic meters per day' :
                     $factor = $thousand * $barrel_per_cubic_meter;
+                    break;
+
+                case 'Thousand Cubic metres per month' :
+                    $factor = $thousand * $barrel_per_cubic_meter * $months_per_day;
                     break;
                 default :
                     $factor = 1;
@@ -1876,15 +1881,15 @@ class Helper {
         return $returnArray;
     }
 
-    public static function archive_source($sourceId){
-    /* Compilations (Source_Id)
-     Data (Source_Id)
-     Errors (Main_Id, Compilation_Id)
-     Ranking (Main_Id, Compilation_Id)
-     Sources -> change Archived to 1
-     Tags (Compilation_Id)
-     Working (Source_Id) */
-     
+    public static function archive_source($sourceId) {
+        /* Compilations (Source_Id)
+         Data (Source_Id)
+         Errors (Main_Id, Compilation_Id)
+         Ranking (Main_Id, Compilation_Id)
+         Sources -> change Archived to 1
+         Tags (Compilation_Id)
+         Working (Source_Id) */
+
     }
 
 }

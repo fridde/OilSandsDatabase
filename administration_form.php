@@ -1,6 +1,7 @@
 <?php
 
 link_for("index.php?page=button_form", "Add Button", "box");
+link_for("index.php?page=edit_buttons", "Edit Buttons", "box");
 echo '<form action="index.php?page=refine_tables" method="post">
 <p>
 <select name="Table">';

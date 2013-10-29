@@ -6,7 +6,7 @@ $table = ORM::for_table('osdb_Sources') -> select_many("SourceName", "Institutio
 -> find_one($source_id)->as_array();
 
 
-echo '<form action="data_upload.php" method="post"> 
+echo '<form action="source_upload.php" method="post"> 
             <p><table>';
         foreach ($table as $key => $value) {
                if($key != "SemiTidyData") {

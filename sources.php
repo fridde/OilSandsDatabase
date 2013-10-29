@@ -2,11 +2,11 @@
 
 if (empty($_GET["source"])) {
     echo '<h1>Sources</h1>';
-    link_for("index.php?page=data_upload_form", "Add Source", "box");
+    link_for("index.php?page=source_upload_form", "Add Source", "box");
     foreach (ORM::for_table('osdb_Sources')->
-            select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product')
-            ->order_by_asc('Institution')->find_result_set()->as_array() as $Source_set) {
-        $Source = $Source_set->as_array();
+    select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product')
+    ->order_by_asc('Institution')->find_result_set()->as_array() as $Source_set) {
+        $Source = $Source_set -> as_array();
 
         echo '<p><table class="tablesorter">';
         foreach ($Source as $key => $value) {
@@ -15,9 +15,7 @@ if (empty($_GET["source"])) {
             }
             if ($key === "SourceName") {
                 echo '<tr> <th>Source</th> <th>
-                    <a href="index.php?page=sources&source=' .
-                $Source_id .
-                '">' . $value . '</a></th> </tr>';
+                    <a href="index.php?page=sources&source=' . $Source_id . '">' . $value . '</a></th> </tr>';
             } elseif ($key != "id") {
                 echo '<tr> <td>' . $key . '</td> <td>' . $value . '</td> </tr>';
             }
@@ -25,16 +23,24 @@ if (empty($_GET["source"])) {
         echo '</table></p>';
     };
 } else {
-    echo '<h1>Convert table</h1>';
-    $table = ORM::for_table('osdb_Sources')->find_one($_GET["source"]);
 
-    $SourceName = $table->SourceName;
-    $Institution = $table->Institution;
-    $SourceUrl = $table->SourceUrl;
-    $PublicationDate = $table->PublicationDate;
-    $Unit = $table->Unit;
-    $RawData = $table->RawData;
-    $SemiTidyData = $table->SemiTidyData;
+    $buttonArray = ORM::for_table('osdb_Buttons') -> distinct() -> order_by_asc('ButtonName') -> find_array();
+    echo '<ul id="buttonDescriptions" hidden>';
+    foreach ($buttonArray as $button) {
+        echo '<li class="buttonDescription" id="' . $button['ButtonName'] . '">' . htmlentities($button['Description']) . '</li>';
+    }
+    echo '</ul>';
+
+    echo '<h1>Convert table</h1>';
+    $table = ORM::for_table('osdb_Sources') -> find_one($_GET["source"]);
+
+    $SourceName = $table -> SourceName;
+    $Institution = $table -> Institution;
+    $SourceUrl = $table -> SourceUrl;
+    $PublicationDate = $table -> PublicationDate;
+    $Unit = $table -> Unit;
+    $RawData = $table -> RawData;
+    $SemiTidyData = $table -> SemiTidyData;
 
     echo '<p><table class="tablesorter">
         <tr>
@@ -53,28 +59,37 @@ if (empty($_GET["source"])) {
         </tr>';
 
     echo '</table></p>';
-
-    $buttonNames = ORM::for_table('osdb_Buttons')->distinct()->
-                    select('ButtonName')->find_result_set();
+    echo '<div>';
     $sourceId = $_GET["source"];
     echo '<form action="conversion.php" method="post" id="conversion">';
     echo 'First parameter<input type="text" name="par1"><br>
     Second parameter<input type="text" name="par2">';
     echo '<p><div class="buttons">';
-    foreach ($buttonNames as $buttonName) {
-        $buttonName = $buttonName->ButtonName;
-        echo '<button type="submit" formaction="conversion.php?source_id=' .
-        $sourceId . '&button=' . $buttonName . '">' . $buttonName . '</button>';
+    $i = 0;
+    $rowlength = 80;
+    foreach ($buttonArray as $button) {
+
+        $buttonName = $button['ButtonName'];
+        echo '<button class="buttonWithDescription" type="submit" formaction="conversion.php?source_id=' . $sourceId . '&button=' . $buttonName . '" value="' . $buttonName . '">' . $buttonName . '</button>';
+        if ($i > $rowlength) {
+            // $i = $i % $rowlength;
+            $i = 0;
+            echo '<br>';
+        }
+        $i += strlen($buttonName) + 5;
     }
     echo '</div></p>';
     echo '</form>';
+    echo '<div id="buttonExplanation" hidden></div>';
+    echo '</div>';
 
-
+    echo '<div style="clear:both;">';
     if (empty($_GET["as_table"])) {
         echo '<p><textarea disabled>' . $SemiTidyData . '</textarea></p>';
     } else {
         echo Helper::create_html_from_csv($SemiTidyData);
     }
+    echo '</div>';
 }
 ?>
 

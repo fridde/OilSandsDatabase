@@ -207,5 +207,10 @@ $(document).ready(function() {
 		});
 	});
 
+	$(".buttonWithDescription").mouseenter(function(){
+		$("#buttonExplanation").show();
+		var id = $(this).attr("value");
+		$("#buttonExplanation").html("<h3>" +id + "</h3>" + $("#"+ id).text());
+	});
 });
 

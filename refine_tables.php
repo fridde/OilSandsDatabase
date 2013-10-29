@@ -45,10 +45,11 @@ switch ($_REQUEST["choice"]) {
             //redirect("index.php?page=compilations");
             break;
         } else {
-            if(!(isset($_REQUEST["changeArray"]))){
+            if (!(isset($_REQUEST["changeArray"]))) {
                 $_REQUEST["changeArray"] = FALSE;
             }
-            if(!isset($_REQUEST["onlyCommonDates"])){$onlyCommonDates = FALSE;} 
+            if (!isset($_REQUEST["onlyCommonDates"])) {$onlyCommonDates = FALSE;
+            }
             Helper::combine_data($_REQUEST["compilationId"], $_REQUEST["method"], $_REQUEST["newName"], $_REQUEST["changeArray"], $onlyCommonDates);
             // redirect("index.php?page=compilations");
             break;
@@ -63,10 +64,22 @@ switch ($_REQUEST["choice"]) {
         redirect("index.php?page=compilations");
         break;
 
-    case "Recalculate Ranking":
-    Helper::calculate_ranking();
-    // redirect("index.php?page=ranking");
-    break;
+    case "Recalculate Ranking" :
+        Helper::calculate_ranking();
+        // redirect("index.php?page=ranking");
+        break;
+
+    case "Edit Buttons" :
+        $buttonArray = array_combine($_REQUEST["ButtonName"], $_REQUEST["ButtonDescription"]);
+        foreach ($buttonArray as $buttonName => $buttonDescription) {
+            if ($buttonDescription != "") {
+                $button = ORM::for_table("osdb_buttons") -> where("ButtonName", $buttonName) -> find_one();
+                $button -> Description = $buttonDescription;
+                $button -> save();
+            }
+        }
+        redirect("index.php?page=edit_buttons");
+        break;
 
     default :
         break;

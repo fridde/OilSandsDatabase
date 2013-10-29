@@ -21,6 +21,17 @@ div {
 	margin: 5px;
 }
 
+div .buttons {
+	float: left;
+}
+
+div #buttonExplanation {
+	padding: 5px;
+	margin: -100px 20px 20px 650px;
+	/*background-color: white;*/
+	border: solid black 1px;
+}
+
 #header {
 	/*background: red;*/
 	background: linear-gradient(to bottom, #1e5799 0%, #7db9e8 100%);
@@ -239,9 +250,7 @@ a {
 	text-decoration: none;
 }
 
-div .buttons {
-	width: 700px;
-}
+
 
 /*
  * Table

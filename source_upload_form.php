@@ -1,6 +1,6 @@
 
 <h1>Upload your data</h1>
-<form action="data_upload.php" method="post" id="Data">
+<form action="source_upload.php" method="post" id="Data">
     <p> Source <input type="text" name="Source" size="45"> </p>
     <p>
         <?php
