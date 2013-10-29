@@ -34,6 +34,10 @@ Good tools to use are (in order of importance)
 * Download _all_ pages as `html` into one folder
 * Open your console, navigate to the folder using `cd "path\to\folder"`, and merge all files into one using `copy *.html collected.txt`
 
+### Energy Statistics Handbook
+
+* Be careful: The months have other units than the years! Create an extra column called _Unit_ and manually add `Thousand Cubic metres per month` (if applicable) where monthly values are given. Where units are omitted, the standard unit of the source (in this case _Thousand Cubic metres per year_) is assumed.
+
 ## The different tables in the database ##
 
 The tables behind the scenes are stored in a MYSQL database. Within the database, all tables are prepended by a `osdb_`, so that the table __Sources__ actually is called __osdb_sources__.
