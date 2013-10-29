@@ -4,10 +4,9 @@
 | [Adding or updating content](#Adding-or-updating-content)
 | [Table description](#The-different-tables-in-the-database)
 
-##Introduction 
+##Introduction ##
 The Oil Sands Database is an online apllication written mainly in PHP and some JavaScript including jQuery. Its purpose is to collect all available sources reporting and prognosing Oil Sands Production in Canada in one place, making it easier to compare and evaluate each data set. 
-
-## Adding or updating content
+ 
 
 Good tools to use are (in order of importance)
 * [Notepad++](http://notepad-plus-plus.org/download)
@@ -34,7 +33,7 @@ Good tools to use are (in order of importance)
 * Download _all_ pages as `html` into one folder
 * Open your console, navigate to the folder using `cd "path\to\folder"`, and merge all files into one using `copy *.html collected.txt`
 
-## The different tables in the database
+## The different tables in the database ##
 
 The tables behind the scenes are stored in a MYSQL database. Within the database, all tables are prepended by a `osdb_`, so that the table __Sources__ actually is called __osdb_sources__.
 
