@@ -12,6 +12,18 @@ foreach ($Tables as $Table) {
 echo '</select>
 <input type="submit" name="choice" value="Remove duplicates">
 </p>';
+echo '<p>
+<select name="Source">';
+$sources = ORM::for_table("osdb_sources")->find_array();
+foreach($sources as $source){
+    $name = $source["SourceName"] . " - " . reset(explode("-", $source["PublicationDate"]));
+    echo '<option value="' . $name . '">' . $name . '</option>'; 
+}
+echo '</select><br>
+<input type="submit" name="choice" value="Remove source"> 
+<input type="checkbox" name="archive" value="archive"> Archive source'; 
+
+
 ?>
 <p><h2>Add synonyms or abbreviations</h2></p>
 <p><input type="submit" name="choice" value="Add synonyms">

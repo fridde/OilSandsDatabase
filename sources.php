@@ -10,15 +10,29 @@ if (empty($_GET["source"])) {
 
         echo '<p><table class="tablesorter">';
         foreach ($Source as $key => $value) {
-            if ($key === "id") {
-                $Source_id = $value;
-            }
-            if ($key === "SourceName") {
-                echo '<tr> <th>Source</th> <th>
+            switch ($key) {
+                case 'id' :
+                    $Source_id = $value;
+                    break;
+
+                case "SourceName" :
+                    echo '<tr> <th>Source</th> <th>
                     <a href="index.php?page=sources&source=' . $Source_id . '">' . $value . '</a></th> </tr>';
-            } elseif ($key != "id") {
-                echo '<tr> <td>' . $key . '</td> <td>' . $value . '</td> </tr>';
+                    break;
+
+                case "SourceUrl" :
+                    echo '<tr> <td>' . $key . '</td> <td>' . $value;
+                    if ($value != "") {
+                        echo '<a href="' . $value . '"> [link]</a>';
+                    }
+                    echo '</td> </tr>';
+                    break;
+
+                default :
+                    echo '<tr> <td>' . $key . '</td> <td>' . $value . '</td> </tr>';
+                    break;
             }
+
         }
         echo '</table></p>';
     };
