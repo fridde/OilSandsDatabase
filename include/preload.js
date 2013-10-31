@@ -19,11 +19,11 @@ $(document).ready(function() {
 	$(".showbutton").on("change", function() {
 		$(".mainComp").show();
 	});
-	
+
 	$(':radio:not(".showbutton"):not(".mainComp")').on("change", function() {
 		$(".mainComp").hide();
 	});
-	
+
 	$("#sortable").dataTable({
 		"bPaginate" : false
 	});
@@ -140,7 +140,8 @@ $(document).ready(function() {
 			// series are turned on/off
 			var i = 0;
 			$.each(data, function(key, val) {
-				val.color = i; ++i;
+				val.color = i;
+				++i;
 
 			});
 
@@ -207,10 +208,12 @@ $(document).ready(function() {
 		});
 	});
 
-	$(".buttonWithDescription").mouseenter(function(){
+	$(".buttonWithDescription").mouseenter(function() {
 		$("#buttonExplanation").show();
 		var id = $(this).attr("value");
-		$("#buttonExplanation").html("<h3>" +id + "</h3>" + $("#"+ id).text());
+		if ($("#" + id).text() != "") {
+			$("#buttonExplanation").html("<h3>" + id + "</h3>" + $("#" + id).text());
+		}
 	});
 });
 

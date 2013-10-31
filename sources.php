@@ -65,7 +65,7 @@ if (empty($_GET["source"])) {
         <tr>
             <td>Institution</td> <td>' . $Institution . '</td>
         </tr>
-            <td>Source Url</td> <td>' . $SourceUrl . '</td>
+            <td>Source Url</td> <td><a href="' . $SourceUrl . '">' . $SourceUrl . '</td>
         </tr>
             <td>Date of Publication</td> <td>' . $PublicationDate . '</td>
         </tr> 

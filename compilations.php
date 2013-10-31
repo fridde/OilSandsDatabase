@@ -83,14 +83,14 @@ echo '<th></th></tr></thead>';
 foreach ($compilationList as $key => $compilation) {
     $associatedTags = Helper::filter_for_value($tags, "Compilation_Id", $compilation["id"]);
     $associatedTags = Helper::sql_select_columns($associatedTags, "Name");
+    $attributedSourceUrl = "index.php?page=sources&source=" . $compilation["Source_Id"];
     
-
     if (count($tagsToShow) == 0 || count(array_intersect($associatedTags, $tagsToShow)) == count($tagsToShow)) {
         $associatedTags = array_pad($associatedTags, $maxTags, " ");
         echo '<tr>';
         echo '<td><input type="radio" class="mainComp" name="mainComp" value="' . $compilation["id"] . '"></td>';
         echo '<td><input type="checkbox" name="compilationId[]" value="' . $compilation["id"] . '"></td>
-    <td>' . $compilation["Name"] . '</td>
+    <td>' . $compilation["Name"] . '<a class="tinyLink" href="' . $attributedSourceUrl . '"> [Source]</a></td>
     <td><input type="text" name="compilationShortNames[]" value="' . $compilationShortNames[$key] . '"></td>';
         foreach ($associatedTags as $tag) {
             echo '<td>'; 

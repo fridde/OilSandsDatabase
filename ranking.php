@@ -3,8 +3,20 @@
 echo '<form action="index.php?page=refine_tables" method="post">
 <p><input type="submit" name="choice" value="Recalculate Ranking">
 </form>';
-$_REQUEST["Main_Id"] = "318";
+$_REQUEST["Main_Id"] = "355";
 $mainId = $_REQUEST["Main_Id"];
+echo '<form action="index.php?page=ranking">
+<p>Change the reported actual production the prognoses are compared to 
+<select name="Main_Id">';
+$possibleMainIdArray = ORM::for_table("osdb_ranking")->distinct()->select("Main_Id")->find_array();
+foreach($possibleMainIdArray as $mainId){
+    $mainId = $mainId["Main_Id"];
+        $mainIdName = ORM::for_table("osdb_compilations")->find_one($mainId)->Name;
+    echo '<option value="' . $mainId . '">' . $mainIdName . '</option>' ;
+}
+echo '</select></form></p>';
+
+
 $mainIdName = ORM::for_table('osdb_compilations') -> find_one($mainId) -> Name;
 echo "<h1>Based on $mainIdName</h1>";
 

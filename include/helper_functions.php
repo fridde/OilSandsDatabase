@@ -1322,7 +1322,9 @@ class Helper {
             $currentORM = $ORMArray;
             $currentCompilationName = ORM::for_table('osdb_sources') -> find_one($sourceId);
             $currentCompilationName = $currentCompilationName -> ShortName;
-
+            
+            
+            
             /* removes all element that are not part of the current Subgroup
              filtering is not required if the table only contains one type of data */
             if ($subGroup != NULL) {
@@ -1680,13 +1682,13 @@ class Helper {
         return $array;
     }
 
-    public static function calculate_error_statistics($compilationIdArray, $mainId, $newName) {
+    public static function calculate_error_statistics($compilationIdArray, $mainId) {
 
         $compilationIdArray = array_diff($compilationIdArray, array($mainId));
         $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
         $mainArray = Helper::rebuild_keys($mainArray, "Date");
-        $mainDates = Helper::sql_select_columns($mainArray, "Date");
-        echop($mainDates);
+        $mainDates = array_keys($mainArray);
+        
         foreach ($compilationIdArray as $compilationId) {
 
             $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
@@ -1727,7 +1729,8 @@ class Helper {
                 }
 
             }
-            // Helper::sql_insert_array($errorArray, "osdb_errors");
+            
+            Helper::sql_insert_array($errorArray, "osdb_errors");
 
         }
 
@@ -1768,9 +1771,9 @@ class Helper {
     }
 
     public static function calculate_ranking() {
-        $foo = ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
+        ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-        // echop($combinationIdArray);
+        
         foreach ($combinationIdArray as $combination) {
             $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
             $maxArray[] = $maxDay -> Day;
@@ -1778,20 +1781,19 @@ class Helper {
         $maxArray = array_unique($maxArray);
         sort($maxArray);
 
-        echop($maxArray);
+
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
-        // echop($mainIdArray);
-        // echop($mainIdArray);
+
         foreach ($mainIdArray as $mainId) {
             $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainId);
             $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
-            // echop($validErrorCompilations);
+           
             if (count($validErrorCompilations) > 1) {
                 $compilationsToCompare = power_perms($validErrorCompilations);
                 array_walk($compilationsToCompare, "sort");
                 $compilationsToCompare = array_filter($compilationsToCompare, create_function('$v', 'return count($v) == 2 ;'));
                 $compilationsToCompare = array_unique($compilationsToCompare, SORT_REGULAR);
-                echop($compilationsToCompare);
+                
                 $queryArray = array();
                 foreach ($compilationsToCompare as $combination) {
                     $firstCompilation = ORM::for_table('osdb_errors') -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
@@ -1822,7 +1824,6 @@ class Helper {
 
         }
         Helper::sql_insert_array($queryArray, "osdb_ranking");
-        Helper::sql_remove_duplicates("osdb_ranking");
     }
 
     public static function autocovariance($array, $stepSize = 1) {
@@ -1849,7 +1850,7 @@ class Helper {
             if (!isset($returnArray[$c2])) {
                 $returnArray[$c2] = 0;
             }
-            if ($row["ErrorStatistic"] > 0) {
+            if ($row["Mean_Differential"] > 0) {
                 $returnArray[$c1] = $returnArray[$c1] + 1;
             } else {
                 $returnArray[$c2] = $returnArray[$c2] + 1;

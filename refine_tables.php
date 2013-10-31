@@ -25,7 +25,7 @@ switch ($_REQUEST["choice"]) {
         foreach ($_REQUEST["checked_source"] as $sourceId) {
             Helper::interpolate_table($sourceId);
         }
-        // redirect("index.php?page=working_tables_form&table_type=working");
+        redirect("index.php?page=working_tables_form&table_type=working");
         break;
 
     case "Add synonyms" :
@@ -51,7 +51,7 @@ switch ($_REQUEST["choice"]) {
             if (!isset($_REQUEST["onlyCommonDates"])) {$onlyCommonDates = FALSE;
             }
             Helper::combine_data($_REQUEST["compilationId"], $_REQUEST["method"], $_REQUEST["newName"], $_REQUEST["changeArray"], $onlyCommonDates);
-            // redirect("index.php?page=compilations");
+            redirect("index.php?page=compilations");
             break;
         }
 

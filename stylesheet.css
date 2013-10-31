@@ -250,6 +250,9 @@ a {
 	text-decoration: none;
 }
 
+a.tinyLink {
+	font-size: 60%;
+}
 
 
 /*
