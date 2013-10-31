@@ -81,6 +81,17 @@ switch ($_REQUEST["choice"]) {
         redirect("index.php?page=edit_buttons");
         break;
 
+    case "Remove source" :
+        if(isset($_REQUEST["archive"]) && $_REQUEST["archive"] == "archive"){
+            $archive = TRUE;
+        } else {
+            $archive = FALSE;
+        }
+        
+        Helper::remove_source_from_database($_REQUEST["Source"], $archive);
+        
+        break;
+
     default :
         break;
 }

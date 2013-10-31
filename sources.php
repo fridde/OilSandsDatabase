@@ -3,11 +3,12 @@
 if (empty($_GET["source"])) {
     echo '<h1>Sources</h1>';
     link_for("index.php?page=source_upload_form", "Add Source", "box");
-    foreach (ORM::for_table('osdb_Sources')->
-    select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product')
-    ->order_by_asc('Institution')->find_result_set()->as_array() as $Source_set) {
-        $Source = $Source_set -> as_array();
-
+    $sources = ORM::for_table('osdb_Sources')->
+    select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product')->where("Archived", 0)->
+    order_by_asc('Institution')->find_array();
+//     where_not_equal("Archived", 1)->
+    foreach ($sources as $Source) {
+        
         echo '<p><table class="tablesorter">';
         foreach ($Source as $key => $value) {
             switch ($key) {

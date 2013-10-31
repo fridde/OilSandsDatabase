@@ -1246,44 +1246,37 @@ class Helper {
 
         $ORM = ORM::for_table($dataTable) -> where("Source_Id", $sourceId) -> find_many();
 
-            $barrel_per_cubic_meter = 1 / 0.158987295;
-            $thousand = 1000;
-            $one_per_thousand = 1 / 1000;
-            $days_per_year = 365;
-            $years_per_day = 1 / $days_per_year;
-            $months_per_day = 1/30.417;
+        $barrel_per_cubic_meter = 1 / 0.158987295;
+        $thousand = 1000;
+        $one_per_thousand = 1 / 1000;
+        $days_per_year = 365;
+        $years_per_day = 1 / $days_per_year;
+        $months_per_day = 1 / 30.417;
+
+        $unitFactors["Thousand Cubic Metres per year"] = $thousand * $barrel_per_cubic_meter * $years_per_day;
+        $unitFactors["Thousand barrels per day"] = $thousand;
+        $unitFactors["Barrels per day"] = 1;
+        $unitFactors["Million barrels per day"] = $thousand * $thousand;
+        $unitFactors["Cubic metres per year"] = $barrel_per_cubic_meter * $years_per_day;
+        $unitFactors["Thousand Cubic meters per day"] = $thousand * $barrel_per_cubic_meter;
+        $unitFactors["Thousand Cubic metres per month"] = $thousand * $barrel_per_cubic_meter * $months_per_day;
+
+        $possibleUnits = array_keys($unitFactors);
 
         foreach ($ORM as $row) {
 
             $unit = $row -> Unit;
             $value = $row -> Value;
 
-            switch ($unit) {
-                case 'Thousand Cubic Metres per year' :
-                    $factor = $thousand * $barrel_per_cubic_meter * $years_per_day;
-                    break;
-                case 'Thousand barrels per day' :
-                    $factor = $thousand;
-                    break;
-                case 'Barrels per day' :
-                    $factor = 1;
-                    break;
-                case 'Million barrels per day' :
-                    $factor = $thousand * $thousand;
-                    break;
-                case 'Cubic metres per year' :
-                    $factor = $barrel_per_cubic_meter * $years_per_day;
-                    break;
-                case 'Thousand Cubic meters per day' :
-                    $factor = $thousand * $barrel_per_cubic_meter;
-                    break;
-
-                case 'Thousand Cubic metres per month' :
-                    $factor = $thousand * $barrel_per_cubic_meter * $months_per_day;
-                    break;
-                default :
-                    $factor = 1;
+            if (!in_array($unit, $possibleUnits)) {
+                // if the unit is omitted, the standard unit should be assumed
+                if (trim($unit) == "") {
+                    $unit = "Barrels per day";
+                } else {
+                    $unit = Helper::find_most_similar($unit, $possibleUnits);
+                }
             }
+            $factor = $unitFactors[$unit];
 
             $row -> Value = $value * $factor;
             $row -> Unit = NULL;
@@ -1480,52 +1473,37 @@ class Helper {
     }
 
     public static function add_or_subtract($array, $method, $onlyCommonDates = TRUE) {
-
-        $commonDates = Helper::sql_select_columns(reset($array), "Date");
-
-        $i = 0;
+        $allDates = array();
         foreach ($array as $compilationId => $rowsBelongingToCompilation) {
-            $i++;
-            if ($i > 1) {
-                $newDates = Helper::sql_select_columns($rowsBelongingToCompilation, "Date");
-                if ($onlyCommonDates) {
-                    $commonDates = array_intersect($commonDates, $newDates);
+            $array[$compilationId] = Helper::rebuild_keys($array[$compilationId], "Date");
+            // $newDates = Helper::sql_select_columns($rowsBelongingToCompilation, "Date");
+            $allDates = array_merge($allDates, array_keys($array[$compilationId]));
+
+        }
+        $allDates = array_unique($allDates);
+        sort($allDates);
+
+        $returnArray = array();
+
+        foreach ($allDates as $date) {
+            $newRow = array();
+            foreach ($array as $compilationId => $rowsBelongingToCompilation) {
+                if (isset($array[$compilationId][$date])) {
+                    $newRow[] = $array[$compilationId][$date]["Value"];
                 } else {
-                    $commonDates = array_merge($commonDates, $newDates);
-                    $commonDates = array_unique($commonDates);
+                    $newRow[] = NULL;
                 }
             }
-        }
-
-        foreach ($array as $compilationId => $rowsBelongingToCompilation) {
-            // the old indices should be avoided
-            $array[$compilationId] = array_values(Helper::filter_for_value($rowsBelongingToCompilation, "Date", $commonDates));
-        }
-        $newArray = Helper::sql_select_columns(reset($array), array("Date", "Value"));
-        $i = 0;
-        foreach ($array as $compilationKey => $rowsBelongingToCompilation) {
-            $i++;
-            if ($i > 1) {
-                $currentArray = Helper::sql_select_columns($array[$compilationKey], array("Date", "Value"));
-                // echop($currentArray);
-                foreach ($newArray as $newArrayRowKey => $newArrayRow) {
-                    if (!isset($currentArray[$newArrayRowKey]["Value"]) && !$onlyCommonDates) {
-                        $currentArray[$newArrayRowKey]["Value"] = 0;
-                    }
-                    switch ($method) {
-                        case 'Add' :
-                            $newArray[$newArrayRowKey]["Value"] += $currentArray[$newArrayRowKey]["Value"];
-                            break;
-
-                        case 'Subtract' :
-                            $newArray[$newArrayRowKey]["Value"] -= $currentArray[$newArrayRowKey]["Value"];
-                            break;
+            if (!$onlyCommonDates || array_filter($newRow) === $newRow) {
+                if ($method == "Subtract") {
+                    for ($i = 1; $i < count($newRow); $i++) {
+                        $newRow[$i] = -1 * $newRow[$i];
                     }
                 }
+                $returnArray[] = array("Date" => $date, "Value" => array_sum($newRow));
             }
         }
-
-        return $newArray;
+        return $returnArray;
     }
 
     public static function concat_time_series($array) {
@@ -1881,14 +1859,32 @@ class Helper {
         return $returnArray;
     }
 
-    public static function archive_source($sourceId) {
-        /* Compilations (Source_Id)
-         Data (Source_Id)
-         Errors (Main_Id, Compilation_Id)
-         Ranking (Main_Id, Compilation_Id)
-         Sources -> change Archived to 1
-         Tags (Compilation_Id)
-         Working (Source_Id) */
+    public static function remove_source_from_database($sourceId, $archive = TRUE) {
+
+        $compilations = ORM::for_table("osdb_working") -> where("Source_Id", $sourceId) -> select("Compilation_Id") -> find_array();
+        $compilations = array_unique($compilations, SORT_REGULAR);
+        $tables = array("compilations" => "Source_Id", "data" => "Source_Id", "errors" => array("Main_Id", "Compilation_Id"), "ranking" => array("Main_Id", "Compilation_1", "Compilation_2"), "tags" => "Compilation_Id", "working" => array("Compilation_Id", "Source_Id"));
+
+        foreach ($tables as $tableName => $columns) {
+            if (gettype($columns) == "string") {
+                $columns = array($columns);
+            }
+            foreach ($columns as $columnName) {
+                if (in_array($columnName, array("Main_Id", "Compilation_Id", "Compilation_1", "Compilation_2"))) {
+                    foreach ($compilations as $compilationId) {
+                        $compilationId = $compilationId["Compilation_Id"];
+                        ORM::for_table('osdb_' . $tableName) -> where_equal($columnName, $compilationId) -> delete_many();
+                    }
+                } else {
+                    ORM::for_table('osdb_' . $tableName) -> where_equal($columnName, $sourceId) -> delete_many();
+                }
+            }
+        }
+        if ($archive) {
+            $source = ORM::for_table("osdb_sources") -> find_one($sourceId);
+            $source -> Archived = 1;
+            $source -> save();
+        }
 
     }
 

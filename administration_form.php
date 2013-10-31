@@ -14,10 +14,10 @@ echo '</select>
 </p>';
 echo '<p>
 <select name="Source">';
-$sources = ORM::for_table("osdb_sources")->find_array();
+$sources = ORM::for_table("osdb_sources")->order_by_asc("Institution")->find_array();
 foreach($sources as $source){
-    $name = $source["SourceName"] . " - " . reset(explode("-", $source["PublicationDate"]));
-    echo '<option value="' . $name . '">' . $name . '</option>'; 
+    $name = $source["Institution"]. " - " . $source["SourceName"] . " - " . reset(explode("-", $source["PublicationDate"]));
+    echo '<option value="' . $source["id"] . '">' . $name . '</option>'; 
 }
 echo '</select><br>
 <input type="submit" name="choice" value="Remove source"> 

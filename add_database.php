@@ -3,7 +3,7 @@
 include_once "include_all.php";
 
 $sourcesToAdd = $_REQUEST["checked_source"];
-echop($sourcesToAdd );
+
 // intialize the bigArray
 $allOldHeaders = array();
 
@@ -41,13 +41,13 @@ foreach ($sourcesToAdd as $key => $sourceId) {
     }
     $standardUnit = ORM::for_table('osdb_Sources') -> find_one($sourceId) -> Unit;
     foreach ($queryArray as $rowKey => $row) {
-        if (trim($row["Unit"]) == "") {
+        if (!isset($row["Unit"]) || trim($row["Unit"]) == "") {
             $queryArray[$rowKey]["Unit"] = $standardUnit;
         }
         $queryArray[$rowKey]["Source_Id"] = $sourceId;
     }
-   
-    // Helper::sql_insert_array($queryArray, "osdb_data");
+  
+   Helper::sql_insert_array($queryArray, "osdb_data");
     echo '<p>The source <strong>' . ORM::for_table('osdb_sources') -> find_one($sourceId) -> SourceName . '</strong> has been transferred to the database.</p>';
 }
 ?>

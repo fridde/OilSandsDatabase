@@ -31,5 +31,5 @@ echo '<p hidden id="plotType">' .  $_REQUEST["plotType"] . '</p>';
 </div>
 
 
-<div id="overview" style="width:600px;height:150px"></div>
+<div id="overview" style="width:300px;height:70px"></div>
 
