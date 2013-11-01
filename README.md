@@ -13,7 +13,16 @@ Good tools to use are (in order of importance)
 * [Notepad++](http://notepad-plus-plus.org/download)
 * [WebPlotDigitizer](http://arohatgi.info/WebPlotDigitizer/app/)
 * [Text Mechanic](http://textmechanic.com/)
-* [OpenRefine](http://openrefine.org/)
+* [OpenRefine][OpenRefine]
+
+Generally, the steps to add a new source of data to the database are as follows:
+  
+1. Find a table or graph that you want to include in the database.
+2. On the webbpage, go to Sources->Add Source.
+3.  Table or graph?
+
+  > If it's a table: Copy-and-paste the table into the textfield.
+  > If it's a graph: Convert the graph to data using _WebPlotDigitizer_ and add the data into the textfield.
 
 
 ### Environment Alberta
@@ -89,3 +98,4 @@ Contains the name for every compilation of data
 
 ---
 [How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
+[OpenRefine]: http://openrefine.org/
