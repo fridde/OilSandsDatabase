@@ -11,7 +11,7 @@ The Oil Sands Database is an online application written mainly in PHP and some J
 
 Good tools to use are (in order of importance)
 * [Notepad++](http://notepad-plus-plus.org/download)
-* [WebPlotDigitizer](http://arohatgi.info/WebPlotDigitizer/app/)
+* [WebPlotDigitizer][WebPlotDigitizer]
 * [Text Mechanic](http://textmechanic.com/)
 * [OpenRefine][OpenRefine]
 
@@ -28,12 +28,12 @@ Generally, the steps to add a new source of data to the database are as follows:
 ### Environment Alberta
 
 * Open [a multiple tab opener](http://www.openurls.eu/)
-* Add the links from [this file](https://github.com/fridde/OilSandsDatabase/blob/master/helper_files/Environment%20Alberta%20Sources.txt), 20 at a time, into the textfield
+* Add the links from [this file][EnvironmentFile]
 * Click on submit while pressing the ctrl-key
 * Download every file as an excel-file into the same folder
 * Convert all files into csv-format using [a converter](http://xls2csv.genxcrowd.com/download).
 * Merge these files into one single file by opening your console, navigating to your folder using `cd "path\to\folder"`, and then entering `copy *.csv collected.txt`
-* Make sure all projects mentioned at the end of [this file](https://github.com/fridde/OilSandsDatabase/blob/master/helper_files/Environment%20Alberta%20Sources.txt) are included
+* Make sure all projects mentioned at the end of [this file][EnvironmentFile] are included
 * Copy and paste
 
 ### OilSandsReview
@@ -98,4 +98,7 @@ Contains the name for every compilation of data
 
 ---
 [How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
+
 [OpenRefine]: http://openrefine.org/
+[WebPlotDigitizer]: http://arohatgi.info/WebPlotDigitizer/app/
+[EnvironmentFile]: https://github.com/fridde/OilSandsDatabase/blob/master/helper_files/Environment%20Alberta%20Sources.txt
