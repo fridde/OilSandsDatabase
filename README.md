@@ -13,6 +13,7 @@ Good tools to use are (in order of importance)
 * [Notepad++](http://notepad-plus-plus.org/download)
 * [OpenRefine](http://openrefine.org/)
 * [Text Mechanic](http://textmechanic.com/)
+* [WebPlotDigitizer](http://arohatgi.info/WebPlotDigitizer/app/)
 
 ### Environment Alberta
 
