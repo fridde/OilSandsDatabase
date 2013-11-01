@@ -5,15 +5,16 @@
 | [Table description](#the-different-tables-in-the-database)
 
 ##Introduction ##
-The Oil Sands Database is an online apllication written mainly in PHP and some JavaScript including jQuery. Its purpose is to collect all available sources reporting and prognosing Oil Sands Production in Canada in one place, making it easier to compare and evaluate each data set. 
+The Oil Sands Database is an online application written mainly in PHP and some JavaScript including jQuery. Its purpose is to collect all available sources reporting and prognosing Oil Sands Production in Canada in one place, making it easier to compare and evaluate each data set. 
 
 ## Adding or updating content 
 
 Good tools to use are (in order of importance)
 * [Notepad++](http://notepad-plus-plus.org/download)
-* [OpenRefine](http://openrefine.org/)
-* [Text Mechanic](http://textmechanic.com/)
 * [WebPlotDigitizer](http://arohatgi.info/WebPlotDigitizer/app/)
+* [Text Mechanic](http://textmechanic.com/)
+* [OpenRefine](http://openrefine.org/)
+
 
 ### Environment Alberta
 
