@@ -7,6 +7,10 @@ $table = ORM::for_table('osdb_Sources') -> find_one($source_id);
 $text = $table -> SemiTidyData;
 
 $button = $_REQUEST["button"];
+/* increase the popularity of the button by one so that it appears earlier next time */
+$buttonObject = ORM::for_table("osdb_buttons")->where("ButtonName", $button)->find_one();
+$buttonObject->Popularity = $buttonObject->Popularity + 1;
+$buttonObject->save();
 
 if (empty($_REQUEST["par1"])) {
     $par1 = "";

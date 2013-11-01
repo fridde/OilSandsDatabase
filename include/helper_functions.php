@@ -1750,10 +1750,10 @@ class Helper {
     }
 
     public static function rebuild_keys($array, $key) {
-        // rebuilds a two-dimensional array to have a certain value from each "row" as each key
-        //usage: $array = array([0]=>array("Fruit"=>"Banana", "Taste"=>"good"),
-        //[1]=>array("Fruit"=>"Apple", "Taste"=>"boring"));
-        // $newArray = rebuild_keys($array, "Fruit");
+        /* rebuilds a two-dimensional array to have a certain value from each "row" as each key
+        usage: $array = array([0]=>array("Fruit"=>"Banana", "Taste"=>"good"),
+        [1]=>array("Fruit"=>"Apple", "Taste"=>"boring"));
+        $newArray = rebuild_keys($array, "Fruit"); */
 
         $newArray = array();
         foreach ($array as $rowKey => $arrayRow) {
@@ -1771,16 +1771,22 @@ class Helper {
     }
 
     public static function calculate_ranking() {
+            /* evaluates the errors in the table "errors" and calculates a mean differential and some other 
+             * statistical values for a certain array of days.
+             * 
+             * See chapter "Comparing prognoses" in  https://github.com/fridde/PerformanceRecordsArticle 
+             * */
+             
         ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-        
+        echop($combinationIdArray);
         foreach ($combinationIdArray as $combination) {
             $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
             $maxArray[] = $maxDay -> Day;
         }
         $maxArray = array_unique($maxArray);
         sort($maxArray);
-
+        echop($maxArray);
 
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
 
@@ -1807,6 +1813,7 @@ class Helper {
                         if (isset($firstCompilation[$day]) && isset($secondCompilation[$day])) {
                             $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"], 2) - pow($secondCompilation[$day]["ErrorPercentage"], 2);
                         }
+                        /*  */
                         if (count($errorDiff) > 1 && in_array($day, $maxArray)) {
                             $meanDifferential = array_sum($errorDiff) / count($errorDiff);
                             $autocovariance = Helper::autocovariance($errorDiff);
@@ -1823,7 +1830,7 @@ class Helper {
             }
 
         }
-        Helper::sql_insert_array($queryArray, "osdb_ranking");
+        // Helper::sql_insert_array($queryArray, "osdb_ranking");
     }
 
     public static function autocovariance($array, $stepSize = 1) {
@@ -1850,7 +1857,7 @@ class Helper {
             if (!isset($returnArray[$c2])) {
                 $returnArray[$c2] = 0;
             }
-            if ($row["Mean_Differential"] > 0) {
+            if ($row["Mean_Differential"] < 0) {
                 $returnArray[$c1] = $returnArray[$c1] + 1;
             } else {
                 $returnArray[$c2] = $returnArray[$c2] + 1;

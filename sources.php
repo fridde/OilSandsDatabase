@@ -3,12 +3,10 @@
 if (empty($_GET["source"])) {
     echo '<h1>Sources</h1>';
     link_for("index.php?page=source_upload_form", "Add Source", "box");
-    $sources = ORM::for_table('osdb_Sources')->
-    select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product')->where("Archived", 0)->
-    order_by_asc('Institution')->find_array();
-//     where_not_equal("Archived", 1)->
+    $sources = ORM::for_table('osdb_Sources') -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
+    //     where_not_equal("Archived", 1)->
     foreach ($sources as $Source) {
-        
+
         echo '<p><table class="tablesorter">';
         foreach ($Source as $key => $value) {
             switch ($key) {
@@ -22,11 +20,21 @@ if (empty($_GET["source"])) {
                     break;
 
                 case "SourceUrl" :
-                    echo '<tr> <td>' . $key . '</td> <td>' . $value;
+                    echo '<tr> <td>' . $key . '</td> <td>';
                     if ($value != "") {
-                        echo '<a href="' . $value . '"> [link]</a>';
-                    }
+                        $maxLength = 70;
+                        if(strlen($value) >$maxLength){
+                            $linkText = substr($value, 0, $maxLength - 5) . "[...]" . substr($value, -5);
+                        } else {
+                            $linkText = $value;
+                        }
+                        echo '<a href="' . $value . '">' . $linkText . '</a>';
+                    } 
                     echo '</td> </tr>';
+                    break;
+
+                case "Institution" :
+                     echo '<tr> <td>' . $key . '</td> <td><b>' . $value . '</b></td> </tr>';
                     break;
 
                 default :
@@ -39,7 +47,7 @@ if (empty($_GET["source"])) {
     };
 } else {
 
-    $buttonArray = ORM::for_table('osdb_Buttons') -> distinct() -> order_by_asc('ButtonName') -> find_array();
+    $buttonArray = ORM::for_table('osdb_Buttons') -> distinct() -> order_by_desc('Popularity') -> find_array();
     echo '<ul id="buttonDescriptions" hidden>';
     foreach ($buttonArray as $button) {
         echo '<li class="buttonDescription" id="' . $button['ButtonName'] . '">' . htmlentities($button['Description']) . '</li>';
@@ -63,7 +71,7 @@ if (empty($_GET["source"])) {
             <th>' . $SourceName . '</th>
         </tr>
         <tr>
-            <td>Institution</td> <td>' . $Institution . '</td>
+            <td>Institution</td> <td><b>' . $Institution . '</b></td>
         </tr>
             <td>Source Url</td> <td><a href="' . $SourceUrl . '">' . $SourceUrl . '</td>
         </tr>

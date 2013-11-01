@@ -68,6 +68,9 @@
         <br>
         New Unit <input type="text" name="NewUnit" size="30">
     </p>
+    <p>
+        Description <br> <textarea class="smallTextarea" name="Description"></textarea>
+    </p>
 
 
     <p><input type="submit" ></p>

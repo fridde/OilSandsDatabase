@@ -1,6 +1,6 @@
 <?php
 
-$sourceList = ORM::for_table('osdb_Sources') -> order_by_asc('Institution') -> find_many();
+$sourceList = ORM::for_table('osdb_Sources') ->where("Archived", 0)-> order_by_asc('Institution') -> find_many();
 
 //echo '<form action="action.php" method="post">' .
 echo '<form action="index.php?page=add_database" method="post">

@@ -237,6 +237,11 @@ textarea {
 	height: 400px;
 }
 
+textarea.smallTextarea {
+	width: 400px;
+	height: 100px;
+}
+
 #parsing {
 	height: 200px;
 }

@@ -105,8 +105,8 @@ $newSource -> Product = $Product;
 $newSource -> Unit = $Unit;
 $newSource -> RawData = $RawData;
 $newSource -> SemiTidyData = $SemiTidyData;
+$newSource -> Description = $_REQUEST["Description"];
 
-echo $ShortName;
 
 $newSource -> save();
 redirect("index.php?page=sources&source=" . $source_id);

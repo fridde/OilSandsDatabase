@@ -43,7 +43,9 @@ foreach ($dayArray as $day) {
     <tbody>
     ";
     $compilationIdArray = ORM::for_table('osdb_ranking') -> where("Main_Id", $mainId)->where("Day", $day) -> find_array();
+    echop($compilationIdArray);
     $compilationIdArray = Helper::create_tournament_ranking($compilationIdArray);
+    echop($compilationIdArray);
         foreach ($compilationIdArray as $compilationId=>$wins) {
                 $compilationIdName = ORM::for_table('osdb_compilations') -> find_one($compilationId) -> Name;
             echo "<tr><td>$compilationIdName</td><td>$wins</td></tr>";
