@@ -92,9 +92,6 @@ Contains the name for every compilation of data
 ##Things to do
 
 * Add _Remove tag_ function
-* Add _Remove Source_ function to remove all data associated with a certain source from all tables
-* Rebuild _add_ function and find errors
-* Explain the buttons in a special `<div>`
 
 ---
 [How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
