@@ -1,8 +1,6 @@
 <?php
 
 $sourceList = ORM::for_table('osdb_Sources') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
-
-//echo '<form action="action.php" method="post">' .
 echo '<form action="index.php?page=add_database" method="post">
 <p><input type="submit" name="action" value="Send data to database"></p>';
 echo '<input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">(De-)Select all';
@@ -36,18 +34,16 @@ foreach ($sourceList as $source) {
     }
     echo "</tr>
     <tr>";
+    $possibleHeaders = Helper::sql_get_columns('osdb_data');
     foreach ($header as $col) {
         echo '<td><select name="' . $source["id"] . '[]>';
-        $possibleHeaders = ORM::for_table('osdb_Headers') -> select('Name') -> find_array();
-        $possibleHeaders_array = Helper::result_column_to_array($possibleHeaders, "Name");
-        echop($possibleHeaders);
-        $mostSimilar = Helper::find_most_similar($col, $possibleHeaders_array);
+        $mostSimilar = Helper::find_most_similar($col, $possibleHeaders);
         foreach ($possibleHeaders as $header) {
-            echo '<option value="' . $header["Name"] . '" ';
-            if ($header["Name"] == $mostSimilar) {
+            echo '<option value="' . $header . '" ';
+            if ($header == $mostSimilar) {
                 echo "selected";
             }
-            echo '>' . $header["Name"] . '</option>';
+            echo '>' . $header . '</option>';
         }
         echo '</select></td>';
     }

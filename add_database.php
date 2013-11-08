@@ -36,7 +36,13 @@ foreach ($sourcesToAdd as $key => $sourceId) {
     
     for ($i = 0; $i < count(reset($bigArray)); $i++) {
         foreach ($headers as $header) {
-            $queryArray[$i][$header] = $bigArray[$header][$i];
+            if(isset($bigArray[$header][$i])){
+                $queryArray[$i][$header] = $bigArray[$header][$i];
+            }
+            else{
+                    $queryArray[$i][$header] = NULL;
+            }
+            
         }
     }
     $standardUnit = ORM::for_table('osdb_Sources') -> find_one($sourceId) -> Unit;

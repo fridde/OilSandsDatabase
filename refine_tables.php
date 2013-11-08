@@ -1,5 +1,5 @@
 <?php
-echop($_REQUEST);
+
 switch ($_REQUEST["choice"]) {
     case 'Remove duplicates' :
         $deleted = Helper::sql_remove_duplicates($_REQUEST["Table"]);

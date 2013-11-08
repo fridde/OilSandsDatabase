@@ -3,7 +3,6 @@
 $sourceIdList = ORM::for_table('osdb_data') -> distinct() -> select('Source_Id') -> find_array();
 
 echo '<form action="index.php?page=refine_tables" method="post">
-<p><input type="submit" name="choice" value="Remove duplicates">
 <input type="hidden" name="Table" value="osdb_data">
 <input type="submit" name="choice" value="Convert to barrels per day">
 <input type="submit" name="choice" value="Convert dates">

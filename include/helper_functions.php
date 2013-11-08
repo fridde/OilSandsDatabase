@@ -1320,6 +1320,8 @@ class Helper {
         foreach ($subGroupArray as $subGroup) {
             $queryArray = array();
             $currentORM = $ORMArray;
+            
+            /* to create a unique name for the compilation, the ShortName is prepended to a row of unique values */
             $currentCompilationName = ORM::for_table('osdb_sources') -> find_one($sourceId);
             $currentCompilationName = $currentCompilationName -> ShortName;
 
@@ -1327,6 +1329,7 @@ class Helper {
              filtering is not required if the table only contains one type of data */
             if ($subGroup != NULL) {
                 foreach ($subGroup as $key => $element) {
+                    // echo $key . " => " . $element . " <br>";
                     $currentORM = Helper::filter_for_value($currentORM, $key, $element);
                     if ($key == 'Time_Accuracy') {
                         $currentCompilationName .= " - " . $element . " months accuracy";
@@ -1335,6 +1338,7 @@ class Helper {
                     }
                 }
             }
+            echo $sourceId . " - " .  $currentCompilationName . "<br>";
             // interpolation is only applicable if there is more than one datapoint to start from
             if (count($currentORM) > 1) {
                 // At the same time, a new Compilation has to be defined for this subgroup
@@ -1394,7 +1398,8 @@ class Helper {
                         }
                     }
                 }
-                Helper::sql_insert_array($queryArray, "osdb_working");
+                // echop($queryArray);
+                // Helper::sql_insert_array($queryArray, "osdb_working");
 
             }
         }
