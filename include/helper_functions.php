@@ -1612,18 +1612,15 @@ class Helper {
                     case 'Time_Accuracy' :
                         if ($method == "Concatenate") {
                             $value = $row["Time_Accuracy"];
-                        } else {
-                            $value = $firstRow[$header];
                         }
-                        break;
 
                     default :
-                        if(isset($firstRow[$header])){
+                        if (isset($firstRow[$header]) && !isset($value)) {
                             $value = $firstRow[$header];
                         } else {
                             $value = NULL;
                         }
-                        
+
                         break;
                 }
 
@@ -1760,7 +1757,6 @@ class Helper {
                 }
 
             }
-
             Helper::sql_insert_array($errorArray, "osdb_errors");
 
         }
@@ -1810,15 +1806,14 @@ class Helper {
 
         ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-        echop($combinationIdArray);
+        
         foreach ($combinationIdArray as $combination) {
             $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
             $maxArray[] = $maxDay -> Day;
         }
         $maxArray = array_unique($maxArray);
         sort($maxArray);
-        echop($maxArray);
-
+        
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
 
         foreach ($mainIdArray as $mainId) {
@@ -1861,7 +1856,8 @@ class Helper {
             }
 
         }
-        // Helper::sql_insert_array($queryArray, "osdb_ranking");
+
+        Helper::sql_insert_array($queryArray, "osdb_ranking");
     }
 
     public static function autocovariance($array, $stepSize = 1) {

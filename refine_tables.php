@@ -42,7 +42,7 @@ switch ($_REQUEST["choice"]) {
     case "Combine" :
         if ($_REQUEST["method"] == "Calculate error statistics") {
             Helper::calculate_error_statistics($_REQUEST["compilationId"], $_REQUEST["mainComp"], $_REQUEST["newName"]);
-            //redirect("index.php?page=compilations");
+            // redirect("index.php?page=ranking");
             break;
         } else {
             if (!(isset($_REQUEST["changeArray"]))) {
@@ -66,7 +66,7 @@ switch ($_REQUEST["choice"]) {
 
     case "Recalculate Ranking" :
         Helper::calculate_ranking();
-        // redirect("index.php?page=ranking");
+        redirect("index.php?page=ranking");
         break;
 
     case "Edit Buttons" :

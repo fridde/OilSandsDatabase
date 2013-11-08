@@ -91,10 +91,11 @@ $(document).ready(function() {
 					autoscaleMargin : 0.05
 				},
 				yaxis : {
+					tickDecimals: 1,
 					ticks : 4,
 					tickFormatter : function suffixFormatter(val, axis) {
-						if (val > 1000000)
-							return (val / 1000000).toFixed(axis.tickDecimals) + " Million  -";
+						if (val >= 1000000)
+							return (val / 1000000).toFixed(axis.tickDecimals) + " million  -";
 						else
 							return val.toFixed(axis.tickDecimals) + "    -";
 					}
