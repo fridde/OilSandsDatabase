@@ -18,8 +18,7 @@ echo '<form action="source_upload.php" method="post">
         }
        echo '</table></p>
        <p>Password to change files<input type="text" name="password"></p>
-       <p>Delete source? Write "DELETE"<input type="text" name="delete"></p>
-       <p><input type="submit" value="Update source"></p>
+        <p><input type="submit" value="Update source"></p>
        <p><textarea name="SemiTidyData" placeholder="Enter edited data here">' . $table["SemiTidyData"] . '</textarea></p>
        <p><textarea disabled>' . $table["SemiTidyData"] . '</textarea></p>
        <input hidden type="text" name="source_id" value="' . $source_id . '>

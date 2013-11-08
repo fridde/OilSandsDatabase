@@ -1322,9 +1322,7 @@ class Helper {
             $currentORM = $ORMArray;
             $currentCompilationName = ORM::for_table('osdb_sources') -> find_one($sourceId);
             $currentCompilationName = $currentCompilationName -> ShortName;
-            
-            
-            
+
             /* removes all element that are not part of the current Subgroup
              filtering is not required if the table only contains one type of data */
             if ($subGroup != NULL) {
@@ -1688,7 +1686,7 @@ class Helper {
         $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
         $mainArray = Helper::rebuild_keys($mainArray, "Date");
         $mainDates = array_keys($mainArray);
-        
+
         foreach ($compilationIdArray as $compilationId) {
 
             $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
@@ -1729,7 +1727,7 @@ class Helper {
                 }
 
             }
-            
+
             Helper::sql_insert_array($errorArray, "osdb_errors");
 
         }
@@ -1751,9 +1749,9 @@ class Helper {
 
     public static function rebuild_keys($array, $key) {
         /* rebuilds a two-dimensional array to have a certain value from each "row" as each key
-        usage: $array = array([0]=>array("Fruit"=>"Banana", "Taste"=>"good"),
-        [1]=>array("Fruit"=>"Apple", "Taste"=>"boring"));
-        $newArray = rebuild_keys($array, "Fruit"); */
+         usage: $array = array([0]=>array("Fruit"=>"Banana", "Taste"=>"good"),
+         [1]=>array("Fruit"=>"Apple", "Taste"=>"boring"));
+         $newArray = rebuild_keys($array, "Fruit"); */
 
         $newArray = array();
         foreach ($array as $rowKey => $arrayRow) {
@@ -1771,12 +1769,12 @@ class Helper {
     }
 
     public static function calculate_ranking() {
-            /* evaluates the errors in the table "errors" and calculates a mean differential and some other 
-             * statistical values for a certain array of days.
-             * 
-             * See chapter "Comparing prognoses" in  https://github.com/fridde/PerformanceRecordsArticle 
-             * */
-             
+        /* evaluates the errors in the table "errors" and calculates a mean differential and some other
+         * statistical values for a certain array of days.
+         *
+         * See chapter "Comparing prognoses" in  https://github.com/fridde/PerformanceRecordsArticle
+         * */
+
         ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
         echop($combinationIdArray);
@@ -1793,13 +1791,13 @@ class Helper {
         foreach ($mainIdArray as $mainId) {
             $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainId);
             $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
-           
+
             if (count($validErrorCompilations) > 1) {
                 $compilationsToCompare = power_perms($validErrorCompilations);
                 array_walk($compilationsToCompare, "sort");
                 $compilationsToCompare = array_filter($compilationsToCompare, create_function('$v', 'return count($v) == 2 ;'));
                 $compilationsToCompare = array_unique($compilationsToCompare, SORT_REGULAR);
-                
+
                 $queryArray = array();
                 foreach ($compilationsToCompare as $combination) {
                     $firstCompilation = ORM::for_table('osdb_errors') -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
@@ -1894,6 +1892,20 @@ class Helper {
             $source -> save();
         }
 
+    }
+
+    public static function remove_compilation_from_database($compilationId) {
+
+        $tables = array("compilations" => "id", "errors" => "Compilation_Id", "ranking" => array("Compilation_1", "Compilation_2"), "tags" => "Compilation_Id", "working" => "Compilation_Id");
+
+        foreach ($tables as $tableName => $columns) {
+            if (gettype($columns) == "string") {
+                $columns = array($columns);
+            }
+            foreach ($columns as $columnName) {
+                ORM::for_table('osdb_' . $tableName) -> where_equal($columnName, $compilationId) -> delete_many();
+            }
+        }
     }
 
 }

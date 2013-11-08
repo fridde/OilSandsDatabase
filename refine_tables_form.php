@@ -1,6 +1,6 @@
 <?php
 
-$sourceIdList = ORM::for_table('osdb_data') -> distinct()-> select('Source_Id') -> find_many();
+$sourceIdList = ORM::for_table('osdb_data') -> distinct() -> select('Source_Id') -> find_array();
 
 echo '<form action="index.php?page=refine_tables" method="post">
 <p><input type="submit" name="choice" value="Remove duplicates">
@@ -9,18 +9,25 @@ echo '<form action="index.php?page=refine_tables" method="post">
 <input type="submit" name="choice" value="Convert dates">
 </p>';
 echo '<input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">(De-)Select all';
+$lastInstitution = "";
 foreach ($sourceIdList as $SourceRow) {
-    echo "<table>";
-    $source = ORM::for_table('osdb_sources') -> find_one($SourceRow -> Source_Id);
 
+    $source = ORM::for_table('osdb_sources') -> find_one($SourceRow["Source_Id"]) -> as_array();
+    if ($source["Institution"] != $lastInstitution) {
+        echo '<hr>';
+        echo '<h2>' . $source["Institution"] . '</h2>';
+    }
+    $lastInstitution = $source["Institution"];
+
+    echo "<table>";
     echo '<tr>
-    <td><input type="checkbox" name="checked_source[]" value="' . $source -> id . '" checked></td>';
-    echo '<td>' . $source -> Institution . '</td>';
-    echo '<td><a href="index.php?page=sources&source=' . $source -> id . '">' . $source -> SourceName . '</a></td>';
-    echo '<td>' . $source -> PublicationDate . '</td>';
+    <td><input type="checkbox" name="checked_source[]" value="' . $source["id"] . '" checked></td>';
+    // echo '<td>' . $source["Institution"] . '</td>';
+    echo '<td><a href="index.php?page=sources&source=' . $source["id"] . '">' . $source["SourceName"] . '</a></td>';
+    echo '<td>' . $source["PublicationDate"] . '</td>';
     echo '</tr><tr><td colspan="4"><hr></td></tr> <tr>';
 
-    $rowsBelongingToSource = ORM::for_table('osdb_data') -> where("Source_Id", $source -> id) -> find_array();
+    $rowsBelongingToSource = ORM::for_table('osdb_data') -> where("Source_Id", $source["id"]) -> find_array();
     $numberRows = count($rowsBelongingToSource);
 
     $headersToShow = array();
@@ -35,7 +42,7 @@ foreach ($sourceIdList as $SourceRow) {
             echo '<td>' . $header . '</td>';
         }
     }
-    
+
     echo '</tr><tr>';
     echo '<td><strong>' . $numberRows . '</strong></td>';
     foreach ($headersToShow as $header) {
@@ -45,9 +52,8 @@ foreach ($sourceIdList as $SourceRow) {
     }
 
     echo '</tr>';
-    echo '</table><hr>';
+    echo '</table>';
 }
 
 echo "</form>";
-
 ?>

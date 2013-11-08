@@ -6,7 +6,7 @@ if (isset($_REQUEST["tag"])) {
     $tagsToShow = array();
 }
 
-$compilationList = ORM::for_table('osdb_compilations') -> find_array();
+$compilationList = ORM::for_table('osdb_compilations') ->order_by_asc("Name")-> find_array();
 $compilationNames = Helper::sql_select_columns($compilationList, "Name");
 $compilationShortNames = Helper::shorten_names($compilationNames);
 $workingHeaders = Helper::sql_get_columns("osdb_working");

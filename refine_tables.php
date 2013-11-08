@@ -1,5 +1,5 @@
 <?php
-
+echop($_REQUEST);
 switch ($_REQUEST["choice"]) {
     case 'Remove duplicates' :
         $deleted = Helper::sql_remove_duplicates($_REQUEST["Table"]);
@@ -87,11 +87,13 @@ switch ($_REQUEST["choice"]) {
         } else {
             $archive = FALSE;
         }
-        
         Helper::remove_source_from_database($_REQUEST["Source"], $archive);
-        
         break;
 
+    case "Remove compilation":
+        Helper::remove_compilation_from_database($_REQUEST["Compilation"]);
+        break;
+        
     default :
         break;
 }

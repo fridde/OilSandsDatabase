@@ -3,10 +3,14 @@
 if (empty($_GET["source"])) {
     echo '<h1>Sources</h1>';
     link_for("index.php?page=source_upload_form", "Add Source", "box");
-    $sources = ORM::for_table('osdb_Sources') -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
-    //     where_not_equal("Archived", 1)->
+    $sources = ORM::for_table('osdb_Sources') -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product', 'Description') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
+    $lastInstitution = "";
     foreach ($sources as $Source) {
-
+        if($Source["Institution"] != $lastInstitution){
+            echo '<hr>';
+            echo '<h2>' . $Source["Institution"] . '</h2>';
+        }
+        $lastInstitution = $Source["Institution"];
         echo '<p><table class="tablesorter">';
         foreach ($Source as $key => $value) {
             switch ($key) {
@@ -20,31 +24,34 @@ if (empty($_GET["source"])) {
                     break;
 
                 case "SourceUrl" :
-                    echo '<tr> <td>' . $key . '</td> <td>';
                     if ($value != "") {
+                        echo '<tr> <td>' . $key . '</td> <td>';
                         $maxLength = 70;
-                        if(strlen($value) >$maxLength){
+                        if (strlen($value) > $maxLength) {
                             $linkText = substr($value, 0, $maxLength - 5) . "[...]" . substr($value, -5);
                         } else {
                             $linkText = $value;
                         }
                         echo '<a href="' . $value . '">' . $linkText . '</a>';
-                    } 
+                    }
                     echo '</td> </tr>';
                     break;
 
                 case "Institution" :
-                     echo '<tr> <td>' . $key . '</td> <td><b>' . $value . '</b></td> </tr>';
+                    // echo '<tr> <td>' . $key . '</td> <td><b>' . $value . '</b></td> </tr>';
                     break;
 
                 default :
-                    echo '<tr> <td>' . $key . '</td> <td>' . $value . '</td> </tr>';
+                    if (trim($value) != "") {
+                        echo '<tr> <td>' . $key . '</td> <td>' . $value . '</td> </tr>';
+                    }
                     break;
             }
 
         }
         echo '</table></p>';
     };
+    /* if a certain source is supposed to be shown */
 } else {
 
     $buttonArray = ORM::for_table('osdb_Buttons') -> distinct() -> order_by_desc('Popularity') -> find_array();
@@ -55,30 +62,27 @@ if (empty($_GET["source"])) {
     echo '</ul>';
 
     echo '<h1>Convert table</h1>';
-    $table = ORM::for_table('osdb_Sources') -> find_one($_GET["source"]);
-
-    $SourceName = $table -> SourceName;
-    $Institution = $table -> Institution;
-    $SourceUrl = $table -> SourceUrl;
-    $PublicationDate = $table -> PublicationDate;
-    $Unit = $table -> Unit;
-    $RawData = $table -> RawData;
-    $SemiTidyData = $table -> SemiTidyData;
+    $table = ORM::for_table('osdb_Sources') -> find_one($_GET["source"])->as_array();
 
     echo '<p><table class="tablesorter">
         <tr>
             <th>Source</th> 
-            <th>' . $SourceName . '</th>
+            <th>' . $table["SourceName"] . '</th>
         </tr>
         <tr>
-            <td>Institution</td> <td><b>' . $Institution . '</b></td>
+            <td>Institution</td> <td><b>' . $table["Institution"] . '</b></td>
         </tr>
-            <td>Source Url</td> <td><a href="' . $SourceUrl . '">' . $SourceUrl . '</td>
+        <tr>
+            <td>Source Url</td> <td><a href="' . $table["SourceUrl"] . '">' . $table["SourceUrl"] . '</td>
         </tr>
-            <td>Date of Publication</td> <td>' . $PublicationDate . '</td>
+        <tr>
+            <td>Date of Publication</td> <td>' . $table["PublicationDate"] . '</td>
         </tr> 
-                </tr>
-            <td>Units</td> <td>' . $Unit . '</td>
+        <tr>
+            <td>Units</td> <td>' . $table["Unit"] . '</td>
+        </tr>
+         <tr>
+            <td>Description</td> <td>' . $table["Description"] . '</td>
         </tr>';
 
     echo '</table></p>';
@@ -108,9 +112,9 @@ if (empty($_GET["source"])) {
 
     echo '<div style="clear:both;">';
     if (empty($_GET["as_table"])) {
-        echo '<p><textarea disabled>' . $SemiTidyData . '</textarea></p>';
+        echo '<p><textarea disabled>' . $table["SemiTidyData"] . '</textarea></p>';
     } else {
-        echo Helper::create_html_from_csv($SemiTidyData);
+        echo Helper::create_html_from_csv($table["SemiTidyData"]);
     }
     echo '</div>';
 }

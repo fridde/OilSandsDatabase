@@ -7,28 +7,23 @@ if ($_REQUEST["password"] == "mikael") {
     $source_id = $_REQUEST["source_id"];
     $Source = ORM::for_table('osdb_Sources') -> find_one($source_id);
 
-    if ($_REQUEST["delete"] == "DELETE") {
-        $Source -> delete();
-    } else {
- 
-        $SourceArray = $Source -> as_array();
+    $SourceArray = $Source -> as_array();
 
-        foreach ($SourceArray as $key => $value) {
-            if (!(empty($_REQUEST[$key]))) {
-                $Source -> set($key, $_REQUEST[$key]);
-            }
+    foreach ($SourceArray as $key => $value) {
+        if (!(empty($_REQUEST[$key]))) {
+            $Source -> set($key, $_REQUEST[$key]);
         }
-        // defining a new ShortName for later reference
-        $ShortName = $_REQUEST["Institution"] . " " . array_shift(explode("-", $_REQUEST["PublicationDate"]));
-        $availableShortNames = ORM::for_table('osdb_Sources') -> select("ShortName") -> find_array();
-        if (in_array($ShortName, $availableShortNames)) {
-            $ShortName = $SourceName;
-        }
-        $Source ->ShortName = $ShortName;
-        
-        $Source -> save();
-        redirect("index.php?page=sources&source=" . $source_id);
     }
+    // defining a new ShortName for later reference
+    $ShortName = $_REQUEST["Institution"] . " " . array_shift(explode("-", $_REQUEST["PublicationDate"]));
+    $availableShortNames = ORM::for_table('osdb_Sources') -> select("ShortName") -> find_array();
+    if (in_array($ShortName, $availableShortNames)) {
+        $ShortName = $SourceName;
+    }
+    $Source -> ShortName = $ShortName;
+
+    $Source -> save();
+    redirect("index.php?page=sources&source=" . $source_id);
 
 } else {
     echo "<h1>Wrong password!</h1>";
@@ -106,7 +101,6 @@ $newSource -> Unit = $Unit;
 $newSource -> RawData = $RawData;
 $newSource -> SemiTidyData = $SemiTidyData;
 $newSource -> Description = $_REQUEST["Description"];
-
 
 $newSource -> save();
 redirect("index.php?page=sources&source=" . $source_id);

@@ -21,8 +21,16 @@ foreach($sources as $source){
 }
 echo '</select><br>
 <input type="submit" name="choice" value="Remove source"> 
-<input type="checkbox" name="archive" value="archive"> Archive source'; 
+<input type="checkbox" name="archive" value="archive"> Archive source </p>' ; 
 
+echo '<p>
+<select name="Compilation">';
+$compilations = ORM::for_table("osdb_compilations")->order_by_asc("Name")->find_array();
+foreach($compilations as $compilation){
+    echo '<option value="' . $compilation["id"] . '">' . $compilation["Name"] . '</option>'; 
+}
+echo '</select><br>
+<input type="submit" name="choice" value="Remove compilation"></p>';
 
 ?>
 <p><h2>Add synonyms or abbreviations</h2></p>
