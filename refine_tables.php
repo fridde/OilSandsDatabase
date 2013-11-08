@@ -25,7 +25,7 @@ switch ($_REQUEST["choice"]) {
         foreach ($_REQUEST["checked_source"] as $sourceId) {
             Helper::interpolate_table($sourceId);
         }
-        redirect("index.php?page=working_tables_form&table_type=working");
+         redirect("index.php?page=working_tables_form");
         break;
 
     case "Add synonyms" :

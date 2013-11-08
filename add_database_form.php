@@ -34,7 +34,7 @@ foreach ($sourceList as $source) {
     }
     echo "</tr>
     <tr>";
-    $possibleHeaders = Helper::sql_get_columns('osdb_data');
+    $possibleHeaders = Helper::sql_get_columnNames('osdb_data');
     foreach ($header as $col) {
         echo '<td><select name="' . $source["id"] . '[]>';
         $mostSimilar = Helper::find_most_similar($col, $possibleHeaders);

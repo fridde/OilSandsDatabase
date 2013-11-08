@@ -9,8 +9,9 @@ if (isset($_REQUEST["tag"])) {
 $compilationList = ORM::for_table('osdb_compilations') ->order_by_asc("Name")-> find_array();
 $compilationNames = Helper::sql_select_columns($compilationList, "Name");
 $compilationShortNames = Helper::shorten_names($compilationNames);
-$workingHeaders = Helper::sql_get_columns("osdb_working");
+$workingHeaders = Helper::sql_get_columnNames("osdb_working");
 $ignoreArray = array("id", "Compilation_Id", "Source_Id", "Date", "Value");
+$includeArray = array("Name", "Product", "Time_Accuracy");
 $tags = ORM::for_table('osdb_tags') -> find_array();
 
 $maxTags = array_count_values(array_filter(Helper::sql_select_columns($tags, "Compilation_Id")));
@@ -44,7 +45,7 @@ echo '<form action="index.php?page=graphs" method="post">
 <tr><th colspan="2">Values for the new Compilation</th></tr>';
 echo '<tr><td>Name</td><td><input type="text" name="newName" required placeholder="Enter new name"></td> ';
 foreach ($workingHeaders as $header) {
-    if (in_array($header, $ignoreArray)) {
+    if (in_array($header, $ignoreArray) || !in_array($header, $includeArray)) {
         echo '<input name="changeArray[]" value="" hidden>';
     } else {
         echo '<tr><td>' . $header . '</td><td><input type="text" name="changeArray[]"></td></tr>';
@@ -90,7 +91,7 @@ foreach ($compilationList as $key => $compilation) {
         echo '<tr>';
         echo '<td><input type="radio" class="mainComp" name="mainComp" value="' . $compilation["id"] . '"></td>';
         echo '<td><input type="checkbox" name="compilationId[]" value="' . $compilation["id"] . '"></td>
-    <td>' . $compilation["Name"] . '<a class="tinyLink" href="' . $attributedSourceUrl . '"> [Source]</a></td>
+    <td>' . $compilation["Name"] . '<a class="tinyLink" href="' . $attributedSourceUrl . '"> [Source]</a> (' . $compilation["TimePeriod"] . ')</td>
     <td><input type="text" name="compilationShortNames[]" value="' . $compilationShortNames[$key] . '"></td>';
         foreach ($associatedTags as $tag) {
             echo '<td>'; 

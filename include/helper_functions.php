@@ -683,6 +683,18 @@ class Helper {
         return $nonEmpty;
     }
 
+    public static function nonempty_columns($array) {
+        $returnArray = array();
+        $headers = array_keys(reset($array));
+        foreach ($headers as $header) {
+            $col = Helper::sql_select_columns($array, $header);
+            if(array_filter($col) != NULL){
+                $returnArray[] = $header;
+            }
+        }
+        return $returnArray;
+    }
+
     public static function slice_at($array, $startpoints) {
         $diffpoints = array();
         $startpoints = array_unique($startpoints);
@@ -1076,7 +1088,7 @@ class Helper {
 
         $rowsBefore = ORM::for_table($sqlTable) -> count();
 
-        $headers = Helper::sql_get_columns($sqlTable);
+        $headers = Helper::sql_get_columnNames($sqlTable);
         $headers = array_diff($headers, $ignoreArray);
         echo print_r($headers) . "<br><br>";
         $query = " ALTER TABLE " . $sqlTable . " ADD COLUMN tmp_col TEXT(300); ";
@@ -1296,13 +1308,14 @@ class Helper {
          All columns that are not within $ignoreArray (the standard columns) are considered to contain subgroups */
         $ignoreArray = array("id", "Source_Id", "Date", "Value");
 
-        $ORMArray = ORM::for_table('osdb_data') -> find_array();
-        $ORMArray = Helper::filter_for_value($ORMArray, "Source_Id", $sourceId);
+        $ORMArray = ORM::for_table('osdb_data') -> where("Source_Id", $sourceId) -> find_array();
 
-        $subGroupHeaders = array_keys(array_filter(reset($ORMArray)));
+        // $subGroupHeaders = array_keys(array_filter(reset($ORMArray)));
+        $subGroupHeaders = Helper::nonempty_columns($ORMArray);
+        
         // creates an array of all non-standard column headers
         $subGroupHeaders = array_diff($subGroupHeaders, $ignoreArray);
-
+        
         // now $subGroupHeaders contains all column-names that contain subgroups
         if (count($subGroupHeaders) > 0) {
             $subGroupArray = Helper::sql_select_columns($ORMArray, $subGroupHeaders, TRUE);
@@ -1312,7 +1325,7 @@ class Helper {
         } else {
             $subGroupArray = array(NULL);
         }
-        $workingTableHeaders = Helper::sql_get_columns("osdb_working");
+        $workingTableHeaders = Helper::sql_get_columnNames("osdb_working");
         /* each row of $subGroupArray now contains  the names of a different dataset that should or could
          be interpolated
 
@@ -1320,7 +1333,7 @@ class Helper {
         foreach ($subGroupArray as $subGroup) {
             $queryArray = array();
             $currentORM = $ORMArray;
-            
+
             /* to create a unique name for the compilation, the ShortName is prepended to a row of unique values */
             $currentCompilationName = ORM::for_table('osdb_sources') -> find_one($sourceId);
             $currentCompilationName = $currentCompilationName -> ShortName;
@@ -1338,20 +1351,27 @@ class Helper {
                     }
                 }
             }
-            echo $sourceId . " - " .  $currentCompilationName . "<br>";
             // interpolation is only applicable if there is more than one datapoint to start from
             if (count($currentORM) > 1) {
+                
+                $currentORM = Helper::sort_by($currentORM, "Date");
+                $currentORM = array_values($currentORM);
+                
+                $firstRow = reset($currentORM);
+                $lastRow = end($currentORM);
+                $timePeriod = reset(explode("-", $firstRow["Date"])) . "-" .  reset(explode("-", $lastRow["Date"]));
+                
+                
                 // At the same time, a new Compilation has to be defined for this subgroup
                 $newCompilation = ORM::for_table('osdb_compilations') -> create();
                 $newCompilation -> Name = $currentCompilationName;
                 $newCompilation -> Source_Id = $sourceId;
+                $newCompilation -> TimePeriod = $timePeriod;
                 $newCompilation -> save();
                 $compilationId = $newCompilation -> id();
 
                 // since $currentORM is still in the form of [Data_row_Id]=>array(), we only filter out the values
-                $currentORM = Helper::sort_by($currentORM, "Date");
-                $currentORM = array_values($currentORM);
-
+                
                 foreach ($currentORM as $rowKey => $row) {
 
                     // traverse all rows in the current ORM except for the last
@@ -1398,10 +1418,10 @@ class Helper {
                         }
                     }
                 }
-                // echop($queryArray);
-                // Helper::sql_insert_array($queryArray, "osdb_working");
+                Helper::sql_insert_array($queryArray, "osdb_working");
 
             }
+            echo "<br>";
         }
 
     }
@@ -1465,7 +1485,7 @@ class Helper {
         return $newArray;
     }
 
-    public static function sql_get_columns($sqlTable) {
+    public static function sql_get_columnNames($sqlTable) {
         $dummyRow = ORM::for_table($sqlTable) -> create();
         $dummyRow -> save();
         $dummyRowId = $dummyRow -> id();
@@ -1560,7 +1580,7 @@ class Helper {
             $newDateAndValues = Helper::concat_time_series($array);
         }
 
-        $headers = Helper::sql_get_columns("osdb_working");
+        $headers = Helper::sql_get_columnNames("osdb_working");
         $changeArray = array_combine($headers, $changeArray);
         $changeArray = array_filter($changeArray);
 

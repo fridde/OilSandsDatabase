@@ -1,11 +1,7 @@
 <?php
 $headersToExclude = array("id", "Source_Id", "Compilation_Id");
-$tableType = "osdb_data";
-if(isset($_GET["table_type"])){
-    $tableType = "osdb_" . $_GET["table_type"];
-}
 
-$sourceIdList = ORM::for_table($tableType) -> distinct() -> select('Source_Id') -> find_array();
+$sourceIdList = ORM::for_table("osdb_data") -> distinct() -> select('Source_Id') -> find_array();
 
 echo '<form action="index.php?page=refine_tables" method="post">
 <input type="submit" name="choice" value="Interpolate data">
@@ -39,7 +35,7 @@ foreach ($sourceIdList as $SourceRow) {
     echo '<td>' . $source["PublicationDate"] . '</td>';
     echo '</tr><tr><td colspan="3"><hr></td></tr> <tr>';
 
-    $rowsBelongingToSource = ORM::for_table($tableType) -> where("Source_Id", $source["id"]) -> order_by_asc('Date') -> find_array();
+    $rowsBelongingToSource = ORM::for_table("osdb_data") -> where("Source_Id", $source["id"]) -> order_by_asc('Date') -> find_array();
 
     $numberRows = count($rowsBelongingToSource);
 

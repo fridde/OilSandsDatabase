@@ -17,7 +17,7 @@
 
 		<div id="navbar">
 				<?php
-                $linkArray = array("Home" => "home", "Documentation" => "documentation", "Sources" => "sources", "Send sources to database" => "add_database_form", "Refine data" => "refine_tables_form", "Create Compilations" => "working_tables_form&table_type=data", "Compilations" => "compilations", "Ranking"=>"ranking", "Administration" => "administration_form");
+                $linkArray = array("Home" => "home", "Documentation" => "documentation", "Sources" => "sources", "Send sources to database" => "add_database_form", "Refine data" => "refine_tables_form", "Create Compilations" => "working_tables_form", "Compilations" => "compilations", "Ranking"=>"ranking", "Administration" => "administration_form");
                 foreach ($linkArray as $label => $url) {
                     link_for("index.php?page=" . $url, $label, "box");
                 }
