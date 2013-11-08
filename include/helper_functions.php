@@ -688,7 +688,7 @@ class Helper {
         $headers = array_keys(reset($array));
         foreach ($headers as $header) {
             $col = Helper::sql_select_columns($array, $header);
-            if(array_filter($col) != NULL){
+            if (array_filter($col) != NULL) {
                 $returnArray[] = $header;
             }
         }
@@ -1312,10 +1312,10 @@ class Helper {
 
         // $subGroupHeaders = array_keys(array_filter(reset($ORMArray)));
         $subGroupHeaders = Helper::nonempty_columns($ORMArray);
-        
+
         // creates an array of all non-standard column headers
         $subGroupHeaders = array_diff($subGroupHeaders, $ignoreArray);
-        
+
         // now $subGroupHeaders contains all column-names that contain subgroups
         if (count($subGroupHeaders) > 0) {
             $subGroupArray = Helper::sql_select_columns($ORMArray, $subGroupHeaders, TRUE);
@@ -1353,15 +1353,14 @@ class Helper {
             }
             // interpolation is only applicable if there is more than one datapoint to start from
             if (count($currentORM) > 1) {
-                
+
                 $currentORM = Helper::sort_by($currentORM, "Date");
                 $currentORM = array_values($currentORM);
-                
+
                 $firstRow = reset($currentORM);
                 $lastRow = end($currentORM);
-                $timePeriod = reset(explode("-", $firstRow["Date"])) . "-" .  reset(explode("-", $lastRow["Date"]));
-                
-                
+                $timePeriod = reset(explode("-", $firstRow["Date"])) . "-" . reset(explode("-", $lastRow["Date"]));
+
                 // At the same time, a new Compilation has to be defined for this subgroup
                 $newCompilation = ORM::for_table('osdb_compilations') -> create();
                 $newCompilation -> Name = $currentCompilationName;
@@ -1371,7 +1370,7 @@ class Helper {
                 $compilationId = $newCompilation -> id();
 
                 // since $currentORM is still in the form of [Data_row_Id]=>array(), we only filter out the values
-                
+
                 foreach ($currentORM as $rowKey => $row) {
 
                     // traverse all rows in the current ORM except for the last
@@ -1538,8 +1537,6 @@ class Helper {
         $allDates = array_unique(Helper::sql_select_columns($array, "Date"));
         sort($allDates);
 
-        //echo print_r($allDates);
-
         $newArray = array();
         foreach ($allDates as $dateKey => $date) {
             $rowsWithRightDate = Helper::filter_for_value($array, "Date", $date);
@@ -1554,6 +1551,7 @@ class Helper {
                 $newArray[] = array("Date" => $date, "Value" => $rowWithLowestAccuracy["Value"], "Time_Accuracy" => $rowWithLowestAccuracy["Time_Accuracy"]);
             }
         }
+
         return $newArray;
     }
 
@@ -1567,18 +1565,23 @@ class Helper {
         $firstRow = reset(reset($array));
         $sourceId = $firstRow["Source_Id"];
 
-        $newCompilation = ORM::for_table('osdb_compilations') -> create();
-        $newCompilation -> Name = $newName;
-        $newCompilation -> Source_Id = $sourceId;
-        $newCompilation -> save();
-        $newCompilationId = $newCompilation -> id();
-
         if (in_array($method, array("Add", "Subtract"))) {
             $newDateAndValues = Helper::add_or_subtract($array, $method, $onlyCommonDates);
 
         } elseif ($method == "Concatenate") {
             $newDateAndValues = Helper::concat_time_series($array);
         }
+
+        $firstRow = reset($newDateAndValues);
+        $lastRow = end($newDateAndValues);
+        $timePeriod = reset(explode("-", $firstRow["Date"])) . "-" . reset(explode("-", $lastRow["Date"]));
+
+        $newCompilation = ORM::for_table('osdb_compilations') -> create();
+        $newCompilation -> Name = $newName;
+        $newCompilation -> Source_Id = $sourceId;
+        $newCompilation -> TimePeriod = $timePeriod;
+        $newCompilation -> save();
+        $newCompilationId = $newCompilation -> id();
 
         $headers = Helper::sql_get_columnNames("osdb_working");
         $changeArray = array_combine($headers, $changeArray);
@@ -1615,7 +1618,12 @@ class Helper {
                         break;
 
                     default :
-                        $value = $firstRow[$header];
+                        if(isset($firstRow[$header])){
+                            $value = $firstRow[$header];
+                        } else {
+                            $value = NULL;
+                        }
+                        
                         break;
                 }
 
