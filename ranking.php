@@ -1,14 +1,16 @@
 <?php
 
+$possibleMainIdArray = ORM::for_table("osdb_ranking")->distinct()->select("Main_Id")->find_array();
+$mainId = reset($possibleMainIdArray);
+$mainId = $mainId["Main_Id"];
+
 echo '<form action="index.php?page=refine_tables" method="post">
 <p><input type="submit" name="choice" value="Recalculate Ranking">
 </form>';
-$_REQUEST["Main_Id"] = "355";
-$mainId = $_REQUEST["Main_Id"];
 echo '<form action="index.php?page=ranking">
 <p>Change the reported actual production the prognoses are compared to 
 <select name="Main_Id">';
-$possibleMainIdArray = ORM::for_table("osdb_ranking")->distinct()->select("Main_Id")->find_array();
+
 foreach($possibleMainIdArray as $mainId){
     $mainId = $mainId["Main_Id"];
         $mainIdName = ORM::for_table("osdb_compilations")->find_one($mainId)->Name;
@@ -31,19 +33,22 @@ foreach ($dayArray as $day) {
     if($day > 700){
         $timeText = "above " . floor($day/365) . " years";
     }
-    
-    
-    
+    $compilationIdArray = ORM::for_table('osdb_ranking') -> where("Main_Id", $mainId)->where("Day", $day) -> find_array();
+    $compilationIdArray = Helper::create_tournament_ranking($compilationIdArray);
+    $linkText = '<a class="tinyLink" href="index.php?page=graphs&compilationId[]=' . $mainId ;
+    foreach($compilationIdArray as $compilationId=>$wins){
+        $linkText .= '&compilationId[]=' . $compilationId;
+    }
+    $linkText .= '">[Show in graph]</a>';    
     
     echo "
     <table>
     <thead>
-    <th>Category:  $timeText</th><th>Better than</th>
+    <th>Category:  $timeText $linkText</th><th>Better than</th>
     </thead>
     <tbody>
     ";
-    $compilationIdArray = ORM::for_table('osdb_ranking') -> where("Main_Id", $mainId)->where("Day", $day) -> find_array();
-    $compilationIdArray = Helper::create_tournament_ranking($compilationIdArray);
+    
         foreach ($compilationIdArray as $compilationId=>$wins) {
                 $compilationIdName = ORM::for_table('osdb_compilations') -> find_one($compilationId) -> Name;
             echo "<tr><td>$compilationIdName</td><td>$wins</td></tr>";

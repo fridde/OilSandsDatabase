@@ -1,6 +1,6 @@
 <?php
 
-$sourceIdList = ORM::for_table('osdb_data') -> distinct() -> select('Source_Id') -> find_array();
+$sourceIdList = ORM::for_table('osdb_data') -> distinct()->select('Source_Id') -> find_array();
 
 echo '<form action="index.php?page=refine_tables" method="post">
 <input type="hidden" name="Table" value="osdb_data">

@@ -25,7 +25,7 @@ switch ($_REQUEST["choice"]) {
         foreach ($_REQUEST["checked_source"] as $sourceId) {
             Helper::interpolate_table($sourceId);
         }
-         redirect("index.php?page=working_tables_form");
+        redirect("index.php?page=working_tables_form");
         break;
 
     case "Add synonyms" :
@@ -41,14 +41,29 @@ switch ($_REQUEST["choice"]) {
         break;
     case "Combine" :
         if ($_REQUEST["method"] == "Calculate error statistics") {
-            Helper::calculate_error_statistics($_REQUEST["compilationId"], $_REQUEST["mainComp"], $_REQUEST["newName"]);
-            // redirect("index.php?page=ranking");
+            foreach ($_REQUEST["compilationId"] as $compilationId) {
+                if (isset($_REQUEST["overwrite"])) {
+                    ORM::for_table('osdb_errors') -> where_equal("Compilation_Id", $compilationId) -> delete_many();
+                }
+                $newTag = ORM::for_table('osdb_tags') -> create();
+                $newTag -> Name = "analyzed";
+                $newTag -> Compilation_Id = $compilationId;
+                $newTag -> save();
+
+            }
+            $mainCompArray = ORM::for_table('osdb_tags') -> where("Name", "Basis") -> find_array();
+            foreach ($mainCompArray as $mainCompId) {
+                $mainCompId = $mainCompId["Compilation_Id"];
+                Helper::calculate_error_statistics($_REQUEST["compilationId"], $mainCompId);
+            }
+            redirect("index.php?page=ranking");
             break;
         } else {
             if (!(isset($_REQUEST["changeArray"]))) {
                 $_REQUEST["changeArray"] = FALSE;
             }
             if (!isset($_REQUEST["onlyCommonDates"])) {$onlyCommonDates = FALSE;
+            } else {$onlyCommonDates = TRUE;
             }
             Helper::combine_data($_REQUEST["compilationId"], $_REQUEST["method"], $_REQUEST["newName"], $_REQUEST["changeArray"], $onlyCommonDates);
             redirect("index.php?page=compilations");
@@ -82,18 +97,20 @@ switch ($_REQUEST["choice"]) {
         break;
 
     case "Remove source" :
-        if(isset($_REQUEST["archive"]) && $_REQUEST["archive"] == "archive"){
+        if (isset($_REQUEST["archive"]) && $_REQUEST["archive"] == "archive") {
             $archive = TRUE;
         } else {
             $archive = FALSE;
         }
         Helper::remove_source_from_database($_REQUEST["Source"], $archive);
+        redirect("index.php?page=administration_form");
         break;
 
-    case "Remove compilation":
+    case "Remove compilation" :
         Helper::remove_compilation_from_database($_REQUEST["Compilation"]);
+        redirect("index.php?page=administration_form");
         break;
-        
+
     default :
         break;
 }

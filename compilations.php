@@ -39,7 +39,9 @@ echo '<form action="index.php?page=graphs" method="post">
 <input type="radio" id="showbutton" class="showbutton" name="method" value="Calculate error statistics">
 <label for="showbutton">Calculate error statistics</label><br>
 <input type="checkbox" id="onlyCommonDates" name="onlyCommonDates" value="TRUE">
-<label for="onlyCommonDates">Only combine common dates</label><br>
+<label for="onlyCommonDates">Only combine common dates</label>
+<input type="checkbox" id="overwrite" name="overwrite" value="TRUE">
+<label for="overwrite">Overwrite error statistics</label><br>
 </p>
 <table>
 <tr><th colspan="2">Values for the new Compilation</th></tr>';

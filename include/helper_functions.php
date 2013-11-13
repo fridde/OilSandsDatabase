@@ -1627,7 +1627,6 @@ class Helper {
                 $newArray[$rowKey][$header] = $value;
             }
         }
-        // echop($newArray);
         Helper::sql_insert_array($newArray, "osdb_working");
 
     }
@@ -1757,6 +1756,7 @@ class Helper {
                 }
 
             }
+            // echop($errorArray);
             Helper::sql_insert_array($errorArray, "osdb_errors");
 
         }
@@ -1806,26 +1806,25 @@ class Helper {
 
         ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-        
+
         foreach ($combinationIdArray as $combination) {
             $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
-            $maxArray[] = $maxDay -> Day;
+            $maxDayArray[] = $maxDay -> Day;
         }
-        $maxArray = array_unique($maxArray);
-        sort($maxArray);
-        
+        $maxDayArray = array_unique($maxDayArray);
+        sort($maxDayArray);
+
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
 
         foreach ($mainIdArray as $mainId) {
             $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainId);
             $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
-
-            if (count($validErrorCompilations) > 1) {
-                $compilationsToCompare = power_perms($validErrorCompilations);
-                array_walk($compilationsToCompare, "sort");
-                $compilationsToCompare = array_filter($compilationsToCompare, create_function('$v', 'return count($v) == 2 ;'));
-                $compilationsToCompare = array_unique($compilationsToCompare, SORT_REGULAR);
-
+            $validErrorCompilations = array_unique($validErrorCompilations);
+            $compilationsToCompare = Helper::create_matchings($validErrorCompilations);
+            
+            if (count($compilationsToCompare) > 0) {
+                
+                /* now all possible combinations of two compilations are compared against each other, like in a tournament */
                 $queryArray = array();
                 foreach ($compilationsToCompare as $combination) {
                     $firstCompilation = ORM::for_table('osdb_errors') -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
@@ -1835,19 +1834,22 @@ class Helper {
                     //echop($secondCompilation);
                     $day = 0;
                     $errorDiff = array();
-                    while ($day <= max($maxArray)) {
+                    $somethingNew = FALSE;
+                    while ($day <= max($maxDayArray)) {
                         if (isset($firstCompilation[$day]) && isset($secondCompilation[$day])) {
                             $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"], 2) - pow($secondCompilation[$day]["ErrorPercentage"], 2);
+                            $somethingNew = TRUE;
                         }
-                        /*  */
-                        if (count($errorDiff) > 1 && in_array($day, $maxArray)) {
+                        /*   */
+                        if ($somethingNew && in_array($day, $maxDayArray)) {
                             $meanDifferential = array_sum($errorDiff) / count($errorDiff);
                             $autocovariance = Helper::autocovariance($errorDiff);
                             $errorStatistic = $meanDifferential / sqrt($autocovariance);
-                            $arrayToAdd = array("Main_Id" => $mainId, "Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => count($errorDiff), "Mean_Differential" => $meanDifferential, "ErrorStatistic" => $errorStatistic);
+                            $arrayToAdd = array("Main_Id" => $mainId, "Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => $day, "Mean_Differential" => $meanDifferential, "ErrorStatistic" => $errorStatistic);
                             if (!in_array($arrayToAdd, $queryArray)) {
                                 $queryArray[] = $arrayToAdd;
                             }
+                            $somethingNew = FALSE;; /* in the case that new arrow */
                         }
                         $day++;
                     }
@@ -1856,7 +1858,6 @@ class Helper {
             }
 
         }
-
         Helper::sql_insert_array($queryArray, "osdb_ranking");
     }
 
@@ -1935,6 +1936,24 @@ class Helper {
                 ORM::for_table('osdb_' . $tableName) -> where_equal($columnName, $compilationId) -> delete_many();
             }
         }
+    }
+
+    public static function create_matchings($array) {
+       /* creates a 1-on-1 matching for each element in the array, so that every element is paired with each element once  */
+        $returnArray = array();
+        foreach ($array as $firstNumber) {
+            foreach ($array as $secondNumber) {
+                if ($firstNumber < $secondNumber) {
+                    $arrayToAdd = array($firstNumber, $secondNumber);
+                } else {
+                    $arrayToAdd = array($secondNumber, $firstNumber);
+                }
+                if ($firstNumber != $secondNumber && !in_array($arrayToAdd, $returnArray)) {
+                    $returnArray[] = $arrayToAdd;
+                }
+            }
+        }
+        return $returnArray;
     }
 
 }
