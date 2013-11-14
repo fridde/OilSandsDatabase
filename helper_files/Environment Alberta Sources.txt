@@ -31,6 +31,8 @@ http://environment.alberta.ca/apps/OSIPDL/Dataset/Details/45?ProjectId=51
 http://environment.alberta.ca/apps/OSIPDL/Dataset/Details/45?ProjectId=63
 http://environment.alberta.ca/apps/OSIPDL/Dataset/Details/45?ProjectId=94
 
+
+########### Projects that should be included###########
 Baytex Energy Cliffdale
 BlackPearl Resources Blackrod
 CNOOC Long Lake
