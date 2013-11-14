@@ -34,6 +34,7 @@ Generally, the steps to add a new source of data to the database are as follows:
 * Convert all files into csv-format using [a converter](http://xls2csv.genxcrowd.com/download).
 * Merge these files into one single file by opening your console, navigating to your folder using `cd "path\to\folder"`, and then entering `copy *.csv collected.txt`
 * Make sure all projects mentioned at the end of [this file][EnvironmentFile] are included
+* Due to the high risk of lines appearing twice during the process, remove all duplicate lines
 * Copy and paste
 
 ### OilSandsReview
