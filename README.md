@@ -93,9 +93,10 @@ Contains the name for every compilation of data
 
 Good tools to analyze the data more are (in order of importance) 
 
-* [TableauPublic][TableauPublic]
 * [R][R] with [RStudio][RStudio]
   * Packages _ggplot2_   
+* [TableauPublic][TableauPublic]
+
 
 ##Things to do
 
