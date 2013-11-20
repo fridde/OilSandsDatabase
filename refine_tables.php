@@ -51,11 +51,8 @@ switch ($_REQUEST["choice"]) {
                 $newTag -> save();
 
             }
-            $mainCompArray = ORM::for_table('osdb_tags') -> where("Name", "Basis") -> find_array();
-            foreach ($mainCompArray as $mainCompId) {
-                $mainCompId = $mainCompId["Compilation_Id"];
-                Helper::calculate_error_statistics($_REQUEST["compilationId"], $mainCompId);
-            }
+            $mainCompArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> where("Name", "Basis") -> find_array(), "Compilation_Id");
+            Helper::calculate_error_statistics($_REQUEST["compilationId"], $mainCompArray);
             redirect("index.php?page=ranking");
             break;
         } else {
@@ -81,6 +78,16 @@ switch ($_REQUEST["choice"]) {
 
     case "Recalculate Ranking" :
         Helper::calculate_ranking();
+        redirect("index.php?page=ranking");
+        break;
+
+    case "Recalculate errors" :
+        ORM::for_table("osdb_errors") -> raw_execute("TRUNCATE TABLE osdb_errors;");
+
+        $compilationIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "analyzed") -> find_array(), "Compilation_Id");
+        $mainCompIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "Basis") -> find_array(), "Compilation_Id");
+        Helper::calculate_error_statistics($compilationIdArray, $mainCompIdArray);
+
         redirect("index.php?page=ranking");
         break;
 

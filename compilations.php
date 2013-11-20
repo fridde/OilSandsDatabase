@@ -12,7 +12,7 @@ $compilationShortNames = Helper::shorten_names($compilationNames);
 $workingHeaders = Helper::sql_get_columnNames("osdb_working");
 $ignoreArray = array("id", "Compilation_Id", "Source_Id", "Date", "Value");
 $includeArray = array("Name", "Product", "Time_Accuracy");
-$tags = ORM::for_table('osdb_tags') -> find_array();
+$tags = ORM::for_table('osdb_tags') ->order_by_asc("Name")-> find_array();
 
 $maxTags = array_count_values(array_filter(Helper::sql_select_columns($tags, "Compilation_Id")));
 arsort($maxTags);
@@ -35,14 +35,14 @@ echo '<form action="index.php?page=graphs" method="post">
 <input type="radio" name="method" value="Subtract" class="showbutton" id="Subtract">
 <label for="Subtract">Subtract</label>
 <input type="radio" name="method" value="Concatenate" id="Concatenate">
-<label for="Concatenate">Concatenate</label>
-<input type="radio" id="showbutton" class="showbutton" name="method" value="Calculate error statistics">
-<label for="showbutton">Calculate error statistics</label><br>
-<input type="checkbox" id="onlyCommonDates" name="onlyCommonDates" value="TRUE">
-<label for="onlyCommonDates">Only combine common dates</label>
-<input type="checkbox" id="overwrite" name="overwrite" value="TRUE">
-<label for="overwrite">Overwrite error statistics</label><br>
-</p>
+<label for="Concatenate">Concatenate</label><br>';
+//<input type="radio" id="showbutton" class="showbutton" name="method" value="Calculate error statistics">'
+// <label for="showbutton">Calculate error statistics</label><br>
+ echo '<input type="checkbox" id="onlyCommonDates" name="onlyCommonDates" value="TRUE">
+<label for="onlyCommonDates">Only combine common dates</label>';
+// <input type="checkbox" id="overwrite" name="overwrite" value="TRUE">
+// <label for="overwrite">Overwrite error statistics</label><br>
+echo '</p>
 <table>
 <tr><th colspan="2">Values for the new Compilation</th></tr>';
 echo '<tr><td>Name</td><td><input type="text" name="newName" required placeholder="Enter new name"></td> ';
@@ -75,9 +75,11 @@ echo '<p>';
 link_for("index.php?page=compilations", "Show all compilations", "box");
 echo '</p>';
 // CAUTION: Change back unsortable to sortable when going to production!!!
-echo '<table id="un-sortable">';
-echo '<thead><tr><th></th><th><input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">Select All</th>
-<th>Compilation</th><th>Label in graph</th>';
+echo '<table id="sortable">';
+echo '<thead><tr>';
+// echo '<th><input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">Select All</th>';
+echo '<th></th>';
+echo '<th>Compilation</th><th>Label in graph</th>';
 for ($i = 0; $i < $maxTags; $i++) {
     echo '<th>#</th>';
 }
@@ -91,7 +93,7 @@ foreach ($compilationList as $key => $compilation) {
     if (count($tagsToShow) == 0 || count(array_intersect($associatedTags, $tagsToShow)) == count($tagsToShow)) {
         $associatedTags = array_pad($associatedTags, $maxTags, " ");
         echo '<tr>';
-        echo '<td><input type="radio" class="mainComp" name="mainComp" value="' . $compilation["id"] . '"></td>';
+        // echo '<td><input type="radio" class="mainComp" name="mainComp" value="' . $compilation["id"] . '"></td>';
         echo '<td><input type="checkbox" name="compilationId[]" value="' . $compilation["id"] . '"></td>
     <td>' . $compilation["Name"] . '<a class="tinyLink" href="' . $attributedSourceUrl . '"> [Source]</a> (' . $compilation["TimePeriod"] . ')</td>
     <td><input type="text" name="compilationShortNames[]" value="' . $compilationShortNames[$key] . '"></td>';

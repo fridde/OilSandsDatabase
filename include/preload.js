@@ -91,7 +91,7 @@ $(document).ready(function() {
 					autoscaleMargin : 0.05
 				},
 				yaxis : {
-					tickDecimals: 1,
+					tickDecimals : 1,
 					ticks : 4,
 					tickFormatter : function suffixFormatter(val, axis) {
 						if (val >= 1000000)
@@ -141,8 +141,7 @@ $(document).ready(function() {
 			// series are turned on/off
 			var i = 0;
 			$.each(data, function(key, val) {
-				val.color = i;
-				++i;
+				val.color = i; ++i;
 
 			});
 
@@ -215,6 +214,14 @@ $(document).ready(function() {
 		if ($("#" + id).text() != "") {
 			$("#buttonExplanation").html("<h3>" + id + "</h3>" + $("#" + id).text());
 		}
+	});
+	
+	$( ".accordion" ).accordion();
+	
+	$(".tCheck").on("change", function() {
+		var tableId = '#table_' + $(this).val();
+		
+		$(tableId).toggle();
 	});
 });
 

@@ -1,16 +1,20 @@
 <?php
 
 function echop($array) {
-    foreach ($array as $key => $element) {
-        if (gettype($element) == "string") {
-            echo $key . " => " . $element . "<br>";
-        } else {
-            echo $key . " => ";
-            echo print_r($element) . "<br>";
-        }
-    }
-    echo "<br>";
+    if (gettype($array) != "array") {
+        echo "<br>" . $array . "<br>";
+    } else {
 
+        foreach ($array as $key => $element) {
+            if (gettype($element) == "string") {
+                echo $key . " => " . $element . "<br>";
+            } else {
+                echo $key . " => ";
+                echo print_r($element) . "<br>";
+            }
+        }
+        echo "<br>";
+    }
 }
 
 function power_perms($arr) {
@@ -1064,15 +1068,15 @@ class Helper {
         return $returnArray;
     }
 
-    public static function get_array_column($array, $col, $header) {
+    public static function get_array_column($array, $col, $hasHeader) {
 
         $newArray = array();
 
-        if (gettype($header) == "boolean" && $header == TRUE) {
+        if (gettype($header) == "boolean" && $hasHeader == TRUE) {
             $newHeader = $array[0][$col];
             $array = array_slice($array, 1);
-        } elseif (gettype($header) == "string" && strlen($header) > 0) {
-            $newHeader = $header;
+        } elseif (gettype($hasHeader) == "string" && strlen($hasHeader) > 0) {
+            $newHeader = $hasHeader;
             $array = array_slice($array, 1);
         }
 
@@ -1709,56 +1713,61 @@ class Helper {
         return $array;
     }
 
-    public static function calculate_error_statistics($compilationIdArray, $mainId) {
+    public static function calculate_error_statistics($compilationIdArray, $mainIdArray) {
 
-        $compilationIdArray = array_diff($compilationIdArray, array($mainId));
-        $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
-        $mainArray = Helper::rebuild_keys($mainArray, "Date");
-        $mainDates = array_keys($mainArray);
+        /* compares two types of compilations to each other  */
 
-        foreach ($compilationIdArray as $compilationId) {
+        /* we don't want to calculate the reported compilations against each other, so we take them away from the compilations*/
+        if (gettype($mainIdArray) != "array") {
+            $mainIdArray = array($mainIdArray);
+        }
+        $compilationIdArray = array_diff($compilationIdArray, $mainIdArray);
+        foreach ($mainIdArray as $mainId) {
+            $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
+            $mainArray = Helper::rebuild_keys($mainArray, "Date");
+            $mainDates = array_keys($mainArray);
 
-            $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
-            $array = Helper::rebuild_keys($array, "Date");
+            foreach ($compilationIdArray as $compilationId) {
 
-            $firstRow = reset($array);
-            $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
-            $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
-            $publicationDate = new DateTime($publicationDate);
+                $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
+                $array = Helper::rebuild_keys($array, "Date");
 
-            $errorArray = array();
+                $firstRow = reset($array);
+                $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
+                $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
+                $publicationDate = new DateTime($publicationDate);
 
-            foreach ($prognosisDates as $date) {
+                $errorArray = array();
 
-                if (isset($array[$date])) {
-                    $yRow = $array[$date];
+                foreach ($prognosisDates as $date) {
 
-                    $xRow = $mainArray[$date];
+                    if (isset($array[$date])) {
+                        $yRow = $array[$date];
 
-                    $errorRow["Date"] = $xRow["Date"];
-                    $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
-                    if ($xRow["Value"] != 0) {
-                        $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
-                    } else {
-                        $errorRow["ErrorPercentage"] = "";
+                        $xRow = $mainArray[$date];
+
+                        $errorRow["Date"] = $xRow["Date"];
+                        $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
+                        if ($xRow["Value"] != 0) {
+                            $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
+                        } else {
+                            $errorRow["ErrorPercentage"] = "";
+                        }
+
+                        $xDate = new DateTime($xRow["Date"]);
+                        $diff = $xDate -> diff($publicationDate);
+
+                        $errorRow["Day"] = $diff -> format('%a');
+
+                        $errorRow["Main_Id"] = $mainId;
+                        $errorRow["Compilation_Id"] = $compilationId;
+
+                        $errorArray[] = $errorRow;
+
                     }
-
-                    $xDate = new DateTime($xRow["Date"]);
-                    $diff = $xDate -> diff($publicationDate);
-
-                    $errorRow["Day"] = $diff -> format('%a');
-
-                    $errorRow["Main_Id"] = $mainId;
-                    $errorRow["Compilation_Id"] = $compilationId;
-
-                    $errorArray[] = $errorRow;
-
                 }
-
+                Helper::sql_insert_array($errorArray, "osdb_errors");
             }
-            // echop($errorArray);
-            Helper::sql_insert_array($errorArray, "osdb_errors");
-
         }
 
     }
@@ -1804,16 +1813,16 @@ class Helper {
          * See chapter "Comparing prognoses" in  https://github.com/fridde/PerformanceRecordsArticle
          * */
 
-        ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
+         ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-
+        // echop($combinationIdArray);
         foreach ($combinationIdArray as $combination) {
             $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
             $maxDayArray[] = $maxDay -> Day;
         }
         $maxDayArray = array_unique($maxDayArray);
         sort($maxDayArray);
-
+        // echop($maxDayArray);
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
 
         foreach ($mainIdArray as $mainId) {
@@ -1821,44 +1830,50 @@ class Helper {
             $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
             $validErrorCompilations = array_unique($validErrorCompilations);
             $compilationsToCompare = Helper::create_matchings($validErrorCompilations);
-            
+
             if (count($compilationsToCompare) > 0) {
-                
+
                 /* now all possible combinations of two compilations are compared against each other, like in a tournament */
                 $queryArray = array();
                 foreach ($compilationsToCompare as $combination) {
-                    $firstCompilation = ORM::for_table('osdb_errors') -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
+                    $firstCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainId) -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
                     $firstCompilation = Helper::rebuild_keys($firstCompilation, "Day");
-                    $secondCompilation = ORM::for_table('osdb_errors') -> where("Compilation_Id", $combination[1]) -> order_by_asc('Day') -> find_array();
+                    $secondCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainId) -> where("Compilation_Id", $combination[1]) -> order_by_asc('Day') -> find_array();
                     $secondCompilation = Helper::rebuild_keys($secondCompilation, "Day");
                     //echop($secondCompilation);
                     $day = 0;
                     $errorDiff = array();
-                    $somethingNew = FALSE;
+                     $somethingNew = FALSE;
                     while ($day <= max($maxDayArray)) {
                         if (isset($firstCompilation[$day]) && isset($secondCompilation[$day])) {
                             $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"], 2) - pow($secondCompilation[$day]["ErrorPercentage"], 2);
                             $somethingNew = TRUE;
                         }
-                        /*   */
                         if ($somethingNew && in_array($day, $maxDayArray)) {
+
                             $meanDifferential = array_sum($errorDiff) / count($errorDiff);
                             $autocovariance = Helper::autocovariance($errorDiff);
-                            $errorStatistic = $meanDifferential / sqrt($autocovariance);
+                            if ($autocovariance == 0) {
+                                $errorStatistic = 0;
+                            } else {
+                                $errorStatistic = $meanDifferential / sqrt($autocovariance);
+                            }
                             $arrayToAdd = array("Main_Id" => $mainId, "Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => $day, "Mean_Differential" => $meanDifferential, "ErrorStatistic" => $errorStatistic);
                             if (!in_array($arrayToAdd, $queryArray)) {
                                 $queryArray[] = $arrayToAdd;
                             }
-                            $somethingNew = FALSE;; /* in the case that new arrow */
+                            /* In the case that a new row is added */
+                            $somethingNew = FALSE;
+                            
                         }
                         $day++;
                     }
 
                 }
+                // echop($queryArray);
+             Helper::sql_insert_array($queryArray, "osdb_ranking");
             }
-
         }
-        Helper::sql_insert_array($queryArray, "osdb_ranking");
     }
 
     public static function autocovariance($array, $stepSize = 1) {
@@ -1939,7 +1954,7 @@ class Helper {
     }
 
     public static function create_matchings($array) {
-       /* creates a 1-on-1 matching for each element in the array, so that every element is paired with each element once  */
+        /* creates a 1-on-1 matching for each element in the array, so that every element is paired with each element once  */
         $returnArray = array();
         foreach ($array as $firstNumber) {
             foreach ($array as $secondNumber) {

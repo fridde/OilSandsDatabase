@@ -46,9 +46,9 @@ div #buttonExplanation {
 
 #navbar {
 	/*background: red;*/
-	background: linear-gradient(to bottom, #4876FF 0%, #FFFFFF 100%);
+	background: linear-gradient(to bottom, #3BA3D0 0%, #FFFFFF 100%);
 	padding: 10px;
-	margin-right: 10px;
+	/*margin-right: 10px;*/
 	border-radius: 5px;
 }
 
@@ -66,10 +66,11 @@ div #buttonExplanation {
 	display: inline;
 	font-weight: bold;
 	color: #FFFFFF;
-	background-color: #0000EE;
+	background-color: #0772A1;
 	width: 120px;
 	text-align: center;
 	padding: 4px;
+	border-radius: 4px;
 }
 #navbar a:hover, #navbar a:active {
 	background-color: #007FFF;

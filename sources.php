@@ -3,15 +3,20 @@
 if (empty($_GET["source"])) {
     echo '<h1>Sources</h1>';
     link_for("index.php?page=source_upload_form", "Add Source", "box");
+    // echo '<div class="accordion">';
     $sources = ORM::for_table('osdb_Sources') -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product', 'Description') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
     $lastInstitution = "";
     foreach ($sources as $Source) {
         if($Source["Institution"] != $lastInstitution){
+                // if($lastInstitution != ""){
+                    // echo '</div>';
+                // }
             echo '<hr>';
             echo '<h2>' . $Source["Institution"] . '</h2>';
+            // echo '<div>';
         }
         $lastInstitution = $Source["Institution"];
-        echo '<p><table class="tablesorter">';
+        echo '<table>';
         foreach ($Source as $key => $value) {
             switch ($key) {
                 case 'id' :
@@ -38,7 +43,6 @@ if (empty($_GET["source"])) {
                     break;
 
                 case "Institution" :
-                    // echo '<tr> <td>' . $key . '</td> <td><b>' . $value . '</b></td> </tr>';
                     break;
 
                 default :
@@ -49,8 +53,10 @@ if (empty($_GET["source"])) {
             }
 
         }
-        echo '</table></p>';
-    };
+        echo '</table>';
+    }
+    // echo '</div></div>';
+
     /* if a certain source is supposed to be shown */
 } else {
 
