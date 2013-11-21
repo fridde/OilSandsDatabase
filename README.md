@@ -3,6 +3,7 @@
 [Introduction ](#introduction)
 | [Adding or updating content](#adding-or-updating-content)
 | [Table description](#the-different-tables-in-the-database)
+| [Exporting data](#exporting-data)
 
 ##Introduction ##
 The Oil Sands Database is an online application written mainly in PHP and some JavaScript including jQuery. Its purpose is to collect all available sources reporting and prognosing Oil Sands Production in Canada in one place, making it easier to compare and evaluate each data set. 
@@ -88,6 +89,14 @@ Contains the name for every compilation of data
 
 ## Route of data through the database
 
+# Exporting data
+
+
+Good tools to analyze the data more are (in order of importance) 
+
+* [R][R] with [RStudio][RStudio]
+  * Packages _ggplot2_   
+* [TableauPublic][TableauPublic]
 
 
 ##Things to do
@@ -100,3 +109,6 @@ Contains the name for every compilation of data
 [OpenRefine]: http://openrefine.org/
 [WebPlotDigitizer]: http://arohatgi.info/WebPlotDigitizer/app/
 [EnvironmentFile]: https://github.com/fridde/OilSandsDatabase/blob/master/helper_files/Environment%20Alberta%20Sources.txt
+[TableauPublic]: https://www.tableausoftware.com/products/public
+[R]: http://cran.r-project.org/
+[RStudio]: http://www.rstudio.com/
