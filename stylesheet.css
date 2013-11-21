@@ -19,10 +19,18 @@ body {
 div {
 	border-radius: 5px;
 	margin: 5px;
+	
 }
 
 div .buttons {
 	float: left;
+}
+
+div.boxed {
+	border: solid black 1px;
+	width: auto;
+	width: 600px;
+	padding: 5px;
 }
 
 div #buttonExplanation {

@@ -14,16 +14,18 @@ echo '<form action="index.php?page=refine_tables" method="post">
 // }
 // echo '</select></form></p>';
 
+echo '<div class="boxed">
+<h3>Show</h3>';
 foreach ($possibleMainIdArray as $mainId) {
     $mainIdName = ORM::for_table("osdb_compilations") -> find_one($mainId) -> Name;
     echo '<input type="checkbox" class="tCheck" value="' . $mainId .  '" checked>' . $mainIdName . '<br>';
 }
+echo '</div>';
 echo '<div class="accordion"> ';
 foreach ($possibleMainIdArray as $mainId) {
         
     $recentDay = 1000000;
     $mainIdName = ORM::for_table('osdb_compilations') -> find_one($mainId) -> Name;
-    // echo '<div class="accordion" id="table_' . $mainId . '">' ;
     
     echo "<h1>Based on $mainIdName</h1>";
     echo '<div>';
@@ -31,28 +33,36 @@ foreach ($possibleMainIdArray as $mainId) {
     $dayArray = Helper::sql_select_columns(ORM::for_table('osdb_ranking') -> distinct() -> order_by_desc('Day') -> select("Day") -> find_array(), "Day");
     // echop($dayArray);
     foreach ($dayArray as $day) {
-        $timeText = $day . " days";
-        if ($day > 30) {
-            $timeText = "above " . floor($day / 30) . " months ";
+        $csvFileName = Helper::shorten_names($mainIdName);
+        if ($day > 30 && $day <= 700) {
+            $timeText = "above " . floor($day / 30) . " months";
+            $csvFileName .= " - " . floor($day / 30) . "m";
         }
-        if ($day > 700) {
-            $timeText = "above " . floor($day / 365) . " years ";
+        elseif ($day > 700) {
+            $timeText = "above " . floor($day / 365) . " years";
+            $csvFileName .= " - " . floor($day / 365) . "y";
+        } else {
+            $timeText = $day . " days";
+            $csvFileName .= $day . "d";
         }
         // echo $day - $recentDay . "<br>";
         $compilationIdArray = ORM::for_table('osdb_ranking') -> where("Main_Id", $mainId) -> where("Day", $day) -> find_array();
         if (count($compilationIdArray) > 1 && ($day < 100 || ($recentDay - $day) > 400)) {
             $recentDay = $day;
             $compilationIdArray = Helper::create_tournament_ranking($compilationIdArray);
-            $linkText = '<a class="tinyLink" href="index.php?page=graphs&compilationId[]=' . $mainId;
+            $graphLinkText = '<a class="tinyLink" target="_blank" href="index.php?page=graphs&compilationId[]=' . $mainId;
+            $csvLinkText = '<a class="tinyLink" target="_blank" href="csv_creater.php?fileName=' . $csvFileName  . '&compilationId[]=' . $mainId;
             foreach ($compilationIdArray as $compilationId => $wins) {
-                $linkText .= '&compilationId[]=' . $compilationId;
+                $graphLinkText .= '&compilationId[]=' . $compilationId;
+                $csvLinkText .= '&compilationId[]=' . $compilationId;
             }
-            $linkText .= '">[Show in graph]</a>';
+            $graphLinkText .= '"> [Show in graph]</a>';
+            $csvLinkText .= '"> [Download csv]</a>';
 
             echo '
     <table>
     <thead>
-    <th>Category: ' .  $timeText . $linkText . '</th><th>Better than</th>
+    <th>Category: ' .  $timeText . $graphLinkText . $csvLinkText . '</th><th>Better than</th>
     </thead>
     <tbody>
     ';
