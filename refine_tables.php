@@ -76,6 +76,17 @@ switch ($_REQUEST["choice"]) {
         redirect("index.php?page=compilations");
         break;
 
+    case "removeTag":
+        if (!isset($_REQUEST["tags"])) {
+            $_REQUEST["tags"] = array();
+        }
+
+        Helper::remove_tags($_REQUEST["compilationId"], $_REQUEST["tags"]);
+        redirect("index.php?page=compilations");
+        break;
+    
+    
+    
     case "Recalculate Ranking" :
         Helper::calculate_ranking();
         redirect("index.php?page=ranking");

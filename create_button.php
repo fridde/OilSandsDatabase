@@ -26,7 +26,7 @@ if ($_REQUEST['update_only'] != "true") {
     $newFunction .= ') {' . $buttonContent . "}";
     $newFunction = preg_replace('/\s\s+/', ' ', $newFunction);
     $newFunction = str_replace('\"', '"', $newFunction);
-    $newButton = ORM::for_table('osdb_Buttons') -> create();
+    $newButton = ORM::for_table('osdb_buttons') -> create();
 
     $newButton -> ButtonName = $buttonName;
     $newButton -> ButtonContent = $newFunction;
@@ -35,7 +35,7 @@ if ($_REQUEST['update_only'] != "true") {
 }
 $buttonString = "<?php ";
 
-foreach (ORM::for_table('osdb_Buttons')->find_result_set() as $button) {
+foreach (ORM::for_table('osdb_buttons')->find_result_set() as $button) {
     $buttonString .= $button -> ButtonContent . "\n\n";
 };
 $buttonString .= " ?>";

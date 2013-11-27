@@ -8,7 +8,7 @@
         echo "<select name='Institution'>";
         echo '<option value="none" selected>Select...</option>';
 
-        foreach (ORM::for_table('osdb_Sources')->distinct()->
+        foreach (ORM::for_table('osdb_sources')->distinct()->
                 select('Institution')->find_result_set() as $Source) {
             echo "<option value='" . $Source->Institution . "'>" .
             $Source->Institution . "</option>";
@@ -42,7 +42,7 @@
         <?php
         echo "<select name='Product'>";
         echo '<option value="Bitumen" selected>Bitumen</option>';
-        foreach (ORM::for_table('osdb_Sources')->distinct()->
+        foreach (ORM::for_table('osdb_sources')->distinct()->
                 select('Product')->find_result_set() as $Source) {
             echo "<option value='" . $Source->Product . "'>" .
             $Source->Product . "</option>";
@@ -58,7 +58,7 @@
         <?php
         echo "<select name='Unit'>";
         echo '<option value="Barrels per day" selected>Barrels per day</option>';
-        foreach (ORM::for_table('osdb_Sources')->distinct()->
+        foreach (ORM::for_table('osdb_sources')->distinct()->
                 select('Unit')->find_result_set() as $Source) {
             echo "<option value='" . $Source->Unit . "'>" .
             $Source->Unit . "</option>";

@@ -5,7 +5,7 @@ include ("include_all.php");
 // the update routine
 if ($_REQUEST["password"] == "mikael") {
     $source_id = $_REQUEST["source_id"];
-    $Source = ORM::for_table('osdb_Sources') -> find_one($source_id);
+    $Source = ORM::for_table('osdb_sources') -> find_one($source_id);
 
     $SourceArray = $Source -> as_array();
 
@@ -16,7 +16,7 @@ if ($_REQUEST["password"] == "mikael") {
     }
     // defining a new ShortName for later reference
     $ShortName = $_REQUEST["Institution"] . " " . array_shift(explode("-", $_REQUEST["PublicationDate"]));
-    $availableShortNames = ORM::for_table('osdb_Sources') -> select("ShortName") -> find_array();
+    $availableShortNames = ORM::for_table('osdb_sources') -> select("ShortName") -> find_array();
     if (in_array($ShortName, $availableShortNames)) {
         $ShortName = $SourceName;
     }
@@ -81,12 +81,12 @@ $RawData = $_POST["RawData"];
 $SemiTidyData = $RawData;
 
 $ShortName = $Institution . " " . array_shift(explode("-", $PublicationDate));
-$availableShortNames = ORM::for_table('osdb_Sources') -> select("ShortName") -> find_array();
+$availableShortNames = ORM::for_table('osdb_sources') -> select("ShortName") -> find_array();
 if (in_array($ShortName, $availableShortNames)) {
     $ShortName = $SourceName;
 }
 
-$newSource = ORM::for_table('osdb_Sources') -> create();
+$newSource = ORM::for_table('osdb_sources') -> create();
 
 $newSource -> SourceName = $SourceName;
 $newSource -> ShortName = $ShortName;

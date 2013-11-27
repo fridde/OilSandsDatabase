@@ -1,5 +1,5 @@
 <?php
-$buttonArray = ORM::for_table('osdb_Buttons') -> distinct() -> order_by_asc('ButtonName') -> find_array();
+$buttonArray = ORM::for_table('osdb_buttons') -> distinct() -> order_by_asc('ButtonName') -> find_array();
 
 echo '<form action="index.php?page=refine_tables" method="post">
 <input hidden type="text" name="choice" value="Edit Buttons">

@@ -25,7 +25,8 @@ echo '<form action="index.php?page=graphs" method="post">
 <input type="radio" name="plotType" value="lines" id="lines" checked>
 <label for="lines">Lines</label>
 <input type="radio" name="plotType" value="stacked" id="stacked">
-<label for="stacked">Stacked</label>
+<label for="stacked">Stacked</label><br>
+<input type="button" value="Get csv file" onClick="this.form.action=\'csv_creater.php\'; this.form.target=\'_blank\'; this.form.submit()">
 </p>
 
 <p>
@@ -58,6 +59,8 @@ echo '</table>
 <h2>Add tags</h2>
 <input type="button" value="Add Tags" onClick="this.form.action=\'index.php?page=refine_tables&choice=AddTag\';this.form.submit()">';
 echo '<input type="text" name="newTags" placeholder="Enter new tags here">';
+echo '<input type="button" value="Remove Tags" onClick="this.form.action=\'index.php?page=refine_tables&choice=removeTag\';this.form.submit()">';
+
 echo '<table><tr>';
 $i = 0;
 foreach ($tagNames as $tag) {

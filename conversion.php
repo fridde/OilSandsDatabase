@@ -3,7 +3,7 @@
 include ("include_all.php");
 
 $source_id = $_REQUEST["source_id"];
-$table = ORM::for_table('osdb_Sources') -> find_one($source_id);
+$table = ORM::for_table('osdb_sources') -> find_one($source_id);
 $text = $table -> SemiTidyData;
 
 $button = $_REQUEST["button"];

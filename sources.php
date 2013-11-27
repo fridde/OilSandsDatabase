@@ -4,7 +4,7 @@ if (empty($_GET["source"])) {
     echo '<h1>Sources</h1>';
     link_for("index.php?page=source_upload_form", "Add Source", "box");
     // echo '<div class="accordion">';
-    $sources = ORM::for_table('osdb_Sources') -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product', 'Description') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
+    $sources = ORM::for_table('osdb_sources') -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product', 'Description') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
     $lastInstitution = "";
     foreach ($sources as $Source) {
         if($Source["Institution"] != $lastInstitution){
@@ -60,7 +60,7 @@ if (empty($_GET["source"])) {
     /* if a certain source is supposed to be shown */
 } else {
 
-    $buttonArray = ORM::for_table('osdb_Buttons') -> distinct() -> order_by_desc('Popularity') -> find_array();
+    $buttonArray = ORM::for_table('osdb_buttons') -> distinct() -> order_by_desc('Popularity') -> find_array();
     echo '<ul id="buttonDescriptions" hidden>';
     foreach ($buttonArray as $button) {
         echo '<li class="buttonDescription" id="' . $button['ButtonName'] . '">' . htmlentities($button['Description']) . '</li>';
@@ -68,7 +68,7 @@ if (empty($_GET["source"])) {
     echo '</ul>';
 
     echo '<h1>Convert table</h1>';
-    $table = ORM::for_table('osdb_Sources') -> find_one($_GET["source"])->as_array();
+    $table = ORM::for_table('osdb_sources') -> find_one($_GET["source"])->as_array();
 
     echo '<p><table class="tablesorter">
         <tr>

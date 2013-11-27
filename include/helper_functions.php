@@ -1706,6 +1706,15 @@ class Helper {
         Helper::sql_insert_array($queryArray, "osdb_tags");
     }
 
+    public static function remove_tags($compilationIdArray, $tagArray) {
+
+        foreach ($compilationIdArray as $compilationId) {
+            foreach ($tagArray as $tag) {
+                ORM::for_table('osdb_tags') -> where('Name', $tag) -> where('Compilation_Id', $compilationId) -> delete_many();
+            }
+        }
+    }
+
     public static function sort_by($arrayToSort, $column, $order = SORT_ASC) {
         $array = $arrayToSort;
         usort($array, make_comparer(array($column, $order)));
@@ -1813,7 +1822,7 @@ class Helper {
          * See chapter "Comparing prognoses" in  https://github.com/fridde/PerformanceRecordsArticle
          * */
 
-         ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
+        ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
         // echop($combinationIdArray);
         foreach ($combinationIdArray as $combination) {
@@ -1843,7 +1852,7 @@ class Helper {
                     //echop($secondCompilation);
                     $day = 0;
                     $errorDiff = array();
-                     $somethingNew = FALSE;
+                    $somethingNew = FALSE;
                     while ($day <= max($maxDayArray)) {
                         if (isset($firstCompilation[$day]) && isset($secondCompilation[$day])) {
                             $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"], 2) - pow($secondCompilation[$day]["ErrorPercentage"], 2);
@@ -1864,14 +1873,14 @@ class Helper {
                             }
                             /* In the case that a new row is added */
                             $somethingNew = FALSE;
-                            
+
                         }
                         $day++;
                     }
 
                 }
                 // echop($queryArray);
-             Helper::sql_insert_array($queryArray, "osdb_ranking");
+                Helper::sql_insert_array($queryArray, "osdb_ranking");
             }
         }
     }
@@ -1971,24 +1980,24 @@ class Helper {
         return $returnArray;
     }
 
-public static function array_to_csv_download($array, $filename = "export.csv", $delimiter=";") {
-        
-    // open raw memory as file so no temp files needed, you might run out of memory though
-    $f = fopen('php://memory', 'w'); 
-    // loop over the input array
-    foreach ($array as $line) { 
-        // generate csv lines from the inner arrays
-        fputcsv($f, $line, $delimiter,'"'); 
+    public static function array_to_csv_download($array, $filename = "export.csv", $delimiter = ";") {
+
+        // open raw memory as file so no temp files needed, you might run out of memory though
+        $f = fopen('php://memory', 'w');
+        // loop over the input array
+        foreach ($array as $line) {
+            // generate csv lines from the inner arrays
+            fputcsv($f, $line, $delimiter, '"');
+        }
+        // rewrind the "file" with the csv lines
+        fseek($f, 0);
+        // tell the browser it's going to be a csv file
+        header('Content-Type: application/csv');
+        // tell the browser we want to save it instead of displaying it
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        // make php send the generated csv lines to the browser
+        fpassthru($f);
     }
-    // rewrind the "file" with the csv lines
-    fseek($f, 0);
-    // tell the browser it's going to be a csv file
-    header('Content-Type: application/csv');
-    // tell the browser we want to save it instead of displaying it
-    header('Content-Disposition: attachement; filename="'.$filename.'"');
-    // make php send the generated csv lines to the browser
-    fpassthru($f);
-}
 
 }
 ?>

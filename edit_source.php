@@ -1,7 +1,7 @@
 <?php
 
 $source_id = $_REQUEST["source"];
-$table = ORM::for_table('osdb_Sources') -> select_many("SourceName", "Institution", "SourceUrl", 
+$table = ORM::for_table('osdb_sources') -> select_many("SourceName", "Institution", "SourceUrl", 
 "PublicationDate", "Prognosis", "Prognosis", "Reported", "TimeAccuracy", "Unit", "SemiTidyData", "Archived", "Description") 
 -> find_one($source_id)->as_array();
 

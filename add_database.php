@@ -18,7 +18,7 @@ $emptyBigArray = array_fill_keys($allOldHeaders, array());
 // fill the bigArray
 foreach ($sourcesToAdd as $key => $sourceId) {
         $bigArray = $emptyBigArray;
-    $source = ORM::for_table('osdb_Sources') -> find_one($sourceId);
+    $source = ORM::for_table('osdb_sources') -> find_one($sourceId);
     $sourceArray = Helper::csvstring_to_array($source -> SemiTidyData);
     $sourceHeader = $sourceArray[0];
 
@@ -48,7 +48,7 @@ foreach ($sourcesToAdd as $key => $sourceId) {
         }
     }
    
-    $standardUnit = ORM::for_table('osdb_Sources') -> find_one($sourceId) -> Unit;
+    $standardUnit = ORM::for_table('osdb_sources') -> find_one($sourceId) -> Unit;
     foreach ($queryArray as $rowKey => $row) {
         if (!isset($row["Unit"]) || trim($row["Unit"]) == "") {
             $queryArray[$rowKey]["Unit"] = $standardUnit;
