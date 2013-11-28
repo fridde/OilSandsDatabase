@@ -25,7 +25,7 @@ if (empty($_GET["source"])) {
 
                 case "SourceName" :
                     echo '<tr> <th>Source</th> <th>
-                    <a href="index.php?page=sources&source=' . $Source_id . '">' . $value . '</a></th> </tr>';
+                    <a href="index.php?page=sources&source=' . $Source_id . '" taget="_blank">' . $value . '</a></th> </tr>';
                     break;
 
                 case "SourceUrl" :
@@ -79,7 +79,7 @@ if (empty($_GET["source"])) {
             <td>Institution</td> <td><b>' . $table["Institution"] . '</b></td>
         </tr>
         <tr>
-            <td>Source Url</td> <td><a href="' . $table["SourceUrl"] . '">' . $table["SourceUrl"] . '</td>
+            <td>Source Url</td> <td><a href="' . $table["SourceUrl"] . '" target="_blank">' . $table["SourceUrl"] . '</td>
         </tr>
         <tr>
             <td>Date of Publication</td> <td>' . $table["PublicationDate"] . '</td>

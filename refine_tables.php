@@ -76,20 +76,13 @@ switch ($_REQUEST["choice"]) {
         redirect("index.php?page=compilations");
         break;
 
-    case "removeTag":
+    case "removeTag" :
         if (!isset($_REQUEST["tags"])) {
             $_REQUEST["tags"] = array();
         }
 
         Helper::remove_tags($_REQUEST["compilationId"], $_REQUEST["tags"]);
         redirect("index.php?page=compilations");
-        break;
-    
-    
-    
-    case "Recalculate Ranking" :
-        Helper::calculate_ranking();
-        redirect("index.php?page=ranking");
         break;
 
     case "Recalculate errors" :
@@ -99,6 +92,11 @@ switch ($_REQUEST["choice"]) {
         $mainCompIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "Basis") -> find_array(), "Compilation_Id");
         Helper::calculate_error_statistics($compilationIdArray, $mainCompIdArray);
 
+        redirect("index.php?page=ranking");
+        break;
+
+    case "Recalculate Ranking" :
+        Helper::calculate_ranking();
         redirect("index.php?page=ranking");
         break;
 

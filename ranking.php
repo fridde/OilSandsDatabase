@@ -2,34 +2,22 @@
 
 $possibleMainIdArray = Helper::sql_select_columns(ORM::for_table("osdb_ranking") -> distinct() -> select("Main_Id") -> find_array(), "Main_Id");
 
-echo '<form action="index.php?page=refine_tables" method="post">
-<p><input type="submit" name="choice" value="Recalculate Ranking"><input type="submit" name="choice" value="Recalculate errors">
-</form>';
-// echo '<form action="index.php?page=ranking">
-// <p>Change the reported actual production the prognoses are compared to
-// <select name="Main_Id">';
+// echo '<div class="boxed">
+// <h3>Show</h3>';
 // foreach ($possibleMainIdArray as $mainId) {
-// $mainIdName = ORM::for_table("osdb_compilations") -> find_one($mainId) -> Name;
-// echo '<option value="' . $mainId . '">' . $mainIdName . '</option>';
+    // $mainIdName = ORM::for_table("osdb_compilations") -> find_one($mainId) -> Name;
+    // echo '<input type="checkbox" class="tCheck" value="' . $mainId .  '" checked>' . $mainIdName . '<br>';
 // }
-// echo '</select></form></p>';
-
-echo '<div class="boxed">
-<h3>Show</h3>';
-foreach ($possibleMainIdArray as $mainId) {
-    $mainIdName = ORM::for_table("osdb_compilations") -> find_one($mainId) -> Name;
-    echo '<input type="checkbox" class="tCheck" value="' . $mainId .  '" checked>' . $mainIdName . '<br>';
-}
-echo '</div>';
+// echo '</div>';
 echo '<div class="accordion"> ';
 foreach ($possibleMainIdArray as $mainId) {
         
     $recentDay = 1000000;
     $mainIdName = ORM::for_table('osdb_compilations') -> find_one($mainId) -> Name;
     
-    echo "<h1>Based on $mainIdName</h1>";
-    echo '<div>';
-
+    echo '<h1 class="table_' . $mainId . '"> > Based on ' . $mainIdName . '</h1>';
+    echo '<div class="table_' . $mainId . '">';
+    
     $dayArray = Helper::sql_select_columns(ORM::for_table('osdb_ranking') -> distinct() -> order_by_desc('Day') -> select("Day") -> find_array(), "Day");
     // echop($dayArray);
     foreach ($dayArray as $day) {

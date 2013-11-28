@@ -1648,7 +1648,7 @@ class Helper {
         return $returnArray;
     }
 
-    public static function sql_insert_array($array, $sqlTable, $maxString = 5000) {
+    public static function sql_insert_array($array, $sqlTable, $maxString = 5000, $updateLog = TRUE) {
         //echo print_r($array) .  "<br>";
         if (count($array) < 1) {
             echo "Empty array given! <br>";
@@ -1688,6 +1688,16 @@ class Helper {
             $totalQuery = $queryStart . rtrim($query, ",") . ";";
             ORM::for_table($sqlTable) -> raw_execute($totalQuery);
         }
+        if($updateLog){
+                if(ORM::for_table('osdb_logs')->count() > 50000){
+                    ORM::for_table("osdb_logs") -> raw_execute("TRUNCATE TABLE osdb_logs;");
+                }
+            date_default_timezone_set("UTC"); 
+            $newEntry = ORM::for_table("osdb_logs")->create();
+            $newEntry->Table = $sqlTable;
+            $newEntry->Timestamp = date("Y-m-d\TH:i:s", time()) ;
+            $newEntry->save();
+        }
     }
 
     public static function add_tags($compilationIdArray, $tagArray, $newTags) {
@@ -1696,14 +1706,13 @@ class Helper {
 
         $tagArray = array_merge($tagArray, $newTags);
         $tagArray = array_filter($tagArray);
-        echo print_r($compilationIdArray) . "<br><br>";
-        echo print_r($tagArray);
         foreach ($compilationIdArray as $compilationId) {
             foreach ($tagArray as $tag) {
                 $queryArray[] = array("id" => "", "Name" => $tag, "Compilation_Id" => $compilationId);
             }
         }
         Helper::sql_insert_array($queryArray, "osdb_tags");
+        Helper::sql_remove_duplicates("osdb_tags");
     }
 
     public static function remove_tags($compilationIdArray, $tagArray) {
@@ -1950,7 +1959,7 @@ class Helper {
 
     public static function remove_compilation_from_database($compilationId) {
 
-        $tables = array("compilations" => "id", "errors" => "Compilation_Id", "ranking" => array("Compilation_1", "Compilation_2"), "tags" => "Compilation_Id", "working" => "Compilation_Id");
+        $tables = array("compilations" => "id", "errors" => "Compilation_Id", "ranking" => array("Main_Id", "Compilation_1", "Compilation_2"), "tags" => "Compilation_Id", "working" => "Compilation_Id");
 
         foreach ($tables as $tableName => $columns) {
             if (gettype($columns) == "string") {

@@ -219,7 +219,7 @@ $(document).ready(function() {
 	$( ".accordion" ).accordion();
 	
 	$(".tCheck").on("change", function() {
-		var tableId = '#table_' + $(this).val();
+		var tableId = '.table_' + $(this).val();
 		
 		$(tableId).toggle();
 	});

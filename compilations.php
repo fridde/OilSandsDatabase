@@ -1,5 +1,6 @@
 <?php
-
+header("Expires: Thu, 19 Nov 1981 08:52:00 GMT"); //Date in the past
+header("Cache-Control: no-store, no-cache, must-revalidate"); //HTTP/1.1
 if (isset($_REQUEST["tag"])) {
     $tagsToShow = array_unique($_REQUEST["tag"]);
 } else {
@@ -21,7 +22,7 @@ $tagNames = array_keys(array_count_values(Helper::sql_select_columns($tags, "Nam
 
 echo '<form action="index.php?page=graphs" method="post">
 <p>
-<input type="button" value="Show graphs" onClick="this.form.action=\'index.php?page=graphs\'; this.form.submit()">
+<input type="button" value="Show graphs" onClick="this.form.action=\'index.php?page=graphs\'; this.form.target=\'_blank\'; this.form.submit()">
 <input type="radio" name="plotType" value="lines" id="lines" checked>
 <label for="lines">Lines</label>
 <input type="radio" name="plotType" value="stacked" id="stacked">
@@ -37,12 +38,8 @@ echo '<form action="index.php?page=graphs" method="post">
 <label for="Subtract">Subtract</label>
 <input type="radio" name="method" value="Concatenate" id="Concatenate">
 <label for="Concatenate">Concatenate</label><br>';
-//<input type="radio" id="showbutton" class="showbutton" name="method" value="Calculate error statistics">'
-// <label for="showbutton">Calculate error statistics</label><br>
- echo '<input type="checkbox" id="onlyCommonDates" name="onlyCommonDates" value="TRUE">
+echo '<input type="checkbox" id="onlyCommonDates" name="onlyCommonDates" value="TRUE">
 <label for="onlyCommonDates">Only combine common dates</label>';
-// <input type="checkbox" id="overwrite" name="overwrite" value="TRUE">
-// <label for="overwrite">Overwrite error statistics</label><br>
 echo '</p>
 <table>
 <tr><th colspan="2">Values for the new Compilation</th></tr>';
@@ -77,10 +74,8 @@ echo '</tr></table></p>';
 echo '<p>';
 link_for("index.php?page=compilations", "Show all compilations", "box");
 echo '</p>';
-// CAUTION: Change back unsortable to sortable when going to production!!!
 echo '<table id="sortable">';
 echo '<thead><tr>';
-// echo '<th><input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">Select All</th>';
 echo '<th></th>';
 echo '<th>Compilation</th><th>Label in graph</th>';
 for ($i = 0; $i < $maxTags; $i++) {

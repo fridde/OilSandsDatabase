@@ -32,6 +32,9 @@ foreach($compilations as $compilation){
 echo '</select><br>
 <input type="submit" name="choice" value="Remove compilation"></p>';
 
+echo '<p><input type="submit" name="choice" value="Recalculate Ranking">
+<input type="submit" name="choice" value="Recalculate errors">';
+
 ?>
 <p><h2>Add synonyms or abbreviations</h2></p>
 <p><input type="submit" name="choice" value="Add synonyms">
