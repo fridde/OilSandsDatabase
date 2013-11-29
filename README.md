@@ -98,12 +98,35 @@ Good tools to analyze the data more are (in order of importance)
   * Packages _ggplot2_   
 * [TableauPublic][TableauPublic]
 
+## Using R to plot and analyze the data
+
+### Preparations
+
+Comma-seperated-values (_csv_) files of collections of time series can be created on the page _Compilations_ and _Ranking_. On _Compilations_ the time series can be composed individually, whereas _Ranking_ provides links to prepared collections of time series.
+
+Using the links to create csv files will automatically download the file to your local pc or prompting you to do so. 
+When done downloading, copy all csv files into a seperate folder of your choice. 
+
+Download the [plotter file][Plotter] for R, place it in the same folders as the csv files and start your local [R][R] installation or [RStudio][Rstudio]. 
+
+In R, change the working directory to the folder where you placed the csv files using the command `setwd("path/to/directory")`. Use citations and your own path, of course.
+
+Now you can _"convert"_ every csv file into plotted graphs by using the single command `source("plotter.r")`, which will execute the file _plotter.r_.
+
+### What does plotter.r do?
+
+1. Loads and/or installs the packages needed (make sure you have an internet connection the first time you run the script).
+2. Looks for csv files in the same directory.
+3. Creates a folder _"figures"_ (if csv files exist)
+3. For every csv file, the script creates several plots with varying ranges of time
+
+## Using Excel or Google docs to analyze data
 
 ##Things to do
 
-* Add _Remove tag_ function
 
 ---
+[Original place for this file][Readme]
 [How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
 
 [OpenRefine]: http://openrefine.org/
@@ -112,3 +135,5 @@ Good tools to analyze the data more are (in order of importance)
 [TableauPublic]: https://www.tableausoftware.com/products/public
 [R]: http://cran.r-project.org/
 [RStudio]: http://www.rstudio.com/
+[Readme]: https://github.com/fridde/OilSandsDatabase/blob/master/README.md
+[Plotter]: https://raw.github.com/fridde/OilSandsDatabase/master/helper_files/plotter.r
