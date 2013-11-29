@@ -52,7 +52,8 @@ Generally, the steps to add a new source of data to the database are as follows:
 
 * Be careful: The months have other units than the years! Create an extra column called _Unit_ and manually add `Thousand Cubic metres per month` (if applicable) where monthly values are given. Where units are omitted, the standard unit of the source (in this case _Thousand Cubic metres per year_) is assumed.
 
-## The different tables in the database ##
+# Behind the scenes
+## The different tables in the database
 
 The tables behind the scenes are stored in a MYSQL database. Within the database, all tables are prepended by a `osdb_`, so that the table __Sources__ actually is called __osdb_sources__.
 
