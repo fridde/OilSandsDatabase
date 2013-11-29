@@ -107,6 +107,10 @@ a.box{
 	width: 1200px;
 }
 
+.ui-widget-content  table {
+	margin-left: -35px !important;
+}
+
 #main th {
 	border: 1px solid #98bf21;
 	padding: 3px 7px 2px 7px;

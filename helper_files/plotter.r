@@ -1,3 +1,6 @@
+main.dir = getwd()
+
+
 pkgs = c("ggplot2", "maps", "scales", "stringr")
 for (pkg in pkgs){
   if(!library(pkg, logical.return = TRUE, character.only = TRUE)){
@@ -7,7 +10,6 @@ for (pkg in pkgs){
 }
 
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-main.dir = getwd()
 
 files = list.files(pattern =".csv")
 #file.name = files[3]

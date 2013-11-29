@@ -6,6 +6,7 @@ echo '<form action="index.php?page=refine_tables" method="post">
 <p>
 <select name="Table">';
 $Tables = ORM::for_table("information_schema.tables") -> where("TABLE_SCHEMA", "a5399891_db") -> find_array();
+
 foreach ($Tables as $Table) {
     echo '<option value="' . $Table["TABLE_NAME"] . '">' . $Table["TABLE_NAME"] . '</option>';
 }

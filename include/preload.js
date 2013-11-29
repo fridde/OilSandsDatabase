@@ -216,7 +216,8 @@ $(document).ready(function() {
 		}
 	});
 	
-	$( ".accordion" ).accordion();
+	// $( ".accordion" ).accordion();
+	$( "#tabs" ).tabs();
 	
 	$(".tCheck").on("change", function() {
 		var tableId = '.table_' + $(this).val();

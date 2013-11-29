@@ -2,38 +2,31 @@
 
 $possibleMainIdArray = Helper::sql_select_columns(ORM::for_table("osdb_ranking") -> distinct() -> select("Main_Id") -> find_array(), "Main_Id");
 
-// echo '<div class="boxed">
-// <h3>Show</h3>';
-// foreach ($possibleMainIdArray as $mainId) {
-    // $mainIdName = ORM::for_table("osdb_compilations") -> find_one($mainId) -> Name;
-    // echo '<input type="checkbox" class="tCheck" value="' . $mainId .  '" checked>' . $mainIdName . '<br>';
-// }
-// echo '</div>';
-echo '<div class="accordion"> ';
+// echo '<div class="accordion"> ';
+echo '<div id="tabs"> ';
+$tabs = array();
 foreach ($possibleMainIdArray as $mainId) {
         
     $recentDay = 1000000;
     $mainIdName = ORM::for_table('osdb_compilations') -> find_one($mainId) -> Name;
-    
-    echo '<h1 class="table_' . $mainId . '"> > Based on ' . $mainIdName . '</h1>';
-    echo '<div class="table_' . $mainId . '">';
+    $thisTab = array("Title"=>Helper::shorten_names($mainIdName), "Content" => "");
+    $thisTab["Content"] .= '<h1> Based on ' . $mainIdName . '</h1><br>';
     
     $dayArray = Helper::sql_select_columns(ORM::for_table('osdb_ranking') -> distinct() -> order_by_desc('Day') -> select("Day") -> find_array(), "Day");
-    // echop($dayArray);
     foreach ($dayArray as $day) {
         $csvFileName = Helper::shorten_names($mainIdName);
         if ($day > 30 && $day <= 700) {
-            $timeText = "above " . floor($day / 30) . " months";
+            $timeText = "~ " . floor($day / 30) . " months";
             $csvFileName .= " - " . floor($day / 30) . "m";
         }
         elseif ($day > 700) {
-            $timeText = "above " . floor($day / 365) . " years";
+            $timeText = "~ " . floor($day / 365) . " years";
             $csvFileName .= " - " . floor($day / 365) . "y";
         } else {
             $timeText = $day . " days";
             $csvFileName .= $day . "d";
         }
-        // echo $day - $recentDay . "<br>";
+       
         $compilationIdArray = ORM::for_table('osdb_ranking') -> where("Main_Id", $mainId) -> where("Day", $day) -> find_array();
         if (count($compilationIdArray) > 1 && ($day < 100 || ($recentDay - $day) > 400)) {
             $recentDay = $day;
@@ -47,8 +40,7 @@ foreach ($possibleMainIdArray as $mainId) {
             $graphLinkText .= '"> [Show in graph]</a>';
             $csvLinkText .= '"> [Download csv]</a>';
 
-            echo '
-    <table>
+           $thisTab["Content"] .=  '<table>
     <thead>
     <th>Category: ' .  $timeText . $graphLinkText . $csvLinkText . '</th><th>Better than</th>
     </thead>
@@ -57,14 +49,22 @@ foreach ($possibleMainIdArray as $mainId) {
 
             foreach ($compilationIdArray as $compilationId => $wins) {
                 $compilationIdName = ORM::for_table('osdb_compilations') -> find_one($compilationId) -> Name;
-                echo "<tr><td>$compilationIdName</td><td>$wins</td></tr>";
+                $thisTab["Content"] .= "<tr><td>$compilationIdName</td><td>$wins</td></tr>";
             }
-            echo "
+            $thisTab["Content"] .= "
     </tbody>
     </table>";
         }
     }
-    echo '</div>';
+    $tabs[$mainId] = $thisTab;
 }
-echo '<div>';
+echo '<ul>';
+foreach($tabs as $mainId=>$tab){
+    echo '<li><a href="#tabs_' . $mainId . '">' . $tab["Title"] . '</a></li>';
+}
+echo '<ul>';
+foreach($tabs as $mainId=>$tab){
+    echo '<div id="tabs_' . $mainId . '">' . $tab["Content"] . '</div>';
+}
+echo '</div>';
 ?>

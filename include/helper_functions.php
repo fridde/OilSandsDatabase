@@ -3,12 +3,14 @@
 function echop($array) {
     if (gettype($array) != "array") {
         echo "<br>" . $array . "<br>";
-    } else {
+    }
+    else {
 
         foreach ($array as $key => $element) {
             if (gettype($element) == "string") {
                 echo $key . " => " . $element . "<br>";
-            } else {
+            }
+            else {
                 echo $key . " => ";
                 echo print_r($element) . "<br>";
             }
@@ -103,7 +105,11 @@ function make_comparer() {
     // Normalize criteria up front so that the comparer finds everything tidy
     $criteria = func_get_args();
     foreach ($criteria as $index => $criterion) {
-        $criteria[$index] = is_array($criterion) ? array_pad($criterion, 3, null) : array($criterion, SORT_ASC, null);
+        $criteria[$index] = is_array($criterion) ? array_pad($criterion, 3, null) : array(
+            $criterion,
+            SORT_ASC,
+            null
+        );
     }
 
     return function($first, $second) use (&$criteria) {
@@ -116,7 +122,8 @@ function make_comparer() {
             if ($projection) {
                 $lhs = call_user_func($projection, $first[$column]);
                 $rhs = call_user_func($projection, $second[$column]);
-            } else {
+            }
+            else {
                 $lhs = $first[$column];
                 $rhs = $second[$column];
             }
@@ -124,7 +131,8 @@ function make_comparer() {
             // Do the actual comparison; do not return if equal
             if ($lhs < $rhs) {
                 return -1 * $sortOrder;
-            } else if ($lhs > $rhs) {
+            }
+            else if ($lhs > $rhs) {
                 return 1 * $sortOrder;
             }
         }
@@ -142,7 +150,8 @@ function curPageURL() {
     $pageURL .= "://";
     if ($_SERVER["SERVER_PORT"] != "80") {
         $pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
-    } else {
+    }
+    else {
         $pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
     }
     return $pageURL;
@@ -157,7 +166,8 @@ function link_for($url, $label = "", $class = "") {
     $returnString .= '>';
     if ($label == "") {
         $returnString .= $url;
-    } else {
+    }
+    else {
         $returnString .= $label;
     }
     $returnString .= "</a>";
@@ -171,7 +181,8 @@ function redirect($to) {
         header("Location: $to");
         flush();
         exit();
-    } else {
+    }
+    else {
         print "<html><head><META http-equiv='refresh' content='0;URL=$to'></head><body><a href='$to'>$to</a></body></html>";
         flush();
         exit();
@@ -191,7 +202,8 @@ function print_r2($Array, $Name = '', $size = 2, $depth = '', $Tab = '', $Sub = 
         $display = '';
         //defualt to open at start
         echo $CR . '<script>function poke_that_array(dir){x=document.getElementById(dir);if(x.style.display == "none"){x.style.display = "";}else{x.style.display = "none";}}</script>' . $CR;
-    } else
+    }
+    else
         $display = 'none';
     $BR = '<br>';
     $Red = '<font color="#DD0000" size=' . $size . '>';
@@ -260,7 +272,8 @@ class Table {
     function addfield($field, $style = "null") {
         if ($style == "null") {
             $html = "\t\t<td>" . $field . "</td>\n";
-        } else {
+        }
+        else {
             $html = "\t\t<td class=\"" . $style . "\">" . $field . "</td>\n";
         }
         return $html;
@@ -304,7 +317,10 @@ class Helper {
             $cols = max($cols, count($currentRow));
         }
 
-        return array("col" => $cols, "row" => $rows);
+        return array(
+            "col" => $cols,
+            "row" => $rows
+        );
     }
 
     public static function fill_array($array, $cols = NULL) {
@@ -312,7 +328,8 @@ class Helper {
         $col_row = Helper::count_col_row($array);
         if (is_null($cols)) {
             $cols = $col_row["col"];
-        } else {
+        }
+        else {
             $cols = $col_row["col"] + intval($cols);
         }
 
@@ -347,7 +364,8 @@ class Helper {
                 // Enclose fields containing $delimiter, $enclosure or whitespace
                 if ($encloseAll || preg_match("/(?:${delimiter_esc}|${enclosure_esc}|[[:blank:]])/", $field)) {
                     $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
-                } else {
+                }
+                else {
                     $output[] = $field;
                 }
             }
@@ -383,28 +401,34 @@ class Helper {
                         $addChar = $char;
                         $i++;
                         // dont check next char
-                    } else {
+                    }
+                    else {
                         $isEnclosured = false;
                     }
-                } else {
+                }
+                else {
                     $addChar = $char;
                 }
-            } else {
+            }
+            else {
                 if ($char == $enclosureChar) {
                     $isEnclosured = true;
-                } else {
+                }
+                else {
 
                     if ($char == $separatorChar) {
                         $array[$rowIndex][$columnIndex] = $fieldValue;
                         $fieldValue = "";
 
                         $columnIndex++;
-                    } elseif ($char == $newlineChar) {
+                    }
+                    elseif ($char == $newlineChar) {
                         $array[$rowIndex][$columnIndex] = $fieldValue;
                         $fieldValue = "";
                         $columnIndex = 0;
                         $rowIndex++;
-                    } else {
+                    }
+                    else {
                         $addChar = $char;
                     }
                 }
@@ -502,13 +526,15 @@ class Helper {
         $cols_rows = Helper::count_col_row($array);
         if ($pivotCols == "") {
             $pivotCols = array("0");
-        } else {
+        }
+        else {
             $pivotCols = explode(",", $pivotCols);
         }
 
         if (gettype($pivotRows) == "string" && $pivotRows != "") {
             $pivotRows = explode(",", $pivotRows);
-        } else {
+        }
+        else {
             $pivotRows = array();
             foreach ($pivotCols as $col) {
                 foreach ($array as $rowKey => $row) {
@@ -574,7 +600,8 @@ class Helper {
     public static function remove_columns($array, $columns, $keepKeys) {
         if ($columns === "") {
             $columns = Helper::empty_columns($array);
-        } else {
+        }
+        else {
             $columns = explode(",", $columns);
         }
 
@@ -584,7 +611,8 @@ class Helper {
                 if (!(in_array($colKey, $columns))) {
                     if ($keepKeys == "true") {
                         $newArray[$rowKey][$colKey] = $cell;
-                    } else {
+                    }
+                    else {
                         $newArray[$rowKey][] = $cell;
                     }
                 }
@@ -629,7 +657,8 @@ class Helper {
             for ($i = 0; $i < $number; $i++) {
                 if ($copy == "TRUE") {
                     $newArray[] = $newArray[$rowKey];
-                } else {
+                }
+                else {
                     $newArray[] = $emptyRow;
                 }
             }
@@ -775,8 +804,26 @@ class Helper {
     public static function is_phase($string) {
 
         $limit = 30;
-        $validPhases = array("stage", "phase", "pilot", "demonstration", "bottleneck", "MR2", "Expansion", "Extension", "Leismer ", "Thornbury", "Pod One", "Hangingstone", "Reliability Tranche 2", "Millennium Mine");
-        $invalidPhases = array("Hangingstone Pilot", "Single cycle pilot");
+        $validPhases = array(
+            "stage",
+            "phase",
+            "pilot",
+            "demonstration",
+            "bottleneck",
+            "MR2",
+            "Expansion",
+            "Extension",
+            "Leismer ",
+            "Thornbury",
+            "Pod One",
+            "Hangingstone",
+            "Reliability Tranche 2",
+            "Millennium Mine"
+        );
+        $invalidPhases = array(
+            "Hangingstone Pilot",
+            "Single cycle pilot"
+        );
         $is_phase = FALSE;
 
         foreach ($validPhases as $key => $value) {
@@ -794,7 +841,8 @@ class Helper {
         if ($is_phase && !($is_invalid)) {
             return TRUE;
 
-        } else {
+        }
+        else {
             return FALSE;
         }
 
@@ -816,7 +864,8 @@ class Helper {
 
                 if (Helper::is_project_date($array[$key - 2])) {
                     $nameArray[] = $key - 3;
-                } else {
+                }
+                else {
                     $nameArray[] = $key - 1;
                 }
             }
@@ -877,7 +926,8 @@ class Helper {
         $col = intval($col);
         if (strlen(trim($char)) < 1) {
             $char = "%[[:blank:]]{1}%";
-        } else {
+        }
+        else {
             $char = "%" . $char . "%";
         }
 
@@ -892,7 +942,8 @@ class Helper {
             if ($col == 0) {
                 $array[$rowKey] = array_merge($leftCell, $rightCell, array_slice($row, 2));
 
-            } else {
+            }
+            else {
                 $leftPart = array_slice($row, 0, $col - 1);
                 $rightPart = array_slice($row, $col + 1);
                 $array[$rowKey] = array_merge($leftPart, $leftCell, $rightCell, $rightPart);
@@ -945,7 +996,8 @@ class Helper {
         foreach ($array as $rowKey => $row) {
             if ($row[$col] == "" && $regex == "") {
                 $returnArray[] = $rowKey;
-            } else {
+            }
+            else {
                 if (preg_match($regex, $row[$col]) == 1) {
                     $returnArray[] = $rowKey;
                 }
@@ -959,7 +1011,8 @@ class Helper {
         $col = $colRowRegex[0];
         if (count($colRowRegex) > 1) {
             $rowRegex = $colRowRegex[1];
-        } else {
+        }
+        else {
             $rowRegex = "%\w+%";
             //means "at least something"
         }
@@ -970,7 +1023,8 @@ class Helper {
             if (in_array($rowKey, $rows)) {
                 $splitCells = array_keys(preg_grep($delimiterRegex, $array[$rowKey]));
                 $added_arrays = Helper::slice_at($row, $splitCells);
-            } else {
+            }
+            else {
                 $added_arrays = $row;
             }
             foreach ($added_arrays as $singleRow) {
@@ -1075,7 +1129,8 @@ class Helper {
         if (gettype($header) == "boolean" && $hasHeader == TRUE) {
             $newHeader = $array[0][$col];
             $array = array_slice($array, 1);
-        } elseif (gettype($hasHeader) == "string" && strlen($hasHeader) > 0) {
+        }
+        elseif (gettype($hasHeader) == "string" && strlen($hasHeader) > 0) {
             $newHeader = $hasHeader;
             $array = array_slice($array, 1);
         }
@@ -1083,7 +1138,10 @@ class Helper {
         foreach ($array as $rowKey => $row) {
             $newArray[] = $row[$col];
         }
-        $returnArray = array("header" => $newHeader, "values" => $newArray);
+        $returnArray = array(
+            "header" => $newHeader,
+            "values" => $newArray
+        );
 
         return $returnArray;
     }
@@ -1113,8 +1171,26 @@ class Helper {
     public static function sql_convert_dates($sourceId, $tableName) {
         $ORM = ORM::for_table($tableName) -> where("Source_Id", $sourceId) -> find_many();
 
-        $dateHeaders = array("Year", "Date", "Actual_Application", "Expected_Approval", "Regulatory_Approval", "Construction_Start", "First_Steam", "Production_Start", "Month", "Startup_Date");
-        $quartalHeaders = array("Actual_Application", "Expected_Approval", "Regulatory_Approval", "Construction_Start", "First_Steam", "Production_Start");
+        $dateHeaders = array(
+            "Year",
+            "Date",
+            "Actual_Application",
+            "Expected_Approval",
+            "Regulatory_Approval",
+            "Construction_Start",
+            "First_Steam",
+            "Production_Start",
+            "Month",
+            "Startup_Date"
+        );
+        $quartalHeaders = array(
+            "Actual_Application",
+            "Expected_Approval",
+            "Regulatory_Approval",
+            "Construction_Start",
+            "First_Steam",
+            "Production_Start"
+        );
 
         // Year (Decimal or integer)
         // Date (Decimal or integer)
@@ -1136,7 +1212,11 @@ class Helper {
 
             switch ($existsMonthYear) {
                 case 'truetrue' :
-                    $date = array("Year" => $row -> Year, "Month" => $row -> Month, "Day" => "01");
+                    $date = array(
+                        "Year" => $row -> Year,
+                        "Month" => $row -> Month,
+                        "Day" => "01"
+                    );
                     $newDate = Helper::convert_date($date, "YMD");
                     break;
 
@@ -1144,7 +1224,8 @@ class Helper {
                     $date = $row -> Year;
                     if (fmod(floatval($date), 1.0) == 0) {
                         $newDate = Helper::convert_date($date, "int");
-                    } else {
+                    }
+                    else {
                         $newDate = Helper::convert_date($date, "dec");
                     }
                     break;
@@ -1155,21 +1236,31 @@ class Helper {
                     $date = explode("-", $date);
                     if (count($date) == 3) {
 
-                        $date = array("Year" => $date[0], "Month" => $date[1], "Day" => $date[2]);
+                        $date = array(
+                            "Year" => $date[0],
+                            "Month" => $date[1],
+                            "Day" => $date[2]
+                        );
                         $newDate = Helper::convert_date($date, "YMD");
                     }
                     if (count($date) == 2) {
-                        $date = array("Year" => $date[0], "Month" => $row -> Month, "Day" => "01");
+                        $date = array(
+                            "Year" => $date[0],
+                            "Month" => $row -> Month,
+                            "Day" => "01"
+                        );
                         $newDate = Helper::convert_date($date, "YMD");
                     }
                     if (count($date) == 1) {
                         $date = $date[0];
                         if (strlen($date) == 0) {
                             $newDate = NULL;
-                        } else {
+                        }
+                        else {
                             if (fmod($date, 1) == 0) {
                                 $newDate = Helper::convert_date($date, "int");
-                            } else {
+                            }
+                            else {
                                 $newDate = Helper::convert_date($date, "dec");
                             }
                         }
@@ -1184,7 +1275,8 @@ class Helper {
 
                     if (substr($date, 0, 1) == "Q") {
                         $newDate = Helper::convert_date($date, "Q");
-                    } else {
+                    }
+                    else {
                         $newDate = Helper::convert_date($date, "int");
                     }
                     $row -> $qHeader = $newDate;
@@ -1200,7 +1292,12 @@ class Helper {
 
     public static function convert_date($date, $type) {
 
-        $qArray = array("02" => 'Q1', "05" => 'Q2', "08" => 'Q3', "11" => 'Q4');
+        $qArray = array(
+            "02" => 'Q1',
+            "05" => 'Q2',
+            "08" => 'Q3',
+            "11" => 'Q4'
+        );
 
         switch ($type) {
             case 'dec' :
@@ -1240,18 +1337,47 @@ class Helper {
 
         if (strlen($month) == 2 || strlen($month) == 0) {
             return $month;
-        } elseif (strlen($month) == 1) {
+        }
+        elseif (strlen($month) == 1) {
             return "0" . $month;
-        } else {
-            $monthNumbers = array('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-            $monthNames = array("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
+        }
+        else {
+            $monthNumbers = array(
+                '01',
+                '02',
+                '03',
+                '04',
+                '05',
+                '06',
+                '07',
+                '08',
+                '09',
+                '10',
+                '11',
+                '12'
+            );
+            $monthNames = array(
+                "jan",
+                "feb",
+                "mar",
+                "apr",
+                "may",
+                "jun",
+                "jul",
+                "aug",
+                "sep",
+                "oct",
+                "nov",
+                "dec"
+            );
             $allMonths = array_combine($monthNumbers, $monthNames);
             $month = strtolower(substr($month, 0, 3));
             $newMonth = array_search($month, $allMonths);
 
             if ($newMonth != FALSE) {
                 return $newMonth;
-            } else {
+            }
+            else {
                 return "Error";
             }
         }
@@ -1288,7 +1414,8 @@ class Helper {
                 // if the unit is omitted, the standard unit should be assumed
                 if (trim($unit) == "") {
                     $unit = "Barrels per day";
-                } else {
+                }
+                else {
                     $unit = Helper::find_most_similar($unit, $possibleUnits);
                 }
             }
@@ -1310,7 +1437,12 @@ class Helper {
          the interpolation has to be done for each subgroup individually
 
          All columns that are not within $ignoreArray (the standard columns) are considered to contain subgroups */
-        $ignoreArray = array("id", "Source_Id", "Date", "Value");
+        $ignoreArray = array(
+            "id",
+            "Source_Id",
+            "Date",
+            "Value"
+        );
 
         $ORMArray = ORM::for_table('osdb_data') -> where("Source_Id", $sourceId) -> find_array();
 
@@ -1326,7 +1458,8 @@ class Helper {
             $subGroupArray = array_unique($subGroupArray, SORT_REGULAR);
 
             Helper::sql_add_columns("osdb_working", $subGroupHeaders);
-        } else {
+        }
+        else {
             $subGroupArray = array(NULL);
         }
         $workingTableHeaders = Helper::sql_get_columnNames("osdb_working");
@@ -1350,7 +1483,8 @@ class Helper {
                     $currentORM = Helper::filter_for_value($currentORM, $key, $element);
                     if ($key == 'Time_Accuracy') {
                         $currentCompilationName .= " - " . $element . " months accuracy";
-                    } else {
+                    }
+                    else {
                         $currentCompilationName .= " - " . $element;
                     }
                 }
@@ -1479,7 +1613,8 @@ class Helper {
                 if (in_array($colKey, $columns)) {
                     if (count($columns) > 1 || $alwaysAsArray) {
                         $newArray[$rowKey][$colKey] = $cell;
-                    } else {
+                    }
+                    else {
                         $newArray[$rowKey] = $cell;
                     }
                 }
@@ -1518,7 +1653,8 @@ class Helper {
             foreach ($array as $compilationId => $rowsBelongingToCompilation) {
                 if (isset($array[$compilationId][$date])) {
                     $newRow[] = $array[$compilationId][$date]["Value"];
-                } else {
+                }
+                else {
                     $newRow[] = NULL;
                 }
             }
@@ -1528,7 +1664,10 @@ class Helper {
                         $newRow[$i] = -1 * $newRow[$i];
                     }
                 }
-                $returnArray[] = array("Date" => $date, "Value" => array_sum($newRow));
+                $returnArray[] = array(
+                    "Date" => $date,
+                    "Value" => array_sum($newRow)
+                );
             }
         }
         return $returnArray;
@@ -1547,12 +1686,21 @@ class Helper {
 
             if (count($rowsWithRightDate) == 1) {
                 $rowsWithRightDate = reset($rowsWithRightDate);
-                $newArray[] = array("Date" => $date, "Value" => $rowsWithRightDate["Value"], "Time_Accuracy" => $rowsWithRightDate["Time_Accuracy"]);
+                $newArray[] = array(
+                    "Date" => $date,
+                    "Value" => $rowsWithRightDate["Value"],
+                    "Time_Accuracy" => $rowsWithRightDate["Time_Accuracy"]
+                );
 
-            } else {
+            }
+            else {
                 $lowestAccuracy = min(Helper::sql_select_columns($rowsWithRightDate, "Time_Accuracy"));
                 $rowWithLowestAccuracy = reset(Helper::filter_for_value($rowsWithRightDate, "Time_Accuracy", $lowestAccuracy));
-                $newArray[] = array("Date" => $date, "Value" => $rowWithLowestAccuracy["Value"], "Time_Accuracy" => $rowWithLowestAccuracy["Time_Accuracy"]);
+                $newArray[] = array(
+                    "Date" => $date,
+                    "Value" => $rowWithLowestAccuracy["Value"],
+                    "Time_Accuracy" => $rowWithLowestAccuracy["Time_Accuracy"]
+                );
             }
         }
 
@@ -1569,10 +1717,14 @@ class Helper {
         $firstRow = reset(reset($array));
         $sourceId = $firstRow["Source_Id"];
 
-        if (in_array($method, array("Add", "Subtract"))) {
+        if (in_array($method, array(
+            "Add",
+            "Subtract"
+        ))) {
             $newDateAndValues = Helper::add_or_subtract($array, $method, $onlyCommonDates);
 
-        } elseif ($method == "Concatenate") {
+        }
+        elseif ($method == "Concatenate") {
             $newDateAndValues = Helper::concat_time_series($array);
         }
 
@@ -1621,7 +1773,8 @@ class Helper {
                     default :
                         if (isset($firstRow[$header]) && !isset($value)) {
                             $value = $firstRow[$header];
-                        } else {
+                        }
+                        else {
                             $value = NULL;
                         }
 
@@ -1688,15 +1841,15 @@ class Helper {
             $totalQuery = $queryStart . rtrim($query, ",") . ";";
             ORM::for_table($sqlTable) -> raw_execute($totalQuery);
         }
-        if($updateLog){
-                if(ORM::for_table('osdb_logs')->count() > 50000){
-                    ORM::for_table("osdb_logs") -> raw_execute("TRUNCATE TABLE osdb_logs;");
-                }
-            date_default_timezone_set("UTC"); 
-            $newEntry = ORM::for_table("osdb_logs")->create();
-            $newEntry->Table = $sqlTable;
-            $newEntry->Timestamp = date("Y-m-d\TH:i:s", time()) ;
-            $newEntry->save();
+        if ($updateLog) {
+            if (ORM::for_table('osdb_logs') -> count() > 50000) {
+                ORM::for_table("osdb_logs") -> raw_execute("TRUNCATE TABLE osdb_logs;");
+            }
+            date_default_timezone_set("UTC");
+            $newEntry = ORM::for_table("osdb_logs") -> create();
+            $newEntry -> Table = $sqlTable;
+            $newEntry -> Timestamp = date("Y-m-d\TH:i:s", time());
+            $newEntry -> save();
         }
     }
 
@@ -1708,7 +1861,11 @@ class Helper {
         $tagArray = array_filter($tagArray);
         foreach ($compilationIdArray as $compilationId) {
             foreach ($tagArray as $tag) {
-                $queryArray[] = array("id" => "", "Name" => $tag, "Compilation_Id" => $compilationId);
+                $queryArray[] = array(
+                    "id" => "",
+                    "Name" => $tag,
+                    "Compilation_Id" => $compilationId
+                );
             }
         }
         Helper::sql_insert_array($queryArray, "osdb_tags");
@@ -1726,7 +1883,10 @@ class Helper {
 
     public static function sort_by($arrayToSort, $column, $order = SORT_ASC) {
         $array = $arrayToSort;
-        usort($array, make_comparer(array($column, $order)));
+        usort($array, make_comparer(array(
+            $column,
+            $order
+        )));
 
         return $array;
     }
@@ -1768,7 +1928,8 @@ class Helper {
                         $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
                         if ($xRow["Value"] != 0) {
                             $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
-                        } else {
+                        }
+                        else {
                             $errorRow["ErrorPercentage"] = "";
                         }
 
@@ -1813,13 +1974,15 @@ class Helper {
         foreach ($array as $rowKey => $arrayRow) {
             if (isset($newArray[$arrayRow[$key]])) {
                 $duplicate[] = $rowKey;
-            } else {
+            }
+            else {
                 $newArray[$arrayRow[$key]] = $arrayRow;
             }
         }
         if (isset($duplicate)) {
             echo "Error: The key you specified is not unique. Some values appear at least twice. Invalid keys at row " . implode(", ", $duplicate);
-        } else {
+        }
+        else {
             return $newArray;
         }
     }
@@ -1842,7 +2005,7 @@ class Helper {
         sort($maxDayArray);
         // echop($maxDayArray);
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
-
+        $queryArray = array();
         foreach ($mainIdArray as $mainId) {
             $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainId);
             $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
@@ -1850,9 +2013,8 @@ class Helper {
             $compilationsToCompare = Helper::create_matchings($validErrorCompilations);
 
             if (count($compilationsToCompare) > 0) {
-
                 /* now all possible combinations of two compilations are compared against each other, like in a tournament */
-                $queryArray = array();
+
                 foreach ($compilationsToCompare as $combination) {
                     $firstCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainId) -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
                     $firstCompilation = Helper::rebuild_keys($firstCompilation, "Day");
@@ -1873,10 +2035,18 @@ class Helper {
                             $autocovariance = Helper::autocovariance($errorDiff);
                             if ($autocovariance == 0) {
                                 $errorStatistic = 0;
-                            } else {
+                            }
+                            else {
                                 $errorStatistic = $meanDifferential / sqrt($autocovariance);
                             }
-                            $arrayToAdd = array("Main_Id" => $mainId, "Compilation_1" => $combination[0], "Compilation_2" => $combination[1], "Day" => $day, "Mean_Differential" => $meanDifferential, "ErrorStatistic" => $errorStatistic);
+                            $arrayToAdd = array(
+                                "Main_Id" => $mainId,
+                                "Compilation_1" => $combination[0],
+                                "Compilation_2" => $combination[1],
+                                "Day" => $day,
+                                "Mean_Differential" => $meanDifferential,
+                                "ErrorStatistic" => $errorStatistic
+                            );
                             if (!in_array($arrayToAdd, $queryArray)) {
                                 $queryArray[] = $arrayToAdd;
                             }
@@ -1886,12 +2056,10 @@ class Helper {
                         }
                         $day++;
                     }
-
                 }
-                // echop($queryArray);
-                Helper::sql_insert_array($queryArray, "osdb_ranking");
             }
         }
+        Helper::sql_insert_array($queryArray, "osdb_ranking");
     }
 
     public static function autocovariance($array, $stepSize = 1) {
@@ -1920,7 +2088,8 @@ class Helper {
             }
             if ($row["Mean_Differential"] < 0) {
                 $returnArray[$c1] = $returnArray[$c1] + 1;
-            } else {
+            }
+            else {
                 $returnArray[$c2] = $returnArray[$c2] + 1;
             }
         }
@@ -1932,19 +2101,42 @@ class Helper {
 
         $compilations = ORM::for_table("osdb_working") -> where("Source_Id", $sourceId) -> select("Compilation_Id") -> find_array();
         $compilations = array_unique($compilations, SORT_REGULAR);
-        $tables = array("compilations" => "Source_Id", "data" => "Source_Id", "errors" => array("Main_Id", "Compilation_Id"), "ranking" => array("Main_Id", "Compilation_1", "Compilation_2"), "tags" => "Compilation_Id", "working" => array("Compilation_Id", "Source_Id"));
+        $tables = array(
+            "compilations" => "Source_Id",
+            "data" => "Source_Id",
+            "errors" => array(
+                "Main_Id",
+                "Compilation_Id"
+            ),
+            "ranking" => array(
+                "Main_Id",
+                "Compilation_1",
+                "Compilation_2"
+            ),
+            "tags" => "Compilation_Id",
+            "working" => array(
+                "Compilation_Id",
+                "Source_Id"
+            )
+        );
 
         foreach ($tables as $tableName => $columns) {
             if (gettype($columns) == "string") {
                 $columns = array($columns);
             }
             foreach ($columns as $columnName) {
-                if (in_array($columnName, array("Main_Id", "Compilation_Id", "Compilation_1", "Compilation_2"))) {
+                if (in_array($columnName, array(
+                    "Main_Id",
+                    "Compilation_Id",
+                    "Compilation_1",
+                    "Compilation_2"
+                ))) {
                     foreach ($compilations as $compilationId) {
                         $compilationId = $compilationId["Compilation_Id"];
                         ORM::for_table('osdb_' . $tableName) -> where_equal($columnName, $compilationId) -> delete_many();
                     }
-                } else {
+                }
+                else {
                     ORM::for_table('osdb_' . $tableName) -> where_equal($columnName, $sourceId) -> delete_many();
                 }
             }
@@ -1959,7 +2151,17 @@ class Helper {
 
     public static function remove_compilation_from_database($compilationId) {
 
-        $tables = array("compilations" => "id", "errors" => "Compilation_Id", "ranking" => array("Main_Id", "Compilation_1", "Compilation_2"), "tags" => "Compilation_Id", "working" => "Compilation_Id");
+        $tables = array(
+            "compilations" => "id",
+            "errors" => "Compilation_Id",
+            "ranking" => array(
+                "Main_Id",
+                "Compilation_1",
+                "Compilation_2"
+            ),
+            "tags" => "Compilation_Id",
+            "working" => "Compilation_Id"
+        );
 
         foreach ($tables as $tableName => $columns) {
             if (gettype($columns) == "string") {
@@ -1977,9 +2179,16 @@ class Helper {
         foreach ($array as $firstNumber) {
             foreach ($array as $secondNumber) {
                 if ($firstNumber < $secondNumber) {
-                    $arrayToAdd = array($firstNumber, $secondNumber);
-                } else {
-                    $arrayToAdd = array($secondNumber, $firstNumber);
+                    $arrayToAdd = array(
+                        $firstNumber,
+                        $secondNumber
+                    );
+                }
+                else {
+                    $arrayToAdd = array(
+                        $secondNumber,
+                        $firstNumber
+                    );
                 }
                 if ($firstNumber != $secondNumber && !in_array($arrayToAdd, $returnArray)) {
                     $returnArray[] = $arrayToAdd;
