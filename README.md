@@ -126,8 +126,8 @@ Now you can _"convert"_ every csv file into plotted graphs by using the single c
 
 
 ---
-[Original place for this file][Readme]
-[How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
+* [Original place for this file][Readme]
+* [How to edit this file using Markdown](https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md)
 
 [OpenRefine]: http://openrefine.org/
 [WebPlotDigitizer]: http://arohatgi.info/WebPlotDigitizer/app/
