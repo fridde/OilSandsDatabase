@@ -137,4 +137,4 @@ Now you can _"convert"_ every csv file into plotted graphs by using the single c
 [R]: http://cran.r-project.org/
 [RStudio]: http://www.rstudio.com/
 [Readme]: https://github.com/fridde/OilSandsDatabase/blob/master/README.md
-[Plotter]: https://raw.github.com/fridde/OilSandsDatabase/master/helper_files/plotter.r
+[Plotter]: www.hehl.se/OilsandsDatabase/download.php?fileName=plotter.r
