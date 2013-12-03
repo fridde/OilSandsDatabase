@@ -2217,5 +2217,18 @@ class Helper {
         fpassthru($f);
     }
 
+    public static function create_download($source, $filename = "export.csv") {
+        
+        $textFromFile = file_get_contents($source);
+        $f = fopen('php://memory', 'w');
+        fwrite($f, $textFromFile);
+        fseek($f, 0);
+        
+        header('Content-Type: text/plain');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        // make php send the generated csv lines to the browser
+        fpassthru($f);
+    }
+
 }
 ?>

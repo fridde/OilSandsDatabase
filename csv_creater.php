@@ -1,12 +1,9 @@
 <?php
 
 $filesToInclude = array(
-    "buttons.php",
     "helper_functions.php",
     "idiorm.php",
     "idiorm_conf.php",
-    "Markdown.php",
-    "simple_html_dom.php"
 );
 foreach ($filesToInclude as $filename) {
     include_once "include/" . $filename;
