@@ -9,26 +9,29 @@ for (pkg in pkgs){
   library(pkg, character.only = TRUE)
 }
 
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+interval.to.plot = 10
 
 files = list.files(pattern =".csv")
-#file.name = files[3]
+#file.name = files[1]
 
 
 for (file.name in files){
   setwd(main.dir)
-  dt = read.table(file.name, sep= ";", blank.lines.skip = FALSE, header = TRUE)
-  dt$Compilation = str_replace_all(dt$Compilation, "[\r\n]", "")
-  dt$Date = as.Date(dt$Date)
-  years = seq(from = as.integer(format(min(dt$Date), "%Y")),
-              to = as.integer(format(max(dt$Date), "%Y")) + 5, by = 5)
+  file.dt = read.table(file.name, sep= ";", blank.lines.skip = FALSE, header = TRUE)
+  file.dt$Compilation = str_replace_all(file.dt$Compilation, "[\r\n]", "")
+  file.dt$Date = as.Date(file.dt$Date)
+  years = seq(from = as.integer(format(min(file.dt$Date), "%Y")),
+              to = as.integer(format(max(file.dt$Date), "%Y")) + interval.to.plot,
+              by = interval.to.plot)
   
   for(start.year in years){
     for (end.year in years){
+        dt = file.dt
         dt = subset(dt, Date > as.Date(paste(start.year, "-01-01", sep ="")))
         dt = subset(dt, Date < as.Date(paste(end.year, "-12-31", sep = "")))
         
-        if(dim(dt)[1] > 1){
+        if(dim(dt)[1] > 1 && start.year != end.year){
+          nr.of.Compilations = length(unique(dt$Compilation))
           table.name = str_split(file.name, "\\.")[[1]][1]
           setwd(main.dir)
           dir.create("figures", showWarnings = FALSE)
@@ -40,10 +43,14 @@ for (file.name in files){
           
           thinned <- floor(seq(from=1,to=dim(dt)[1],length=20))
           p = ggplot(dt, aes(Date, Value, colour= Compilation, group = Compilation))
-          p = p + geom_point(data=dt[thinned,],aes(as.Date(Date), Value, colour= Compilation, shape = Compilation), size = 5)
-          p = p + scale_shape_manual(values = seq(0,20), guide=FALSE)
-          p = p + geom_line()
-          p = p + scale_colour_manual(values=cbPalette)
+          p = p + geom_point(data=dt[thinned,],aes(as.Date(Date), Value, 
+                                                   colour= Compilation, shape = Compilation), size = 5, guide = FALSE)
+          p = p + scale_shape_manual(values = seq(0,20))
+          p = p + geom_line(aes(linetype=Compilation))
+          p = p + scale_color_brewer(palette="Spectral")
+#           if(nr.of.Compilations > 1){
+#             p = p + scale_colour_gradient(colours = rainbow(nr.of.Compilations))
+#           }
           p = p + scale_size(range=c(0.5, 1.2), guide=FALSE)
           p = p + scale_y_continuous(labels = comma)
           p = p + ylab("Barrels per day") + xlab("")
@@ -54,9 +61,4 @@ for (file.name in files){
         }
     }
   }
-  
-  
-  
-  
-  
 }

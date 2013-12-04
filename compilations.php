@@ -1,4 +1,9 @@
 <?php
+
+/* This header is included to assure that the user can't go back to this page without refreshing. 
+ * Going back without refreshing has caused issues (wrong fields are checked) and should be 
+ * avoided for complex tables with checkboxes. Probably one of the javascripts for the table 
+ * causes the issues.*/
 header("Expires: Thu, 19 Nov 1981 08:52:00 GMT"); //Date in the past
 header("Cache-Control: no-store, no-cache, must-revalidate"); //HTTP/1.1
 if (isset($_REQUEST["tag"])) {
