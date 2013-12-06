@@ -1098,11 +1098,18 @@ class Helper {
         return $newArray;
     }
 
-    public static function find_most_similar($needle, $haystack) {
+    public static function find_most_similar($needle, $haystack, $alwaysFindSomething = TRUE) {
 
-        $bestWord = $haystack[0];
-        $shortestDistance = levenshtein($needle, $bestWord);
+        if ($alwaysFindSomething) {
+            $bestWord = reset($haystack);
+            $shortestDistance = levenshtein($needle, $bestWord);
+        }
+        else {
+            $bestWord = "";
+            $shortestDistance = 255;
+        }
 
+        // echo print_r($haystack);
         foreach ($haystack as $key => $value) {
             $thisDistance = levenshtein($needle, $value);
             if ($thisDistance < $shortestDistance) {
@@ -2218,16 +2225,62 @@ class Helper {
     }
 
     public static function create_download($source, $filename = "export.csv") {
-        
+
         $textFromFile = file_get_contents($source);
         $f = fopen('php://memory', 'w');
         fwrite($f, $textFromFile);
         fseek($f, 0);
-        
+
         header('Content-Type: text/plain');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         // make php send the generated csv lines to the browser
         fpassthru($f);
+    }
+
+    public static function find_matching_project($projectNameArray, $format = "I Y - P - C P") {
+        /* tries to find the best matching Oil Sand Project for an array of project names.
+         * The "official" project List is in a SQL-Table called osdb_projects*/
+
+        if (gettype($projectNameArray) != "array") {
+            $projectNameArray = array($projectNameArray);
+        }
+
+        $projectTable = ORM::for_table("osdb_projects") -> find_array();
+        $projectTable = Helper::rebuild_keys($projectTable, "id");
+
+        switch($format) {
+            case "I Y - P - C P" :
+                foreach ($projectNameArray as $key => $value) {
+                    $value = explode("-", $value);
+                    if (count($value) == 3) {
+                        $projectNameArray[$key] = trim($value[2]);
+                    }
+                }
+                foreach ($projectTable as $key => $projectRow) {
+                    $projectTable[$key]["SearchFor"] = $projectRow["Company"] . " " . $projectRow["Project"];
+                }
+                break;
+        }
+
+        $searchFor = Helper::sql_select_columns($projectTable, "SearchFor");
+
+        $returnArray = array();
+
+        foreach ($projectNameArray as $projectName) {
+
+            $bestMatch = Helper::find_most_similar($projectName, $searchFor, FALSE);
+            $matchingRow = Helper::filter_for_value($projectTable, "SearchFor", $bestMatch);
+
+            if (count($matchingRow) == 1) {
+                $returnArray[] = $matchingRow;
+            }
+            else {
+                $returnArray[] = array();
+            }
+
+        }
+        return $returnArray;
+
     }
 
 }

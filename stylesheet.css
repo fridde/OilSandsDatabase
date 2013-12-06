@@ -19,7 +19,6 @@ body {
 div {
 	border-radius: 5px;
 	margin: 5px;
-	
 }
 
 div .buttons {
@@ -84,11 +83,11 @@ div #buttonExplanation {
 	background-color: #007FFF;
 }
 
-a.box{
+a.box {
 	border: 1px solid #98bf21;
 	margin-left: 5px;
 	padding: 5px;
-	background-color:#7DB9E8;
+	background-color: #7DB9E8;
 	font-weight: bold;
 	display: inline;
 }
@@ -168,9 +167,8 @@ table.odd {
 	border: 1px dotted black;
 	float: left;
 	margin-top: 10px;
-	margin-left:220px;
+	margin-left: 220px;
 	padding: 5px;
-	
 }
 
 #choices:hover, #choices:active {
@@ -192,12 +190,10 @@ table.odd {
 	background: white;
 	width: 600px;
 	padding: 30px;
-	
 	height: 300px;
-	
 }
 
-.yAxis .tickLabel{
+.yAxis .tickLabel {
 	margin-top: -20px;
 }
 
@@ -212,7 +208,7 @@ table.odd {
 }
 
 #overview {
-	clear:both;
+	clear: both;
 	float: left;
 	margin: 50px;
 }
@@ -244,6 +240,12 @@ td.legendColorBox {
 
  }*/
 
+div #map {
+	height: 600px;
+	width:  1000px;
+	border-radius: 5px;
+}
+
 textarea {
 	border: 1px solid #888;
 	width: 600px;
@@ -271,7 +273,6 @@ a {
 a.tinyLink {
 	font-size: 60%;
 }
-
 
 /*
  * Table

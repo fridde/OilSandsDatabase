@@ -208,6 +208,9 @@ $(document).ready(function() {
 		});
 	});
 
+//  end flot graph functions 
+
+
 	$(".buttonWithDescription").mouseenter(function() {
 		$("#buttonExplanation").show();
 		var id = $(this).attr("value");
@@ -215,14 +218,70 @@ $(document).ready(function() {
 			$("#buttonExplanation").html("<h3>" + id + "</h3>" + $("#" + id).text());
 		}
 	});
-	
+
 	// $( ".accordion" ).accordion();
-	$( "#tabs" ).tabs();
-	
+	$("#tabs").tabs();
+
 	$(".tCheck").on("change", function() {
 		var tableId = '.table_' + $(this).val();
-		
+
 		$(tableId).toggle();
 	});
+
+//  start map functions
+
+var postdata;
+
+$.ajax({
+		url : 'get_map_data.php',
+		type : "POST",
+		data : postdata,
+		//dataType : 'text',
+		success : function(bigArray) {
+
+			var projects = [];
+
+			$.each(bigArray, function(index, row) {
+					projects[index] = {
+						center: new google.maps.LatLng(row["lon"], row["lat"]),
+						production : row["Production"]
+					};
+			});
+		}
+});
+
+	function initialize() {
+		var mapOptions = {
+			center : new google.maps.LatLng(57.010599, -111.570282),
+			zoom : 7,
+			mapTypeId: google.maps.MapTypeId.TERRAIN
+		};
+		
+		var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	};
+
+  // Construct the circle for each value in citymap.
+  // Note: We scale the population by a factor of 20.
+  for (var project in projects) {
+    var projectOptions = {
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: map,
+      center: projects[project].center,
+      radius: projects[project].production / 20
+    };
+    // Add the circle for this city to the map.
+    cityCircle = new google.maps.Circle(populationOptions);
+  };
+// end circle drawing
+
+	google.maps.event.addDomListener(window, 'load', initialize);
+
+// end map functions
+
+//end document ready
 });
 

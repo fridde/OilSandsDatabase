@@ -1,0 +1,26 @@
+Name;lat;lng;Production
+Base Operations - Suncor Energy Inc.;56.926693;-111.484228;1
+Blackrod - BlackPearl Resources Inc.;55.63860218;-112.6702667;2
+Christina Lake - Cenovus Energy Inc.;55.57919;-110.890382;33
+Christina Lake - MEG Energy Corporation;55.70202;-110.624239;49
+Cold Lake - Imperial Oil Limited;54.5964;-110.395;65
+Firebag - Suncor Energy Inc.;57.38981068;-110.7770798;81
+Foster Creek - Cenovus Energy Inc.;54.90683268;-110.5632589;97
+Great Divide - Connacher Oil And Gas Limited;56.24972798;-111.6134791;113
+Hangingstone - Japan Canada Oil Sands Limited;56.3131;-111.6353;129
+Horizon - Canadian Natural Resources Limited;57.33821267;-111.7459318;145
+Jackfish - Devon Canada Corporation;55.6518;-111.0844;161
+Jackpine - Shell Albian Sands;57.26349633;-111.3875885;177
+Joslyn - Total E&P Canada Ltd.;57.220597;-111.794319;193
+Kai Kos Dehseh - Statoil;55.80968997;-111.4523091;209
+Long Lake - Nexen Inc.;56.4078;-110.9283;225
+MacKay River - Suncor Energy Inc.;56.86674568;-112.145337;241
+Mildred Lake/Aurora North & South - Syncrude Canada Ltd.;57.0405;-111.6192;257
+Muskeg River - Shell Albian Sands;57.25915623;-111.5597567;273
+Orion - Royal Dutch Shell plc;54.51290521;-110.397694;289
+Peace River - Royal Dutch Shell plc;56.3806;-116.795;305
+Poplar Creek - E-T Energy Ltd.;56.80757853;-111.4447166;321
+Primrose & Wolf Lake - Canadian Natural Resources Limited;54.69636778;-110.7193866;337
+Red Earth - Southern Pacific Resource Corp.;56.63445467;-115.352547;353
+Surmont - ConocoPhillips Canada Limited;56.215;-110.9681;369
+Tucker - Husky Energy Inc.;54.56944972;-110.5574995;385
