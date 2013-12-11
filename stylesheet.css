@@ -41,7 +41,7 @@ div #buttonExplanation {
 
 #header {
 	/*background: red;*/
-	background: linear-gradient(to bottom, #1e5799 0%, #7db9e8 100%);
+	background: linear-gradient(to bottom, #FFC768 0%, #FFE0AC 100%);
 	padding: 5px 10px;
 }
 
@@ -49,11 +49,12 @@ div #buttonExplanation {
 	font-weight: bold;
 	font-size: 300%;
 	text-align: center;
+	color: #3083AA;
 }
 
 #navbar {
 	/*background: red;*/
-	background: linear-gradient(to bottom, #3BA3D0 0%, #FFFFFF 100%);
+	background: linear-gradient(to bottom, #FFC768 0%, #FFFFFF 100%);
 	padding: 10px;
 	/*margin-right: 10px;*/
 	border-radius: 5px;
@@ -73,7 +74,7 @@ div #buttonExplanation {
 	display: inline;
 	font-weight: bold;
 	color: #FFFFFF;
-	background-color: #0772A1;
+	background-color: #3083AA;
 	width: 120px;
 	text-align: center;
 	padding: 4px;
