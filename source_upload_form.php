@@ -9,7 +9,8 @@
         echo '<option value="none" selected>Select...</option>';
 
         foreach (ORM::for_table('osdb_sources')->distinct()->
-                select('Institution')->find_result_set() as $Source) {
+                select('Institution')->order_by_asc('Institution') -> 
+                find_result_set() as $Source) {
             echo "<option value='" . $Source->Institution . "'>" .
             $Source->Institution . "</option>";
         }

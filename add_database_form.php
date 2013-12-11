@@ -1,6 +1,7 @@
 <?php
 
-$sourceList = ORM::for_table('osdb_sources') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
+$sourceList = ORM::for_table('osdb_sources') -> where("Archived", 0) -> order_by_asc('Institution') 
+-> order_by_asc('PublicationDate')-> find_array();
 echo '<form action="index.php?page=add_database" method="post">
 <p><input type="submit" name="action" value="Send data to database"></p>';
 echo '<input type="checkbox" id="chkSelectDeselectAll" onClick="SelectDeselect()">(De-)Select all';

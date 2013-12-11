@@ -4,7 +4,10 @@ if (empty($_GET["source"])) {
     echo '<h1>Sources</h1>';
     link_for("index.php?page=source_upload_form", "Add Source", "box");
     // echo '<div class="accordion">';
-    $sources = ORM::for_table('osdb_sources') -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product', 'Description') -> where("Archived", 0) -> order_by_asc('Institution') -> find_array();
+    $sources = ORM::for_table('osdb_sources') 
+    -> select_many('id', 'SourceName', 'Institution', 'SourceUrl', 'PublicationDate', 'Product', 'Description') 
+    -> where("Archived", 0) -> order_by_asc('Institution') -> order_by_asc('PublicationDate')
+    -> find_array();
     $lastInstitution = "";
     foreach ($sources as $Source) {
         if($Source["Institution"] != $lastInstitution){

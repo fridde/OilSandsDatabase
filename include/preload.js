@@ -215,7 +215,7 @@ $(document).ready(function() {
 		$("#buttonExplanation").show();
 		var id = $(this).attr("value");
 		if ($("#" + id).text() != "") {
-			$("#buttonExplanation").html("<h3>" + id + "</h3>" + $("#" + id).text());
+			$("#buttonExplanation").html("<h4>" + id + "</h4>" + $("#" + id).text());
 		}
 	});
 

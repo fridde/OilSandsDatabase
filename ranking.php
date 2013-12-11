@@ -42,7 +42,7 @@ foreach ($possibleMainIdArray as $mainId) {
 
            $thisTab["Content"] .=  '<table>
     <thead>
-    <th>Category: ' .  $timeText . $graphLinkText . $csvLinkText . '</th><th>Better than</th>
+    <th>Category: ' .  $timeText . $graphLinkText . $csvLinkText . '</th><th>Wins</th>
     </thead>
     <tbody>
     ';

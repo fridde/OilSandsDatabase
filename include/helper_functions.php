@@ -972,6 +972,7 @@ class Helper {
     }
 
     public static function draw_left($array, $targetCol) {
+            
         if ($targetCol == "") {
             $targetCol = 0;
         }
@@ -1133,7 +1134,7 @@ class Helper {
 
         $newArray = array();
 
-        if (gettype($header) == "boolean" && $hasHeader == TRUE) {
+        if (gettype($hasHeader) == "boolean" && $hasHeader == TRUE) {
             $newHeader = $array[0][$col];
             $array = array_slice($array, 1);
         }
@@ -2003,14 +2004,12 @@ class Helper {
 
         ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
         $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-        // echop($combinationIdArray);
         foreach ($combinationIdArray as $combination) {
             $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
             $maxDayArray[] = $maxDay -> Day;
         }
         $maxDayArray = array_unique($maxDayArray);
         sort($maxDayArray);
-        // echop($maxDayArray);
         $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
         $queryArray = array();
         foreach ($mainIdArray as $mainId) {
