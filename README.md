@@ -15,6 +15,7 @@ Good tools to use are (in order of importance)
 * [WebPlotDigitizer][WebPlotDigitizer]
 * [Text Mechanic](http://textmechanic.com/)
 * [OpenRefine][OpenRefine]
+* [HTMLMerger](http://www.iterati.org/ebookTools/vHtmlMerger/)
 
 Generally, the steps to add a new source of data to the database are as follows:
   
