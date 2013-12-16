@@ -1901,20 +1901,28 @@ class Helper {
 
     public static function calculate_error_statistics($compilationIdArray, $mainIdArray) {
 
-        /* compares two types of compilations to each other  */
-
-        /* we don't want to calculate the reported compilations against each other, so we take them away from the compilations*/
+        /* compares two types of compilations to each other. 
+         * Algorithm: 
+         * 1. Choose a certain time range.
+         * 2. For each day within that time range, calculate the difference of the value of the compilation 
+         * to the value of the basis compilation (i.e prognosis vs reported actual values)
+         * 3. Insert into table "osdb_errors" 
+         *    */
         if (gettype($mainIdArray) != "array") {
             $mainIdArray = array($mainIdArray);
         }
+        /* we don't want to calculate the reported compilations  against each other, so we take them away from the compilations*/
         $compilationIdArray = array_diff($compilationIdArray, $mainIdArray);
         foreach ($mainIdArray as $mainId) {
+            $beforeMemory = memory_get_usage($real_usage = TRUE);
             $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
             $mainArray = Helper::rebuild_keys($mainArray, "Date");
+            echo $mainId . "<br>";
+            echo (memory_get_usage($real_usage = TRUE) - $beforeMemory) / (1024 * 1024) . "<br><br>";
             $mainDates = array_keys($mainArray);
 
             foreach ($compilationIdArray as $compilationId) {
-
+                set_time_limit(30);
                 $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
                 $array = Helper::rebuild_keys($array, "Date");
 
@@ -1950,10 +1958,19 @@ class Helper {
                         $errorRow["Compilation_Id"] = $compilationId;
 
                         $errorArray[] = $errorRow;
+//                         avoid memory overflow by inserting array when memory use goes over 20 MB
+                        if((memory_get_usage() / (1024 * 1024)) > 20 && count($errorArray) > 0){
+                            // Helper::sql_insert_array($errorArray, "osdb_errors");
+                            $errorArray = array();
+                        } 
 
                     }
                 }
-                Helper::sql_insert_array($errorArray, "osdb_errors");
+                echo "<br>made it through a loop";
+                // Helper::sql_insert_array($errorArray, "osdb_errors");
+                // echop(reset($errorArray));
+                // echo (memory_get_usage() / (1024 * 1024)) . " <br><br>";
+                // unset($errorArray, $array);
             }
         }
 

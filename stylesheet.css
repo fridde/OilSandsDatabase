@@ -25,6 +25,10 @@ div .buttons {
 	float: left;
 }
 
+/*button {
+	maybe the button will look nicer one day...
+}*/
+
 div.boxed {
 	border: solid black 1px;
 	width: auto;

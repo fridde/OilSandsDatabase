@@ -3,15 +3,16 @@
 link_for("index.php?page=button_form", "Add Button", "box");
 link_for("index.php?page=edit_buttons", "Edit Buttons", "box");
 echo '<form action="index.php?page=refine_tables" method="post">
+<p><input type="text" name="password"> <b>Password for certain actions</b></p>
 <p>
 <select name="Table">';
-$Tables = ORM::for_table("information_schema.tables") -> where("TABLE_SCHEMA", "a5399891_db") -> find_array();
+$Tables = ORM::for_table("information_schema.tables") -> where("TABLE_SCHEMA", $ini_array["mysql_db"]) -> find_array();
 
 foreach ($Tables as $Table) {
     echo '<option value="' . $Table["TABLE_NAME"] . '">' . $Table["TABLE_NAME"] . '</option>';
 }
 echo '</select>
-<input type="submit" name="choice" value="Remove duplicates">
+<input type="submit" name="choice" value="Remove duplicates"><input type="submit" name="choice" value="Empty Table">
 </p>';
 echo '<p>
 <select name="Source">';

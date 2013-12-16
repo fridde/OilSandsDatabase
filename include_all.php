@@ -1,5 +1,5 @@
 <?php
-
+$ini_array = parse_ini_file("config.ini");
 $filesToInclude = array(
     "buttons.php",
     "helper_functions.php",

@@ -3,7 +3,7 @@
 include ("include_all.php");
 
 // the update routine
-if ($_REQUEST["password"] == "mikael") {
+if ($_REQUEST["password"] == $ini_array["password"]) {
     $source_id = $_REQUEST["source_id"];
     $Source = ORM::for_table('osdb_sources') -> find_one($source_id);
 
