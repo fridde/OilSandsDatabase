@@ -16,6 +16,8 @@ foreach ($tableauArray as $tableau) {
 <param name="display_count" value="yes" /></object></div>';
 }
 
+echo '<iframe id="igraph" src="https://plot.ly/~fridde/3/1200/800/" width="1200" height="800" seamless="seamless" scrolling="no"></iframe>';
+
 // <param name="static_image" value="http:&#47;&#47;public.tableausoftware.com&#47;static&#47;images&#47;Pr&#47;ProductionTarSands2012&#47;Sheet1&#47;1.png" / >
 // ProductionTarSands2012/Sheet1
 ?>

@@ -34,8 +34,18 @@ foreach($compilations as $compilation){
 echo '</select><br>
 <input type="submit" name="choice" value="Remove compilation"></p>';
 
-echo '<p><input type="submit" name="choice" value="Recalculate Ranking">
-<input type="submit" name="choice" value="Recalculate errors">';
+echo '<p><input type="submit" name="choice" value="Recalculate Ranking">';
+
+
+$toCalculate = ORM::for_table('osdb_tags') -> distinct() -> where("Name", "analyzed") -> count();
+$difference = $toCalculate - $ini_array["compilations_with_calculated_errors"];
+if($difference > 0){
+    echo '<input type="submit" name="choice" value="Calculate errors" class="redButton">';
+} else {
+    echo '<input type="submit" name="choice" value="Empty error table">';
+}
+echo $difference . " more to calculate";
+
 
 ?>
 <p><h2>Add synonyms or abbreviations</h2></p>

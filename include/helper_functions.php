@@ -972,7 +972,7 @@ class Helper {
     }
 
     public static function draw_left($array, $targetCol) {
-            
+
         if ($targetCol == "") {
             $targetCol = 0;
         }
@@ -1899,81 +1899,166 @@ class Helper {
         return $array;
     }
 
-    public static function calculate_error_statistics($compilationIdArray, $mainIdArray) {
+    // public static function calculate_error_statistics($compilationIdArray, $mainIdArray) {
+    //
+    // /* compares two types of compilations to each other.
+    // * Algorithm:
+    // * 1. Choose a certain time range.
+    // * 2. For each day within that time range, calculate the difference of the value of the compilation
+    // * to the value of the basis compilation (i.e prognosis vs reported actual values)
+    // * 3. Insert into table "osdb_errors"
+    // *    */
+    // if (gettype($mainIdArray) != "array") {
+    // $mainIdArray = array($mainIdArray);
+    // }
+    // /* we don't want to calculate the reported compilations  against each other, so we take them away from the compilations*/
+    // $compilationIdArray = array_diff($compilationIdArray, $mainIdArray);
+    // foreach ($mainIdArray as $mainId) {
+    // $beforeMemory = memory_get_usage($real_usage = TRUE);
+    // $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
+    // $mainArray = Helper::rebuild_keys($mainArray, "Date");
+    // echo $mainId . "<br>";
+    // echo (memory_get_usage($real_usage = TRUE) - $beforeMemory) / (1024 * 1024) . "<br><br>";
+    // $mainDates = array_keys($mainArray);
+    //
+    // foreach ($compilationIdArray as $compilationId) {
+    // set_time_limit(30);
+    // $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
+    // $array = Helper::rebuild_keys($array, "Date");
+    //
+    // $firstRow = reset($array);
+    // $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
+    // $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
+    // $publicationDate = new DateTime($publicationDate);
+    //
+    // $errorArray = array();
+    //
+    // foreach ($prognosisDates as $date) {
+    //
+    // if (isset($array[$date])) {
+    // $yRow = $array[$date];
+    //
+    // $xRow = $mainArray[$date];
+    //
+    // $errorRow["Date"] = $xRow["Date"];
+    // $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
+    // if ($xRow["Value"] != 0) {
+    // $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
+    // }
+    // else {
+    // $errorRow["ErrorPercentage"] = "";
+    // }
+    //
+    // $xDate = new DateTime($xRow["Date"]);
+    // $diff = $xDate -> diff($publicationDate);
+    //
+    // $errorRow["Day"] = $diff -> format('%a');
+    //
+    // $errorRow["Main_Id"] = $mainId;
+    // $errorRow["Compilation_Id"] = $compilationId;
+    //
+    // $errorArray[] = $errorRow;
+    // //                         avoid memory overflow by inserting array when memory use goes over 20 MB
+    // if((memory_get_usage() / (1024 * 1024)) > 20 && count($errorArray) > 0){
+    // Helper::sql_insert_array($errorArray, "osdb_errors");
+    // $errorArray = array();
+    // }
+    //
+    // }
+    // }
+    // echo "<br>made it through a loop";
+    // Helper::sql_insert_array($errorArray, "osdb_errors");
+    // // echop(reset($errorArray));
+    // // echo (memory_get_usage() / (1024 * 1024)) . " <br><br>";
+    // // unset($errorArray, $array);
+    // }
+    // }
+    //
+    // }
 
-        /* compares two types of compilations to each other. 
-         * Algorithm: 
-         * 1. Choose a certain time range.
-         * 2. For each day within that time range, calculate the difference of the value of the compilation 
-         * to the value of the basis compilation (i.e prognosis vs reported actual values)
-         * 3. Insert into table "osdb_errors" 
-         *    */
-        if (gettype($mainIdArray) != "array") {
-            $mainIdArray = array($mainIdArray);
-        }
-        /* we don't want to calculate the reported compilations  against each other, so we take them away from the compilations*/
+    public static function calculate_errors($compilationIdArray, $mainIdArray, $stepLength = 100) {
+
+        // number of days that are analyzed in each day. If memory problems appear, reduce the step size
+        
+        $stepLength = "+ " . $stepLength ." days";
+        
         $compilationIdArray = array_diff($compilationIdArray, $mainIdArray);
-        foreach ($mainIdArray as $mainId) {
-            $beforeMemory = memory_get_usage($real_usage = TRUE);
-            $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
-            $mainArray = Helper::rebuild_keys($mainArray, "Date");
-            echo $mainId . "<br>";
-            echo (memory_get_usage($real_usage = TRUE) - $beforeMemory) / (1024 * 1024) . "<br><br>";
-            $mainDates = array_keys($mainArray);
+        $firstDate = ORM::for_table("osdb_working") -> order_by_asc('Date') -> find_one() -> as_array();
+        $lastDate = ORM::for_table("osdb_working") -> order_by_desc('Date') -> find_one() -> as_array();
+        $allPossibleDates = Helper::dateRange($firstDate["Date"], $lastDate["Date"], $stepLength);
+        /* error calculation has to be done step-wise to minimize memory use*/
+        for ($i = 1; $i < count($allPossibleDates); $i++) {
+            foreach ($mainIdArray as $mainId) {
+                $mainArray = ORM::for_table("osdb_working") -> where("Compilation_Id", $mainId) -> where_gte("Date", $allPossibleDates[$i - 1]) -> where_lt("Date", $allPossibleDates[$i]) -> find_array();
 
-            foreach ($compilationIdArray as $compilationId) {
-                set_time_limit(30);
-                $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
-                $array = Helper::rebuild_keys($array, "Date");
+                if (count($mainArray) > 0) {
+                    $mainArray = Helper::rebuild_keys($mainArray, "Date");
+                    $mainDates = array_keys($mainArray);
 
-                $firstRow = reset($array);
-                $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
-                $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
-                $publicationDate = new DateTime($publicationDate);
+                    foreach ($compilationIdArray as $compilationId) {
+                        $compArray = ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) -> where_gte("Date", $allPossibleDates[$i - 1]) -> where_lt("Date", $allPossibleDates[$i]) -> find_array();
 
-                $errorArray = array();
+                        if (count($compArray) > 0) {
+                            $compArray = Helper::rebuild_keys($compArray, "Date");
+                            $firstRow = reset($compArray);
+                            $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
+                            $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
+                            $publicationDate = new DateTime($publicationDate);
 
-                foreach ($prognosisDates as $date) {
-
-                    if (isset($array[$date])) {
-                        $yRow = $array[$date];
-
-                        $xRow = $mainArray[$date];
-
-                        $errorRow["Date"] = $xRow["Date"];
-                        $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
-                        if ($xRow["Value"] != 0) {
-                            $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
-                        }
-                        else {
-                            $errorRow["ErrorPercentage"] = "";
-                        }
-
-                        $xDate = new DateTime($xRow["Date"]);
-                        $diff = $xDate -> diff($publicationDate);
-
-                        $errorRow["Day"] = $diff -> format('%a');
-
-                        $errorRow["Main_Id"] = $mainId;
-                        $errorRow["Compilation_Id"] = $compilationId;
-
-                        $errorArray[] = $errorRow;
-//                         avoid memory overflow by inserting array when memory use goes over 20 MB
-                        if((memory_get_usage() / (1024 * 1024)) > 20 && count($errorArray) > 0){
-                            Helper::sql_insert_array($errorArray, "osdb_errors");
                             $errorArray = array();
-                        } 
+                            echo "Prognosis dates: " . count($prognosisDates);
+                            foreach ($prognosisDates as $date) {
+                                if (isset($compArray[$date])) {
+                                    $yRow = $compArray[$date];
 
+                                    $xRow = $mainArray[$date];
+
+                                    $errorRow["Date"] = $xRow["Date"];
+                                    $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
+                                    if ($xRow["Value"] != 0) {
+                                        $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
+                                    }
+                                    else {
+                                        $errorRow["ErrorPercentage"] = "";
+                                    }
+
+                                    $xDate = new DateTime($xRow["Date"]);
+                                    $diff = $xDate -> diff($publicationDate);
+
+                                    $errorRow["Day"] = $diff -> format('%a');
+
+                                    $errorRow["Main_Id"] = $mainId;
+                                    $errorRow["Compilation_Id"] = $compilationId;
+
+                                    $errorArray[] = $errorRow;
+                                }
+                            }
+                            Helper::sql_insert_array($errorArray, "osdb_errors");
+                        }
                     }
                 }
-                echo "<br>made it through a loop";
-                Helper::sql_insert_array($errorArray, "osdb_errors");
-                // echop(reset($errorArray));
-                // echo (memory_get_usage() / (1024 * 1024)) . " <br><br>";
-                // unset($errorArray, $array);
             }
         }
+    }
 
+    public static function dateRange($first, $last, $step = "+1 day", $format = "Y-m-d", $addLast = TRUE) {
+
+        $step = date_interval_create_from_date_string($step);
+
+        $dates = array();
+        $current = date_create_from_format($format, $first);
+        $last = date_create_from_format($format, $last);
+
+        while ($current <= $last) {
+            $dates[] = $current -> format($format);
+            $current = date_add($current, $step);
+        }
+
+        if ($addLast && end($dates) != $last) {
+            $dates[] = $last -> format($format);
+        }
+
+        return $dates;
     }
 
     public static function filter_dates($dates, $constantDate, $after = TRUE) {
@@ -2297,6 +2382,21 @@ class Helper {
         }
         return $returnArray;
 
+    }
+
+    public static function write_to_config($configArray) {
+        $filename = "config.ini";
+        $text = "";
+        foreach ($configArray as $key => $value) {
+            if (gettype($value) == "array") {
+                $value = implode(",", $value);
+            }
+            $text .= $key . " = " . $value . "\r\n";
+        }
+
+        $fh = fopen($filename, "w") or die("Could not open log file.");
+        fwrite($fh, $text) or die("Could not write file!");
+        fclose($fh);
     }
 
 }

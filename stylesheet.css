@@ -29,6 +29,10 @@ div .buttons {
 	maybe the button will look nicer one day...
 }*/
 
+.redButton {
+	background-color: red; 
+}
+
 div.boxed {
 	border: solid black 1px;
 	width: auto;

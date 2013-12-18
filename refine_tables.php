@@ -28,6 +28,17 @@ switch ($_REQUEST["choice"]) {
         }
         break;
 
+    case 'Empty error table':
+        if ($rightPassword) {
+            ORM::for_table('osdb_errors') -> raw_execute("TRUNCATE TABLE osdb_errors ;");
+            redirect("index.php?page=administration_form");
+        }
+        else {
+            $failedAttempt = TRUE;
+        }
+        break;
+        break;
+    
     case "Convert to barrels per day" :
         foreach ($_REQUEST["checked_source"] as $sourceId) {
             Helper::sql_to_barrels_per_day($sourceId, 'osdb_data');
@@ -121,15 +132,40 @@ switch ($_REQUEST["choice"]) {
 
         break;
 
-    case "Recalculate errors" :
+    case "Calculate errors" :
         error_reporting(E_ALL);
         ini_set('display_errors', 'On');
-
+        
+        if(!isset($ini_array["compilations_with_calculated_errors"]) || $ini_array["compilations_with_calculated_errors"] == 0){
+            $alreadyCalculatedCompilationIds = array();
+        }
+        else{
+            $alreadyCalculatedCompilationIds = Helper::sql_select_columns(ORM::for_table('osdb_errors') -> distinct() -> select("Compilation_Id") -> find_array(), "Compilation_Id");
+        }
+        $alreadyCalculated = count($alreadyCalculatedCompilationIds);
         $compilationIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "analyzed") -> find_array(), "Compilation_Id");
         $mainCompIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "Basis") -> find_array(), "Compilation_Id");
-        Helper::calculate_error_statistics($compilationIdArray, $mainCompIdArray);
+        
+        $allCompilations = count($compilationIdArray);
+        
+        $start = microtime(true);
+        foreach ($compilationIdArray as $compilationId) {
+            $bool1 = !in_array($compilationId, $alreadyCalculatedCompilationIds);
+            $bool2 = (microtime(true) - $start) < $ini_array["maxCalculationTime"];
+            echo (microtime(true) - $start) . "<br>";
+            $bool3 = $alreadyCalculated < $allCompilations;
+            if ($bool1 && $bool2 && $bool3) {
+                echo $compilationId . "<br>";
+                echo (microtime(true) - $start) . "<br><br>";
+                Helper::calculate_errors(array($compilationId), $mainCompIdArray, $ini_array["maxSteps"]);
+                $alreadyCalculated++;
+            }
+        }
 
-        // redirect("index.php?page=ranking");
+        
+        $ini_array["compilations_with_calculated_errors"] = $alreadyCalculated;
+        Helper::write_to_config($ini_array);
+        // redirect("index.php?page=administration_form");
         break;
 
     case "Recalculate Ranking" :
@@ -189,11 +225,8 @@ switch ($_REQUEST["choice"]) {
 }
 // end of big switch
 
-if($failedAttempt){
+if ($failedAttempt) {
     echo "<h1> You tried to perform a critical action without a valid password. </h1>
      <p>Please contact the admin of this database to obtain one!</p>";
 }
-
-
-
 ?>
