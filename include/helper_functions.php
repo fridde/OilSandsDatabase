@@ -1960,14 +1960,14 @@ class Helper {
                         $errorArray[] = $errorRow;
 //                         avoid memory overflow by inserting array when memory use goes over 20 MB
                         if((memory_get_usage() / (1024 * 1024)) > 20 && count($errorArray) > 0){
-                            // Helper::sql_insert_array($errorArray, "osdb_errors");
+                            Helper::sql_insert_array($errorArray, "osdb_errors");
                             $errorArray = array();
                         } 
 
                     }
                 }
                 echo "<br>made it through a loop";
-                // Helper::sql_insert_array($errorArray, "osdb_errors");
+                Helper::sql_insert_array($errorArray, "osdb_errors");
                 // echop(reset($errorArray));
                 // echo (memory_get_usage() / (1024 * 1024)) . " <br><br>";
                 // unset($errorArray, $array);
