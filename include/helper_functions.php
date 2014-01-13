@@ -1,6 +1,7 @@
 <?php
 
 function echop($array) {
+    /* extends echo by nicely printing arrays*/
     if (gettype($array) != "array") {
         echo "<br>" . $array . "<br>";
     }
@@ -158,7 +159,7 @@ function curPageURL() {
 }
 
 function link_for($url, $label = "", $class = "") {
-
+    /* wrapper to build links and the ability to define a class*/
     $returnString = '<a href="' . $url . '" ';
     if ($class != "") {
         $returnString .= 'class="' . $class . '"';
@@ -176,6 +177,7 @@ function link_for($url, $label = "", $class = "") {
 }
 
 function redirect($to) {
+    /* wrapper to redirect to a given url specified by $to */
     @session_write_close();
     if (!headers_sent()) {
         header("Location: $to");
@@ -308,9 +310,11 @@ class CSV_DataSource {
 }
 
 class Helper {
+    /* class that contains all functions used in OilSandsDatabase*/
 
     public static function count_col_row($array) {
-
+        /* will return the number of rows(number of arrays in $array)
+         * and columns (length of the longest array within $array)*/
         $rows = count($array);
         $cols = 0;
         foreach ($array as $currentRow) {
@@ -324,7 +328,9 @@ class Helper {
     }
 
     public static function fill_array($array, $cols = NULL) {
-
+        /* for a given $array of arrays, each array is padded with NULL-values
+         * to equalize lengths.
+         * The parameter $cols */
         $col_row = Helper::count_col_row($array);
         if (is_null($cols)) {
             $cols = $col_row["col"];
@@ -1617,6 +1623,10 @@ class Helper {
         $newArray = array();
 
         foreach ($array as $rowKey => $row) {
+            if (gettype($row) != "array") {
+                $row = array($rowKey => $row);
+            }
+
             foreach ($row as $colKey => $cell) {
                 if (in_array($colKey, $columns)) {
                     if (count($columns) > 1 || $alwaysAsArray) {
@@ -1976,68 +1986,105 @@ class Helper {
     //
     // }
 
-    public static function calculate_errors($compilationIdArray, $mainIdArray, $stepLength = 100) {
+    public static function calculate_errors($mainId, $compilationId, $startDate, $endDate) {
 
-        // number of days that are analyzed in each day. If memory problems appear, reduce the step size
-        
-        $stepLength = "+ " . $stepLength ." days";
-        
-        $compilationIdArray = array_diff($compilationIdArray, $mainIdArray);
-        $firstDate = ORM::for_table("osdb_working") -> order_by_asc('Date') -> find_one() -> as_array();
-        $lastDate = ORM::for_table("osdb_working") -> order_by_desc('Date') -> find_one() -> as_array();
-        $allPossibleDates = Helper::dateRange($firstDate["Date"], $lastDate["Date"], $stepLength);
-        /* error calculation has to be done step-wise to minimize memory use*/
-        for ($i = 1; $i < count($allPossibleDates); $i++) {
-            foreach ($mainIdArray as $mainId) {
-                $mainArray = ORM::for_table("osdb_working") -> where("Compilation_Id", $mainId) -> where_gte("Date", $allPossibleDates[$i - 1]) -> where_lt("Date", $allPossibleDates[$i]) -> find_array();
+        $mainArray = ORM::for_table("osdb_working") -> where("Compilation_Id", $mainId) -> where_gte("Date", $startDate) -> where_lt("Date", $endDate) -> find_array();
+        if (count($mainArray) > 0) {
+            $mainArray = Helper::rebuild_keys($mainArray, "Date");
+            $mainDates = array_keys($mainArray);
 
-                if (count($mainArray) > 0) {
-                    $mainArray = Helper::rebuild_keys($mainArray, "Date");
-                    $mainDates = array_keys($mainArray);
+            $compArray = ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) -> where_gte("Date", $startDate) -> where_lt("Date", $endDate) -> find_array();
 
-                    foreach ($compilationIdArray as $compilationId) {
-                        $compArray = ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) -> where_gte("Date", $allPossibleDates[$i - 1]) -> where_lt("Date", $allPossibleDates[$i]) -> find_array();
+            if (count($compArray) > 0) {
+                $compArray = Helper::rebuild_keys($compArray, "Date");
+                $firstRow = reset($compArray);
+                $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
+                $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
+                if (count($prognosisDates) > 0) {
+                    $publicationDate = new DateTime($publicationDate);
 
-                        if (count($compArray) > 0) {
-                            $compArray = Helper::rebuild_keys($compArray, "Date");
-                            $firstRow = reset($compArray);
-                            $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
-                            $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
-                            $publicationDate = new DateTime($publicationDate);
+                    $errorArray = array();
+                    foreach ($prognosisDates as $date) {
+                        if (isset($compArray[$date])) {
+                            $yRow = $compArray[$date];
 
-                            $errorArray = array();
-                            echo "Prognosis dates: " . count($prognosisDates);
-                            foreach ($prognosisDates as $date) {
-                                if (isset($compArray[$date])) {
-                                    $yRow = $compArray[$date];
+                            $xRow = $mainArray[$date];
 
-                                    $xRow = $mainArray[$date];
-
-                                    $errorRow["Date"] = $xRow["Date"];
-                                    $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
-                                    if ($xRow["Value"] != 0) {
-                                        $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
-                                    }
-                                    else {
-                                        $errorRow["ErrorPercentage"] = "";
-                                    }
-
-                                    $xDate = new DateTime($xRow["Date"]);
-                                    $diff = $xDate -> diff($publicationDate);
-
-                                    $errorRow["Day"] = $diff -> format('%a');
-
-                                    $errorRow["Main_Id"] = $mainId;
-                                    $errorRow["Compilation_Id"] = $compilationId;
-
-                                    $errorArray[] = $errorRow;
-                                }
+                            $errorRow["Date"] = $xRow["Date"];
+                            $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
+                            if ($xRow["Value"] != 0) {
+                                $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
                             }
-                            Helper::sql_insert_array($errorArray, "osdb_errors");
+                            else {
+                                $errorRow["ErrorPercentage"] = "";
+                            }
+
+                            $xDate = new DateTime($xRow["Date"]);
+                            $diff = $xDate -> diff($publicationDate);
+
+                            $errorRow["Day"] = $diff -> format('%a');
+
+                            $errorRow["Main_Id"] = $mainId;
+                            $errorRow["Compilation_Id"] = $compilationId;
+
+                            $errorArray[] = $errorRow;
                         }
                     }
+                    Helper::sql_insert_array($errorArray, "osdb_errors");
                 }
+
             }
+        }
+
+    }
+
+    public static function establish_calculation_table($stepLength) {
+
+        // number of days that are analyzed in each day. If memory problems appear, reduce the step size
+        $stepLength = "+ " . $stepLength . " days";
+
+        /* First, create combination Array with all possible
+         * combinations of compilations that have to be compared to other mainCompilations */
+
+        $compilationIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "analyzed") -> find_array(), "Compilation_Id");
+        $mainCompIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "Basis") -> find_array(), "Compilation_Id");
+
+        /* Now, create a $combinationArray that contains all possible combinations of a mainCompilation (the reference)
+         * and a normal compilation */
+        $combinationArray = array();
+        foreach ($mainCompIdArray as $mainId) {
+            foreach ($compilationIdArray as $compId) {
+                $combinationArray[] = array(
+                    $mainId,
+                    $compId
+                );
+            }
+        }
+        /* Now, create an array allPossibleDates that divides the whole time series into
+         * shorter steps to minimize calculation costs for each step */
+        foreach ($compilationIdArray as $key => $compilationId) {
+            $newFirstDate[$key] = Helper::sql_select_columns(ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) -> order_by_asc('Date') -> find_one() -> as_array(), "Date");
+            $newLastDate[$key] = Helper::sql_select_columns(ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) -> order_by_desc('Date') -> find_one() -> as_array(), "Date");
+        }
+        sort($newFirstDate);
+        sort($newLastDate);
+        $firstDate = reset($newFirstDate);
+        $lastDate = end($newLastDate);
+        $allPossibleDates = Helper::dateRange($firstDate["Date"], $lastDate["Date"], $stepLength);
+        echo count($allPossibleDates) * count($combinationArray);
+        for ($i = 1; $i < count($allPossibleDates); $i++) {
+            $inputArray = array();
+            $startDate = $allPossibleDates[$i - 1];
+            $endDate = $allPossibleDates[$i];
+            foreach ($combinationArray as $combination) {
+                $inputArray[] = array(
+                    "startDate" => $startDate,
+                    "endDate" => $endDate,
+                    "mainCompId" => $combination[0],
+                    "compId" => $combination[1]
+                );
+            }
+            Helper::sql_insert_array($inputArray, "osdb_errors_to_calculate");
         }
     }
 
@@ -2103,71 +2150,75 @@ class Helper {
          *
          * See chapter "Comparing prognoses" in  https://github.com/fridde/PerformanceRecordsArticle
          * */
+        if (ORM::for_table("osdb_errors_to_calculate") -> count() == 0) {
+            ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
+            $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
+            foreach ($combinationIdArray as $combination) {
+                $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
+                $maxDayArray[] = $maxDay -> Day;
+            }
+            $maxDayArray = array_unique($maxDayArray);
+            sort($maxDayArray);
+            $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
+            $queryArray = array();
+            foreach ($mainIdArray as $mainId) {
+                $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainId);
+                $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
+                $validErrorCompilations = array_unique($validErrorCompilations);
+                $compilationsToCompare = Helper::create_matchings($validErrorCompilations);
 
-        ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
-        $combinationIdArray = ORM::for_table('osdb_errors') -> distinct() -> select_many("Main_Id", "Compilation_Id") -> find_array();
-        foreach ($combinationIdArray as $combination) {
-            $maxDay = ORM::for_table('osdb_errors') -> where("Main_Id", $combination["Main_Id"]) -> where("Compilation_Id", $combination["Compilation_Id"]) -> order_by_desc('Day') -> find_one();
-            $maxDayArray[] = $maxDay -> Day;
-        }
-        $maxDayArray = array_unique($maxDayArray);
-        sort($maxDayArray);
-        $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
-        $queryArray = array();
-        foreach ($mainIdArray as $mainId) {
-            $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainId);
-            $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
-            $validErrorCompilations = array_unique($validErrorCompilations);
-            $compilationsToCompare = Helper::create_matchings($validErrorCompilations);
+                if (count($compilationsToCompare) > 0) {
+                    /* now all possible combinations of two compilations are compared against each other, like in a tournament */
 
-            if (count($compilationsToCompare) > 0) {
-                /* now all possible combinations of two compilations are compared against each other, like in a tournament */
+                    foreach ($compilationsToCompare as $combination) {
+                        $firstCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainId) -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
+                        $firstCompilation = Helper::rebuild_keys($firstCompilation, "Day");
+                        $secondCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainId) -> where("Compilation_Id", $combination[1]) -> order_by_asc('Day') -> find_array();
+                        $secondCompilation = Helper::rebuild_keys($secondCompilation, "Day");
+                        //echop($secondCompilation);
+                        $day = 0;
+                        $errorDiff = array();
+                        $somethingNew = FALSE;
+                        while ($day <= max($maxDayArray)) {
+                            if (isset($firstCompilation[$day]) && isset($secondCompilation[$day])) {
+                                $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"], 2) - pow($secondCompilation[$day]["ErrorPercentage"], 2);
+                                $somethingNew = TRUE;
+                            }
+                            if ($somethingNew && in_array($day, $maxDayArray)) {
 
-                foreach ($compilationsToCompare as $combination) {
-                    $firstCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainId) -> where("Compilation_Id", $combination[0]) -> order_by_asc('Day') -> find_array();
-                    $firstCompilation = Helper::rebuild_keys($firstCompilation, "Day");
-                    $secondCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainId) -> where("Compilation_Id", $combination[1]) -> order_by_asc('Day') -> find_array();
-                    $secondCompilation = Helper::rebuild_keys($secondCompilation, "Day");
-                    //echop($secondCompilation);
-                    $day = 0;
-                    $errorDiff = array();
-                    $somethingNew = FALSE;
-                    while ($day <= max($maxDayArray)) {
-                        if (isset($firstCompilation[$day]) && isset($secondCompilation[$day])) {
-                            $errorDiff[$day] = pow($firstCompilation[$day]["ErrorPercentage"], 2) - pow($secondCompilation[$day]["ErrorPercentage"], 2);
-                            $somethingNew = TRUE;
+                                $meanDifferential = array_sum($errorDiff) / count($errorDiff);
+                                $autocovariance = Helper::autocovariance($errorDiff);
+                                if ($autocovariance == 0) {
+                                    $errorStatistic = 0;
+                                }
+                                else {
+                                    $errorStatistic = $meanDifferential / sqrt($autocovariance);
+                                }
+                                $arrayToAdd = array(
+                                    "Main_Id" => $mainId,
+                                    "Compilation_1" => $combination[0],
+                                    "Compilation_2" => $combination[1],
+                                    "Day" => $day,
+                                    "Mean_Differential" => $meanDifferential,
+                                    "ErrorStatistic" => $errorStatistic
+                                );
+                                if (!in_array($arrayToAdd, $queryArray)) {
+                                    $queryArray[] = $arrayToAdd;
+                                }
+                                /* In the case that a new row is added */
+                                $somethingNew = FALSE;
+
+                            }
+                            $day++;
                         }
-                        if ($somethingNew && in_array($day, $maxDayArray)) {
-
-                            $meanDifferential = array_sum($errorDiff) / count($errorDiff);
-                            $autocovariance = Helper::autocovariance($errorDiff);
-                            if ($autocovariance == 0) {
-                                $errorStatistic = 0;
-                            }
-                            else {
-                                $errorStatistic = $meanDifferential / sqrt($autocovariance);
-                            }
-                            $arrayToAdd = array(
-                                "Main_Id" => $mainId,
-                                "Compilation_1" => $combination[0],
-                                "Compilation_2" => $combination[1],
-                                "Day" => $day,
-                                "Mean_Differential" => $meanDifferential,
-                                "ErrorStatistic" => $errorStatistic
-                            );
-                            if (!in_array($arrayToAdd, $queryArray)) {
-                                $queryArray[] = $arrayToAdd;
-                            }
-                            /* In the case that a new row is added */
-                            $somethingNew = FALSE;
-
-                        }
-                        $day++;
                     }
                 }
             }
+            Helper::sql_insert_array($queryArray, "osdb_ranking");
         }
-        Helper::sql_insert_array($queryArray, "osdb_ranking");
+        else {
+            echo "Can't calculate ranking: Some errors are still uncalculated! <br>";
+        }
     }
 
     public static function autocovariance($array, $stepSize = 1) {

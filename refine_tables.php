@@ -30,13 +30,15 @@ switch ($_REQUEST["choice"]) {
 
     case 'Empty error table':
         if ($rightPassword) {
-            ORM::for_table('osdb_errors') -> raw_execute("TRUNCATE TABLE osdb_errors ;");
+           ORM::for_table('osdb_errors_to_calculate') -> raw_execute("TRUNCATE TABLE osdb_errors_to_calculate ;");   
+           $stepLength = $ini_array["maxSteps"];   
+           Helper::establish_calculation_table($stepLength);     
+           ORM::for_table('osdb_errors') -> raw_execute("TRUNCATE TABLE osdb_errors ;");
             redirect("index.php?page=administration_form");
         }
         else {
             $failedAttempt = TRUE;
         }
-        break;
         break;
     
     case "Convert to barrels per day" :
@@ -133,41 +135,30 @@ switch ($_REQUEST["choice"]) {
         break;
 
     case "Calculate errors" :
-        error_reporting(E_ALL);
-        ini_set('display_errors', 'On');
-        
-        if(!isset($ini_array["compilations_with_calculated_errors"]) || $ini_array["compilations_with_calculated_errors"] == 0){
-            $alreadyCalculatedCompilationIds = array();
-        }
-        else{
-            $alreadyCalculatedCompilationIds = Helper::sql_select_columns(ORM::for_table('osdb_errors') -> distinct() -> select("Compilation_Id") -> find_array(), "Compilation_Id");
-        }
-        $alreadyCalculated = count($alreadyCalculatedCompilationIds);
-        $compilationIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "analyzed") -> find_array(), "Compilation_Id");
-        $mainCompIdArray = Helper::sql_select_columns(ORM::for_table('osdb_tags') -> distinct() -> where("Name", "Basis") -> find_array(), "Compilation_Id");
-        
-        $allCompilations = count($compilationIdArray);
-        
-        $start = microtime(true);
-        foreach ($compilationIdArray as $compilationId) {
-            $bool1 = !in_array($compilationId, $alreadyCalculatedCompilationIds);
-            $bool2 = (microtime(true) - $start) < $ini_array["maxCalculationTime"];
-            echo (microtime(true) - $start) . "<br>";
-            $bool3 = $alreadyCalculated < $allCompilations;
-            if ($bool1 && $bool2 && $bool3) {
-                echo $compilationId . "<br>";
-                echo (microtime(true) - $start) . "<br><br>";
-                Helper::calculate_errors(array($compilationId), $mainCompIdArray, $ini_array["maxSteps"]);
-                $alreadyCalculated++;
+            
+            $start = microtime(TRUE);
+            
+            $minId = ORM::for_table("osdb_errors_to_calculate")->order_by_asc("id")->find_one()->id;
+            $maxId = ORM::for_table("osdb_errors_to_calculate")->order_by_desc("id")->find_one()->id;
+            
+            for ($i=$minId; $i <= $maxId; $i++) {
+                $rows = ORM::for_table("osdb_errors_to_calculate")->where("id", $i)->find_result_set();
+                if($rows->count() > 0){
+                    foreach($rows as $row){
+                        Helper::calculate_errors($row->mainCompId, $row->compId, $row->startDate, $row->endDate);
+                        $row->delete();   
+                    }
+                }
+                if((microtime(TRUE) - $start) > $ini_array["maxCalculationTime"]){
+                            echo ORM::for_table("osdb_errors_to_calculate")->count() . " left to calculate.<br><br>";
+                        redirect("index.php?page=administration_form");
+                    // break(2);
+                }
             }
-        }
-
+            
         
-        $ini_array["compilations_with_calculated_errors"] = $alreadyCalculated;
-        Helper::write_to_config($ini_array);
-        // redirect("index.php?page=administration_form");
         break;
-
+    
     case "Recalculate Ranking" :
         Helper::calculate_ranking();
         redirect("index.php?page=ranking");

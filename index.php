@@ -22,14 +22,14 @@
             $linkArray = array(
                 "Documentation" => "documentation",
                 "Sources" => "sources",
-                "Send sources to database" => "add_database_form",
+                "Extend database" => "add_database_form",
                 "Refine data" => "refine_tables_form",
                 "Create Compilations" => "working_tables_form",
                 "Compilations" => "compilations",
                 "Ranking" => "ranking",
                 "Gallery" => "gallery",
                 "Map" => "map",
-                "Administration" => "administration_form"
+                "Admin" => "administration_form"
             );
             foreach ($linkArray as $label => $url) {
                 link_for("index.php?page=" . $url, $label, "box");

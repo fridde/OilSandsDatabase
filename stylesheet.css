@@ -11,7 +11,7 @@ root {
 }
 
 body {
-	background-color: IVORY;
+	background-color: #F5FFFa;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	min-width: 500px; /* 2x LC width + RC width */
 }
@@ -25,10 +25,6 @@ div .buttons {
 	float: left;
 }
 
-/*button {
-	maybe the button will look nicer one day...
-}*/
-
 .redButton {
 	background-color: red; 
 }
@@ -36,7 +32,6 @@ div .buttons {
 div.boxed {
 	border: solid black 1px;
 	width: auto;
-	width: 600px;
 	padding: 5px;
 }
 
@@ -61,10 +56,8 @@ div #buttonExplanation {
 }
 
 #navbar {
-	/*background: red;*/
 	background: linear-gradient(to bottom, #FFC768 0%, #FFFFFF 100%);
 	padding: 10px;
-	/*margin-right: 10px;*/
 	border-radius: 5px;
 }
 
@@ -80,7 +73,6 @@ div #buttonExplanation {
 
 #navbar a:link, #navbar a:visited {
 	display: inline;
-	font-weight: bold;
 	color: #FFFFFF;
 	background-color: #3083AA;
 	width: 120px;
@@ -97,14 +89,12 @@ a.box {
 	margin-left: 5px;
 	padding: 5px;
 	background-color: #7DB9E8;
-	font-weight: bold;
 	display: inline;
 }
 
 #main {
 	float: left;
 	width: 100%;
-	background: MINTCREAM;
 	padding: 10px;
 }
 
@@ -126,7 +116,7 @@ a.box {
 	text-align: left;
 	padding-top: 5px;
 	padding-bottom: 4px;
-	background-color: CORNSILK;
+	background-color: #FFF8DC;
 	color: BLACK;
 }
 

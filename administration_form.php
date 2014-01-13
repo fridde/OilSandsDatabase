@@ -37,14 +37,14 @@ echo '</select><br>
 echo '<p><input type="submit" name="choice" value="Recalculate Ranking">';
 
 
-$toCalculate = ORM::for_table('osdb_tags') -> distinct() -> where("Name", "analyzed") -> count();
-$difference = $toCalculate - $ini_array["compilations_with_calculated_errors"];
-if($difference > 0){
+$toCalculate = ORM::for_table('osdb_errors_to_calculate') -> count();
+
+if($toCalculate > 0){
     echo '<input type="submit" name="choice" value="Calculate errors" class="redButton">';
 } else {
     echo '<input type="submit" name="choice" value="Empty error table">';
 }
-echo $difference . " more to calculate";
+echo " " . $toCalculate . " more to calculate";
 
 
 ?>
