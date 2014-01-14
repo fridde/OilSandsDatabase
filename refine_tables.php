@@ -28,19 +28,21 @@ switch ($_REQUEST["choice"]) {
         }
         break;
 
-    case 'Empty error table':
+    case 'Empty error table' :
         if ($rightPassword) {
-           ORM::for_table('osdb_errors_to_calculate') -> raw_execute("TRUNCATE TABLE osdb_errors_to_calculate ;");   
-           $stepLength = $ini_array["maxSteps"];   
-           Helper::establish_calculation_table($stepLength);     
-           ORM::for_table('osdb_errors') -> raw_execute("TRUNCATE TABLE osdb_errors ;");
+            ORM::for_table('osdb_errors_to_calculate') -> raw_execute("TRUNCATE TABLE osdb_errors_to_calculate ;");
+            ORM::for_table("osdb_ranking") -> raw_execute("TRUNCATE TABLE osdb_ranking;");
+            ORM::for_table('osdb_errors') -> raw_execute("TRUNCATE TABLE osdb_errors ;");
+
+            $stepLength = $ini_array["maxSteps"];
+            Helper::establish_calculation_table("errors", $stepLength);
             redirect("index.php?page=administration_form");
         }
         else {
             $failedAttempt = TRUE;
         }
         break;
-    
+
     case "Convert to barrels per day" :
         foreach ($_REQUEST["checked_source"] as $sourceId) {
             Helper::sql_to_barrels_per_day($sourceId, 'osdb_data');
@@ -135,33 +137,57 @@ switch ($_REQUEST["choice"]) {
         break;
 
     case "Calculate errors" :
-            
-            $start = microtime(TRUE);
-            
-            $minId = ORM::for_table("osdb_errors_to_calculate")->order_by_asc("id")->find_one()->id;
-            $maxId = ORM::for_table("osdb_errors_to_calculate")->order_by_desc("id")->find_one()->id;
-            
-            for ($i=$minId; $i <= $maxId; $i++) {
-                $rows = ORM::for_table("osdb_errors_to_calculate")->where("id", $i)->find_result_set();
-                if($rows->count() > 0){
-                    foreach($rows as $row){
-                        Helper::calculate_errors($row->mainCompId, $row->compId, $row->startDate, $row->endDate);
-                        $row->delete();   
+        $start = microtime(TRUE);
+
+        $errorsLeft = ORM::for_table("osdb_errors_to_calculate") -> where("type", "errors") -> count() > 0;
+        $noStatistics = ORM::for_table("osdb_errors_to_calculate") -> where("type", "statistics") -> count() == 0;
+
+        /* any calculation of ranking values that is done BEFORE all errors are calculated would yield false results  */
+        if ($errorsLeft) {
+            $minId = ORM::for_table("osdb_errors_to_calculate") -> where("type", "errors") -> order_by_asc("id") -> find_one() -> id;
+            $maxId = ORM::for_table("osdb_errors_to_calculate") -> where("type", "errors") -> order_by_desc("id") -> find_one() -> id;
+
+            for ($i = $minId; $i <= $maxId; $i++) {
+                $rows = ORM::for_table("osdb_errors_to_calculate") -> where("id", $i) -> where("type", "errors") -> find_result_set();
+                if ($rows -> count() > 0) {
+                    /* actually, there'll be one result at maximum, but the grammar
+                     *  of the result set demands a foreach-loop */
+                    foreach ($rows as $row) {
+                        Helper::calculate_errors($row -> mainCompId, $row -> compId1, $row -> startDate, $row -> endDate);
+                        $row -> delete();
                     }
                 }
-                if((microtime(TRUE) - $start) > $ini_array["maxCalculationTime"]){
-                            echo ORM::for_table("osdb_errors_to_calculate")->count() . " left to calculate.<br><br>";
-                        redirect("index.php?page=administration_form");
-                    // break(2);
+                if ((microtime(TRUE) - $start) > $ini_array["maxCalculationTime"]) {
+                    echo ORM::for_table("osdb_errors_to_calculate") -> count() . " left to calculate.<br><br>";
+                    redirect("index.php?page=administration_form");
                 }
             }
+        }
+        /* if all errors are calculated, ranking statistics can be calculated */
+        else {
+            if ($noStatistics) {
+                Helper::establish_calculation_table("statistics");
+                redirect("index.php?page=administration_form");
+            }
             
-        
-        break;
-    
-    case "Recalculate Ranking" :
-        Helper::calculate_ranking();
-        redirect("index.php?page=ranking");
+            $timeLeft = TRUE;
+            while ($timeLeft) {
+                if ((microtime(TRUE) - $start) > $ini_array["maxCalculationTime"]) {
+                    $timeLeft = FALSE;
+                }
+                $i = ORM::for_table("osdb_errors_to_calculate") -> where("type", "statistics") -> order_by_asc("Day") -> find_one() -> id;
+                $rows = ORM::for_table("osdb_errors_to_calculate") -> where("id", $i) -> find_result_set();
+                if ($rows -> count() > 0) {
+                    foreach ($rows as $row) {
+                        Helper::calculate_ranking($row -> mainCompId, $row -> compId1, $row -> compId2, $row -> Day);
+                        $row -> delete();
+                    }
+                }
+            }
+            echo ORM::for_table("osdb_errors_to_calculate") -> count() . " left to calculate.<br><br>";
+            redirect("index.php?page=administration_form");
+        }
+
         break;
 
     case "Edit Buttons" :

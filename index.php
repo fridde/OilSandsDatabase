@@ -28,7 +28,7 @@
                 "Compilations" => "compilations",
                 "Ranking" => "ranking",
                 "Gallery" => "gallery",
-                "Map" => "map",
+                // "Map" => "map", //currently no map available
                 "Admin" => "administration_form"
             );
             foreach ($linkArray as $label => $url) {

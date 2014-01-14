@@ -34,17 +34,18 @@ foreach($compilations as $compilation){
 echo '</select><br>
 <input type="submit" name="choice" value="Remove compilation"></p>';
 
-echo '<p><input type="submit" name="choice" value="Recalculate Ranking">';
+// echo '<p><input type="submit" name="choice" value="Calculate Ranking">';
 
 
-$toCalculate = ORM::for_table('osdb_errors_to_calculate') -> count();
+$toCalculate = ORM::for_table('osdb_errors_to_calculate') ->where("type", "errors") -> count();
+$statisticsQueue = ORM::for_table('osdb_errors_to_calculate') ->where("type", "statistics") -> count();
 
-if($toCalculate > 0){
+ if($toCalculate > 0 || !$statisticsQueue == 0){
     echo '<input type="submit" name="choice" value="Calculate errors" class="redButton">';
 } else {
     echo '<input type="submit" name="choice" value="Empty error table">';
 }
-echo " " . $toCalculate . " more to calculate";
+echo " " . $toCalculate . " more error sets and " . $statisticsQueue . " more statistics sets to calculate.";
 
 
 ?>
