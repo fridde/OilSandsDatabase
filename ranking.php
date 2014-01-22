@@ -2,7 +2,6 @@
 
 $possibleMainIdArray = Helper::sql_select_columns(ORM::for_table("osdb_ranking") -> distinct() -> select("Main_Id") -> find_array(), "Main_Id");
 
-// echo '<div class="accordion"> ';
 echo '<div id="tabs"> ';
 $tabs = array();
 foreach ($possibleMainIdArray as $mainId) {
@@ -15,11 +14,11 @@ foreach ($possibleMainIdArray as $mainId) {
     $dayArray = Helper::sql_select_columns(ORM::for_table('osdb_ranking') -> distinct() -> order_by_desc('Day') -> select("Day") -> find_array(), "Day");
     foreach ($dayArray as $day) {
         $csvFileName = Helper::shorten_names($mainIdName);
-        if ($day > 30 && $day <= 700) {
+        if ($day > 30 && $day <= 800) {
             $timeText = "~ " . floor($day / 30) . " months";
             $csvFileName .= " - " . floor($day / 30) . "m";
         }
-        elseif ($day > 700) {
+        elseif ($day > 800) {
             $timeText = "~ " . floor($day / 365) . " years";
             $csvFileName .= " - " . floor($day / 365) . "y";
         } else {

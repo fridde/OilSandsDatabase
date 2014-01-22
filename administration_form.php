@@ -16,53 +16,64 @@ echo '</select>
 </p>';
 echo '<p>
 <select name="Source">';
-$sources = ORM::for_table("osdb_sources")->order_by_asc("Institution")->find_array();
-foreach($sources as $source){
-    $name = $source["Institution"]. " - " . $source["SourceName"] . " - " . reset(explode("-", $source["PublicationDate"]));
-    echo '<option value="' . $source["id"] . '">' . $name . '</option>'; 
+$sources = ORM::for_table("osdb_sources") -> order_by_asc("Institution") -> find_array();
+foreach ($sources as $source) {
+    $name = $source["Institution"] . " - " . $source["SourceName"] . " - " . reset(explode("-", $source["PublicationDate"]));
+    echo '<option value="' . $source["id"] . '">' . $name . '</option>';
 }
 echo '</select><br>
 <input type="submit" name="choice" value="Remove source"> 
-<input type="checkbox" name="archive" value="archive"> Archive source </p>' ; 
+<input type="checkbox" name="archive" value="archive"> Archive source </p>';
 
 echo '<p>
 <select name="Compilation">';
-$compilations = ORM::for_table("osdb_compilations")->order_by_asc("Name")->find_array();
-foreach($compilations as $compilation){
-    echo '<option value="' . $compilation["id"] . '">' . $compilation["Name"] . '</option>'; 
+$compilations = ORM::for_table("osdb_compilations") -> order_by_asc("Name") -> find_array();
+foreach ($compilations as $compilation) {
+    echo '<option value="' . $compilation["id"] . '">' . $compilation["Name"] . '</option>';
 }
 echo '</select><br>
 <input type="submit" name="choice" value="Remove compilation"></p>';
 
 // echo '<p><input type="submit" name="choice" value="Calculate Ranking">';
 
+$errorsQueue = ORM::for_table('osdb_errors_to_calculate') -> where("type", "errors") -> count();
+$statisticsQueue = ORM::for_table('osdb_errors_to_calculate') -> where("type", "statistics") -> count();
 
-$toCalculate = ORM::for_table('osdb_errors_to_calculate') ->where("type", "errors") -> count();
-$statisticsQueue = ORM::for_table('osdb_errors_to_calculate') ->where("type", "statistics") -> count();
-
- if($toCalculate > 0 || !$statisticsQueue == 0){
+if ($errorsQueue > 0) {
     echo '<input type="submit" name="choice" value="Calculate errors" class="redButton">';
-} else {
+}
+elseif ($errorsQueue == 0 && $statisticsQueue == 0) {
+    echo '<input type="submit" name="choice" value="Prepare statistics calculations" class="redButton"><br>';
     echo '<input type="submit" name="choice" value="Empty error table">';
 }
-echo " " . $toCalculate . " more error sets and " . $statisticsQueue . " more statistics sets to calculate.";
+elseif($statisticsQueue > 0){
+    echo '<input type="submit" name="choice" value="Calculate statistics" class="redButton">';
+}
 
-
+else {
+    echo '<input type="submit" name="choice" value="Empty error table">';
+}
+echo " " . $errorsQueue . " more error sets and " . $statisticsQueue . " more statistics sets to calculate.";
 ?>
-<p><h2>Add synonyms or abbreviations</h2></p>
-<p><input type="submit" name="choice" value="Add synonyms">
-<input type="radio" name="synonym_type" value="Synonym" id="synonym" checked>
-<label for="synonym">Synonym</label>
-<input type="radio" name="synonym_type" value="Abbreviation" id="abbreviation">
-<label for="abbreviation">Abbreviation</label>
+<p>
+	<h2>Add synonyms or abbreviations</h2>
+</p>
+<p>
+	<input type="submit" name="choice" value="Add synonyms">
+	<input type="radio" name="synonym_type" value="Synonym" id="synonym" checked>
+	<label for="synonym">Synonym</label>
+	<input type="radio" name="synonym_type" value="Abbreviation" id="abbreviation">
+	<label for="abbreviation">Abbreviation</label>
 </p>
 <table class="short_table">
-    <tr><th>Synonym</th><th>Replacement</th></tr>
-<?php
-for ($i=0; $i < 15 ; $i++) { 
-	echo '<tr id="synonyms"><td><input type="text" name="synonym[]"></td>
-	<td><input type="text" name="replacement[]"></td></tr>';
-}
- ?>    
+	<tr>
+		<th>Synonym</th><th>Replacement</th>
+	</tr>
+	<?php
+    for ($i = 0; $i < 15; $i++) {
+        echo '<tr id="synonyms"><td><input type="text" name="synonym[]"></td>
+<td><input type="text" name="replacement[]"></td></tr>';
+    }
+	?>
 </table>
 </form>

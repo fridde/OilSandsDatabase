@@ -884,11 +884,21 @@ class Helper {
         return (preg_match("~\d%\)~", $string) == 1);
     }
 
+    /*
+     /* ###################################################
+     /* is_project_date
+     /* ###################################################
+     */
     public static function is_project_date($string) {
 
         return (preg_match("~[[:upper:]]{1}[[:lower:]]{2}[[:blank:]]{1}\d{4}:~", $string) == 1);
     }
 
+    /*
+     /* ###################################################
+     /* array_each_add
+     /* ###################################################
+     */
     public static function array_each_add($array, $number) {
         foreach ($array as $key => $value) {
             $array[$key] = intval($array[$key]) + $number;
@@ -896,6 +906,11 @@ class Helper {
         return $array;
     }
 
+    /*
+     /* ###################################################
+     /* multiple_search
+     /* ###################################################
+     */
     public static function multiple_search($haystack_array, $needle_array, $length_limit = FALSE) {
         $returnArray = array();
         if (gettype($needle_array) != "array") {
@@ -917,6 +932,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* merge_columns
+     /* ###################################################
+     */
     public static function merge_columns($array, $col1, $col2) {
 
         foreach ($array as $rowKey => $row) {
@@ -928,6 +948,11 @@ class Helper {
         return $array;
     }
 
+    /*
+     /* ###################################################
+     /* split_at
+     /* ###################################################
+     */
     public static function split_at($array, $col, $char) {
         $col = intval($col);
         if (strlen(trim($char)) < 1) {
@@ -959,6 +984,11 @@ class Helper {
         return $array;
     }
 
+    /*
+     /* ###################################################
+     /* transpose
+     /* ###################################################
+     */
     public static function transpose($array) {
         array_unshift($array, null);
         return call_user_func_array('array_map', $array);
@@ -994,6 +1024,11 @@ class Helper {
         return $array;
     }
 
+    /*
+     /* ###################################################
+     /* find_rows
+     /* ###################################################
+     */
     public static function find_rows($array, $regex, $col) {
         if ($col == "") {
             $col = 0;
@@ -1013,6 +1048,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* split_row_at
+     /* ###################################################
+     */
     public static function split_row_at($array, $colRowRegex, $delimiterRegex) {
         $colRowRegex = explode(",", $colRowRegex, 2);
         $col = $colRowRegex[0];
@@ -1041,6 +1081,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* remove_lines_where
+     /* ###################################################
+     */
     public static function remove_lines_where($array, $regex, $col) {
 
         $linesToRemove = Helper::find_rows($array, $regex, $col);
@@ -1049,12 +1094,22 @@ class Helper {
         return $array;
     }
 
+    /*
+     /* ###################################################
+     /* fill_from_above_where
+     /* ###################################################
+     */
     public static function fill_from_above_where($array, $pivotCols, $regex) {
         $pivotRows = Helper::find_rows($array, $regex, $pivotCols);
         $array = Helper::fill_from_above($array, $pivotCols, $pivotRows);
         return $array;
     }
 
+    /*
+     /* ###################################################
+     /* remove_if_other_col
+     /* ###################################################
+     */
     public static function remove_if_other_col($array, $checkCol, $removeCol) {
         $checkCol = explode(",", $checkCol, 2);
         $regex = "%\w+%";
@@ -1072,6 +1127,11 @@ class Helper {
         return $array;
     }
 
+    /*
+     /* ###################################################
+     /* melt
+     /* ###################################################
+     */
     public static function melt($array, $colsToSplit, $header) {
         // header contains only the words used for the value and the word of differentiation, for example "Value" and "Product"
         $colsToSplit = explode(",", $colsToSplit);
@@ -1105,6 +1165,11 @@ class Helper {
         return $newArray;
     }
 
+    /*
+     /* ###################################################
+     /* find_most_similar
+     /* ###################################################
+     */
     public static function find_most_similar($needle, $haystack, $alwaysFindSomething = TRUE) {
 
         if ($alwaysFindSomething) {
@@ -1127,6 +1192,11 @@ class Helper {
         return $bestWord;
     }
 
+    /*
+     /* ###################################################
+     /* result_column_to_array
+     /* ###################################################
+     */
     public static function result_column_to_array($resultSet, $colName) {
 
         $returnArray = array();
@@ -1136,6 +1206,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* get_array_column
+     /* ###################################################
+     */
     public static function get_array_column($array, $col, $hasHeader) {
 
         $newArray = array();
@@ -1160,6 +1235,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* sql_remove_duplicates
+     /* ###################################################
+     */
     public static function sql_remove_duplicates($sqlTable, $ignoreArray = array("id")) {
 
         $rowsBefore = ORM::for_table($sqlTable) -> count();
@@ -1182,6 +1262,11 @@ class Helper {
         return $rowsBefore - $rowsAfter;
     }
 
+    /*
+     /* ###################################################
+     /* sql_convert_dates
+     /* ###################################################
+     */
     public static function sql_convert_dates($sourceId, $tableName) {
         $ORM = ORM::for_table($tableName) -> where("Source_Id", $sourceId) -> find_many();
 
@@ -1304,6 +1389,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* convert_date
+     /* ###################################################
+     */
     public static function convert_date($date, $type) {
 
         $qArray = array(
@@ -1347,6 +1437,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* convert_month
+     /* ###################################################
+     */
     public static function convert_month($month) {
 
         if (strlen($month) == 2 || strlen($month) == 0) {
@@ -1398,6 +1493,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* sql_to_barrels_per_day
+     /* ###################################################
+     */
     public static function sql_to_barrels_per_day($sourceId, $dataTable) {
 
         $ORM = ORM::for_table($dataTable) -> where("Source_Id", $sourceId) -> find_many();
@@ -1442,6 +1542,11 @@ class Helper {
         }
     }
 
+    /*
+     /* ###################################################
+     /* interpolate_table
+     /* ###################################################
+     */
     public static function interpolate_table($sourceId) {
 
         /* chooses all rows of a given source from the table osdb_data, interpolates the values with a step
@@ -1577,6 +1682,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* sql_add_columns
+     /* ###################################################
+     */
     public static function sql_add_columns($sqlTable, $columns) {
         $dummyRow = ORM::for_table($sqlTable) -> create();
         $dummyRow -> save();
@@ -1595,6 +1705,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* filter_for_value
+     /* ###################################################
+     */
     public static function filter_for_value($array, $key, $values) {
         // goes through each element of an 2d-array and returns only those rows where the element $key is $value
 
@@ -1616,6 +1731,11 @@ class Helper {
         return $newArray;
     }
 
+    /*
+     /* ###################################################
+     /* sql_select_columns
+     /* ###################################################
+     */
     public static function sql_select_columns($array, $columns, $alwaysAsArray = FALSE) {
         if (gettype($columns) != "array") {
             $columns = array($columns);
@@ -1641,6 +1761,11 @@ class Helper {
         return $newArray;
     }
 
+    /*
+     /* ###################################################
+     /* sql_get_columnNames
+     /* ###################################################
+     */
     public static function sql_get_columnNames($sqlTable) {
         $dummyRow = ORM::for_table($sqlTable) -> create();
         $dummyRow -> save();
@@ -1653,6 +1778,11 @@ class Helper {
         return $sqlColumns;
     }
 
+    /*
+     /* ###################################################
+     /* add_or_subtract
+     /* ###################################################
+     */
     public static function add_or_subtract($array, $method, $onlyCommonDates = TRUE) {
         $allDates = array();
         foreach ($array as $compilationId => $rowsBelongingToCompilation) {
@@ -1691,6 +1821,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* concat_time_series
+     /* ###################################################
+     */
     public static function concat_time_series($array) {
 
         $allDates = array();
@@ -1725,6 +1860,11 @@ class Helper {
         return $newArray;
     }
 
+    /*
+     /* ###################################################
+     /* combine_data
+     /* ###################################################
+     */
     public static function combine_data($compilationIdArray, $method, $newName, $changeArray, $onlyCommonDates) {
 
         //creating a subgroup with only the relevant compilations
@@ -1806,6 +1946,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* shorten_names
+     /* ###################################################
+     */
     public static function shorten_names($inputArray) {
 
         $ORM = ORM::for_table("osdb_synonyms") -> find_array();
@@ -1819,6 +1964,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* sql_insert_array
+     /* ###################################################
+     */
     public static function sql_insert_array($array, $sqlTable, $maxString = 5000, $updateLog = TRUE) {
         //echo print_r($array) .  "<br>";
         if (count($array) < 1) {
@@ -1871,6 +2021,11 @@ class Helper {
         }
     }
 
+    /*
+     /* ###################################################
+     /* add_tags
+     /* ###################################################
+     */
     public static function add_tags($compilationIdArray, $tagArray, $newTags) {
 
         $newTags = explode(",", $newTags);
@@ -1890,6 +2045,11 @@ class Helper {
         Helper::sql_remove_duplicates("osdb_tags");
     }
 
+    /*
+     /* ###################################################
+     /* remove_tags
+     /* ###################################################
+     */
     public static function remove_tags($compilationIdArray, $tagArray) {
 
         foreach ($compilationIdArray as $compilationId) {
@@ -1899,6 +2059,11 @@ class Helper {
         }
     }
 
+    /*
+     /* ###################################################
+     /* sort_by
+     /* ###################################################
+     */
     public static function sort_by($arrayToSort, $column, $order = SORT_ASC) {
         $array = $arrayToSort;
         usort($array, make_comparer(array(
@@ -1909,83 +2074,11 @@ class Helper {
         return $array;
     }
 
-    // public static function calculate_error_statistics($compilationIdArray, $mainIdArray) {
-    //
-    // /* compares two types of compilations to each other.
-    // * Algorithm:
-    // * 1. Choose a certain time range.
-    // * 2. For each day within that time range, calculate the difference of the value of the compilation
-    // * to the value of the basis compilation (i.e prognosis vs reported actual values)
-    // * 3. Insert into table "osdb_errors"
-    // *    */
-    // if (gettype($mainIdArray) != "array") {
-    // $mainIdArray = array($mainIdArray);
-    // }
-    // /* we don't want to calculate the reported compilations  against each other, so we take them away from the compilations*/
-    // $compilationIdArray = array_diff($compilationIdArray, $mainIdArray);
-    // foreach ($mainIdArray as $mainId) {
-    // $beforeMemory = memory_get_usage($real_usage = TRUE);
-    // $mainArray = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $mainId) -> find_array();
-    // $mainArray = Helper::rebuild_keys($mainArray, "Date");
-    // echo $mainId . "<br>";
-    // echo (memory_get_usage($real_usage = TRUE) - $beforeMemory) / (1024 * 1024) . "<br><br>";
-    // $mainDates = array_keys($mainArray);
-    //
-    // foreach ($compilationIdArray as $compilationId) {
-    // set_time_limit(30);
-    // $array = ORM::for_table("osdb_working") -> order_by_asc('Date') -> where("Compilation_Id", $compilationId) -> find_array();
-    // $array = Helper::rebuild_keys($array, "Date");
-    //
-    // $firstRow = reset($array);
-    // $publicationDate = ORM::for_table("osdb_sources") -> find_one($firstRow["Source_Id"]) -> PublicationDate;
-    // $prognosisDates = Helper::filter_dates($mainDates, $publicationDate);
-    // $publicationDate = new DateTime($publicationDate);
-    //
-    // $errorArray = array();
-    //
-    // foreach ($prognosisDates as $date) {
-    //
-    // if (isset($array[$date])) {
-    // $yRow = $array[$date];
-    //
-    // $xRow = $mainArray[$date];
-    //
-    // $errorRow["Date"] = $xRow["Date"];
-    // $errorRow["Error"] = $yRow["Value"] - $xRow["Value"];
-    // if ($xRow["Value"] != 0) {
-    // $errorRow["ErrorPercentage"] = $errorRow["Error"] / $xRow["Value"];
-    // }
-    // else {
-    // $errorRow["ErrorPercentage"] = "";
-    // }
-    //
-    // $xDate = new DateTime($xRow["Date"]);
-    // $diff = $xDate -> diff($publicationDate);
-    //
-    // $errorRow["Day"] = $diff -> format('%a');
-    //
-    // $errorRow["Main_Id"] = $mainId;
-    // $errorRow["Compilation_Id"] = $compilationId;
-    //
-    // $errorArray[] = $errorRow;
-    // //                         avoid memory overflow by inserting array when memory use goes over 20 MB
-    // if((memory_get_usage() / (1024 * 1024)) > 20 && count($errorArray) > 0){
-    // Helper::sql_insert_array($errorArray, "osdb_errors");
-    // $errorArray = array();
-    // }
-    //
-    // }
-    // }
-    // echo "<br>made it through a loop";
-    // Helper::sql_insert_array($errorArray, "osdb_errors");
-    // // echop(reset($errorArray));
-    // // echo (memory_get_usage() / (1024 * 1024)) . " <br><br>";
-    // // unset($errorArray, $array);
-    // }
-    // }
-    //
-    // }
-
+    /*
+     /* ###################################################
+     /* calculate_errors
+     /* ###################################################
+     */
     public static function calculate_errors($mainId, $compilationId, $startDate, $endDate) {
 
         $mainArray = ORM::for_table("osdb_working") -> where("Compilation_Id", $mainId) -> where_gte("Date", $startDate) -> where_lt("Date", $endDate) -> find_array();
@@ -2038,6 +2131,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* dateRange
+     /* ###################################################
+     */
     public static function dateRange($first, $last, $step = "+1 day", $format = "Y-m-d", $addLast = TRUE) {
 
         $step = date_interval_create_from_date_string($step);
@@ -2058,6 +2156,11 @@ class Helper {
         return $dates;
     }
 
+    /*
+     /* ###################################################
+     /* filter_dates
+     /* ###################################################
+     */
     public static function filter_dates($dates, $constantDate, $after = TRUE) {
 
         $returnDates = array();
@@ -2071,6 +2174,11 @@ class Helper {
         return $returnDates;
     }
 
+    /*
+     /* ###################################################
+     /* rebuild_keys
+     /* ###################################################
+     */
     public static function rebuild_keys($array, $key) {
         /* rebuilds a two-dimensional array to have a certain value from each "row" as each key
          usage: $array = array([0]=>array("Fruit"=>"Banana", "Taste"=>"good"),
@@ -2094,6 +2202,11 @@ class Helper {
         }
     }
 
+    /*
+     /* ###################################################
+     /* establish_calculation_table
+     /* ###################################################
+     */
     public static function establish_calculation_table($type, $stepLength = 0) {
 
         /* first we establish the queue for the error calculation */
@@ -2129,7 +2242,6 @@ class Helper {
             $firstDate = reset($newFirstDate);
             $lastDate = end($newLastDate);
             $allPossibleDates = Helper::dateRange($firstDate["Date"], $lastDate["Date"], $stepLength);
-            echo count($allPossibleDates) * count($combinationArray);
             for ($i = 1; $i < count($allPossibleDates); $i++) {
                 $inputArray = array();
                 $startDate = $allPossibleDates[$i - 1];
@@ -2148,6 +2260,8 @@ class Helper {
                 Helper::sql_insert_array($inputArray, "osdb_errors_to_calculate");
             }
         }
+        /* # statistics ################################################## */
+
         elseif ($type == "statistics") {
             /* secondly we establish the queue for the performance statistics of each compilation in comparison to
              * the "real" values  */
@@ -2161,44 +2275,62 @@ class Helper {
             }
             $maxDayArray = array_unique($maxDayArray);
             sort($maxDayArray);
-            $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
+            $ini_array = parse_ini_file("config.ini");
 
-            foreach ($mainIdArray as $mainCompId) {
+            $maxDayArray = Helper::create_relevant_day_array($maxDayArray);
+            $ini_array["maxDayArray"] = implode(",", $maxDayArray);
+            Helper::write_to_config($ini_array);
+
+            $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
+            
+            foreach ($mainIdArray as $key => $mainCompId) {
                 $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainCompId);
                 $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
                 $validErrorCompilations = array_unique($validErrorCompilations);
                 $compilationsToCompare = Helper::create_matchings($validErrorCompilations);
                 $inputArray = array();
-                if (count($compilationsToCompare) > 0) {
-                    /* now all possible combinations of two compilations
-                     * are compared against each other, like in a tournament */
-                    foreach ($compilationsToCompare as $combination) {
-                        foreach ($maxDayArray as $day) {
-                            $inputArray[] = array(
-                                "type" => "statistics",
-                                "startDate" => "",
-                                "endDate" => "",
-                                "mainCompId" => $mainCompId,
-                                "compId1" => $combination[0],
-                                "compId2" => $combination[1],
-                                "Day" => $day
-                            );
-                        }
-                    }
+
+                /* now all possible combinations of two compilations
+                 * are compared against each other, like in a tournament */
+                foreach ($compilationsToCompare as $combination) {
+                    /* we'll find out which is the maximum amount of days that these two compilations can
+                     * be compared against each other */
+                    $compId1 = $combination[0];
+                    $compId2 = $combination[1];
+                    $maxDay1 = ORM::for_table('osdb_errors') -> where("Main_Id", $mainCompId) -> where("Compilation_Id", $compId1) -> order_by_desc('Day') -> find_one() -> Day;
+                    $maxDay2 = ORM::for_table('osdb_errors') -> where("Main_Id", $mainCompId) -> where("Compilation_Id", $compId2) -> order_by_desc('Day') -> find_one() -> Day;
+                    $maxDay = min($maxDay1, $maxDay2);
+                    $inputArray[] = array(
+                        "type" => "statistics",
+                        "startDate" => "",
+                        "endDate" => "",
+                        "mainCompId" => $mainCompId,
+                        "compId1" => $compId1,
+                        "compId2" => $compId2,
+                        "Day" => $maxDay
+                    );
+                    echop(reset($inputArray));
                 }
                 Helper::sql_insert_array($inputArray, "osdb_errors_to_calculate");
             }
+
         }
     }
 
+    /*
+     /* ###################################################
+     /* calculate_ranking
+     /* ###################################################
+     */
     public static function calculate_ranking($mainCompId, $compId1, $compId2, $Day) {
         /* evaluates the errors in the table "errors" and calculates a mean differential and some other
          * statistical values for a certain array of days.
+         * The results are entered into osdb_ranking
          *
          * See chapter "Comparing prognoses" in  https://github.com/fridde/PerformanceRecordsArticle
          * */
-
-        $queryArray = array();
+        $ini_array = parse_ini_file("config.ini");
+        $allRelevantDays = explode(",", $ini_array["maxDayArray"]);
 
         $firstCompilation = ORM::for_table('osdb_errors') -> where("Main_Id", $mainCompId) -> where("Compilation_Id", $compId1) -> order_by_asc('Day') -> find_array();
         $firstCompilation = Helper::rebuild_keys($firstCompilation, "Day");
@@ -2207,40 +2339,44 @@ class Helper {
 
         $today = 0;
         $errorDiff = array();
-        $somethingNew = FALSE;
+        $arrayToAdd = array();
         while ($today <= $Day) {
+            $today++;
             if (isset($firstCompilation[$today]) && isset($secondCompilation[$today])) {
                 $errorDiff[$today] = pow($firstCompilation[$today]["ErrorPercentage"], 2) - pow($secondCompilation[$today]["ErrorPercentage"], 2);
             }
-            $today++;
-        }
-        if (count($errorDiff) > 0) {
-            $meanDifferential = array_sum($errorDiff) / count($errorDiff);
-        }
-        $autocovariance = Helper::autocovariance($errorDiff);
-        if ($autocovariance == 0) {
+            // below are default values
+            $meanDifferential = 0;
             $errorStatistic = 0;
-        }
-        else {
-            $errorStatistic = $meanDifferential / sqrt($autocovariance);
-        }
+            if (count($errorDiff) > 0) {
+                $meanDifferential = array_sum($errorDiff) / count($errorDiff);
+                $autocovariance = Helper::autocovariance($errorDiff);
+                if ($autocovariance != 0) {
+                    $errorStatistic = $meanDifferential / sqrt($autocovariance);
+                }
+            }
 
-        $mostRecentEntry = ORM::for_table('osdb_ranking') -> where("Main_Id", $mainCompId) -> where("Compilation_1", $compId1) -> where("Compilation_2", $compId2) -> order_by_desc('Day') -> find_one();
-
-        if ($mostRecentEntry["Mean_Differential"] != $meanDifferential) {
-            $arrayToAdd = array(
-                "Main_Id" => $mainCompId,
-                "Compilation_1" => $compId1,
-                "Compilation_2" => $compId2,
-                "Day" => $today,
-                "Mean_Differential" => $meanDifferential,
-                "ErrorStatistic" => $errorStatistic
-            );
-            Helper::sql_insert_array(array($arrayToAdd), "osdb_ranking");
-            
+            if (in_array($today, $allRelevantDays) && $meanDifferential != 0 && $errorStatistic != 0) {
+                $arrayToAdd[] = array(
+                    "Main_Id" => $mainCompId,
+                    "Compilation_1" => $compId1,
+                    "Compilation_2" => $compId2,
+                    "Day" => $today,
+                    "Mean_Differential" => $meanDifferential,
+                    "ErrorStatistic" => $errorStatistic
+                );
+            }
+        }
+        if (count($arrayToAdd) > 0) {
+            Helper::sql_insert_array($arrayToAdd, "osdb_ranking");
         }
     }
 
+    /*
+     /* ###################################################
+     /* autocovariance
+     /* ###################################################
+     */
     public static function autocovariance($array, $stepSize = 1) {
         $array = array_values($array);
         $mean = array_sum($array) / count($array);
@@ -2252,6 +2388,11 @@ class Helper {
         return $covariance;
     }
 
+    /*
+     /* ###################################################
+     /* create_tournament_ranking
+     /* ###################################################
+     */
     public static function create_tournament_ranking($array) {
         $returnArray = array();
 
@@ -2276,6 +2417,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* remove_source_from_database
+     /* ###################################################
+     */
     public static function remove_source_from_database($sourceId, $archive = TRUE) {
 
         $compilations = ORM::for_table("osdb_working") -> where("Source_Id", $sourceId) -> select("Compilation_Id") -> find_array();
@@ -2328,6 +2474,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* remove_compilation_from_database
+     /* ###################################################
+     */
     public static function remove_compilation_from_database($compilationId) {
 
         $tables = array(
@@ -2352,6 +2503,11 @@ class Helper {
         }
     }
 
+    /*
+     /* ###################################################
+     /* create_matchings
+     /* ###################################################
+     */
     public static function create_matchings($array) {
         /* creates a 1-on-1 matching for each element in the array, so that every element is paired with each element once  */
         $returnArray = array();
@@ -2377,6 +2533,11 @@ class Helper {
         return $returnArray;
     }
 
+    /*
+     /* ###################################################
+     /* array_to_csv_download
+     /* ###################################################
+     */
     public static function array_to_csv_download($array, $filename = "export.csv", $delimiter = ";") {
 
         // open raw memory as file so no temp files needed, you might run out of memory though
@@ -2396,6 +2557,11 @@ class Helper {
         fpassthru($f);
     }
 
+    /*
+     /* ###################################################
+     /* create_download
+     /* ###################################################
+     */
     public static function create_download($source, $filename = "export.csv") {
 
         $textFromFile = file_get_contents($source);
@@ -2409,9 +2575,15 @@ class Helper {
         fpassthru($f);
     }
 
+    /*
+     /* ###################################################
+     /* find_matching_project
+     /* ###################################################
+     */
     public static function find_matching_project($projectNameArray, $format = "I Y - P - C P") {
         /* tries to find the best matching Oil Sand Project for an array of project names.
-         * The "official" project List is in a SQL-Table called osdb_projects*/
+         * The "official" project List is in a SQL-Table called osdb_projects
+         * the format abbreviations are Institution Year - Product - Company Project */
 
         if (gettype($projectNameArray) != "array") {
             $projectNameArray = array($projectNameArray);
@@ -2455,6 +2627,11 @@ class Helper {
 
     }
 
+    /*
+     /* ###################################################
+     /* write_to_config
+     /* ###################################################
+     */
     public static function write_to_config($configArray) {
         $filename = "config.ini";
         $text = "";
@@ -2468,6 +2645,24 @@ class Helper {
         $fh = fopen($filename, "w") or die("Could not open log file.");
         fwrite($fh, $text) or die("Could not write file!");
         fclose($fh);
+    }
+
+    public static function create_relevant_day_array($dayArray) {
+
+        $returnArray = array(reset($dayArray));
+        foreach ($dayArray as $day) {
+            $difference = $day - end($returnArray);
+            $cond1 = $day < 100 && $difference > 30;
+            $cond2 = $day < 1000 && $difference > 300;
+            $cond3 = $day >= 1000 && $difference > 600;
+
+            if ($cond1 || $cond2 || $cond3) {
+                $returnArray[] = $day;
+            }
+        }
+
+        return $returnArray;
+
     }
 
 }
