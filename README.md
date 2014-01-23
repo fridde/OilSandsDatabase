@@ -59,16 +59,19 @@ Generally, the steps to add a new source of data to the database are as follows:
 The tables behind the scenes are stored in a MYSQL database. Within the database, all tables are prepended by a `osdb_`, so that the table __Sources__ actually is called __osdb_sources__.
 
 The tables within the database are: 
-* Buttons
-* Compilations
-* Data
-* Errors
-* Headers
-* Ranking
-* Sources
-* Synonyms
-* Tags
-* Working
+* buttons
+* compilations
+* data
+* errors
+* errors\_to\_calculate
+* gallery
+* logs
+* projects
+* ranking
+* sources
+* synonyms
+* tags
+* working
 
 ###Sources
 This is the most basic table. Here all values that are important for a certain _Source_ are entered as well as the data itself. 
@@ -138,4 +141,4 @@ Now you can _"convert"_ every csv file into plotted graphs by using the single c
 [R]: http://cran.r-project.org/
 [RStudio]: http://www.rstudio.com/
 [Readme]: https://github.com/fridde/OilSandsDatabase/blob/master/README.md
-[Plotter]: http://www.hehl.se/OilsandsDatabase/download.php?fileName=plotter.r
+[Plotter]: http://www.hehl.se/oilsandsdatabase/download.php?fileName=plotter.r
