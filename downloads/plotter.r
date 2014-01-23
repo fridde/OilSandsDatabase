@@ -18,7 +18,6 @@ files = list.files(pattern =".csv")
 for (file.name in files){
   setwd(main.dir)
   file.dt = read.table(file.name, sep= ";", blank.lines.skip = FALSE, header = TRUE)
-  file.dt$Compilation = str_replace_all(file.dt$Compilation, "[\r\n]", "")
   file.dt$Date = as.Date(file.dt$Date)
   years = seq(from = as.integer(format(min(file.dt$Date), "%Y")),
               to = as.integer(format(max(file.dt$Date), "%Y")) + interval.to.plot,

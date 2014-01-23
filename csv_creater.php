@@ -50,7 +50,7 @@ foreach ($chosenCompilationIdArray as $key => $compilationId) {
     foreach ($array as $rowKey => $row) {
         if ($i % $accuracy == 0) {
             $returnArray[] = array(
-                $compilationName,
+                preg_replace("%[\r\n]%", "", $compilationName),
                 $row["Date"],
                 $row["Value"],
                 $plotParameter

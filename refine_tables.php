@@ -197,6 +197,7 @@ switch ($_REQUEST["choice"]) {
 
         $errorsLeft = ORM::for_table("osdb_errors_to_calculate") -> where("type", "errors") -> count() > 0;
         $noStatistics = ORM::for_table("osdb_errors_to_calculate") -> where("type", "statistics") -> count() == 0;
+        $noRankings = ORM::for_table("osdb_ranking") -> count() == 0;
 
         /* any calculation of ranking values that is done BEFORE all errors are calculated would yield false results  */
 
@@ -223,15 +224,15 @@ switch ($_REQUEST["choice"]) {
         }
         /* if all errors are calculated, ranking statistics can be calculated */
         else {
-            if ($noStatistics) {
+            if ($noStatistics && $noRankings) {
                 Helper::establish_calculation_table("statistics");
-                // redirect("index.php?page=administration_form");
+                redirect("index.php?page=administration_form");
             }
 
             $timeLeft = TRUE;
 
             /*this process is horribly slow*/
-            while ($timeLeft) {
+            while (!$noStatistics && $timeLeft ) {
                 /* check if time has run out */
                 if ((microtime(TRUE) - $startTime) > $ini_array["maxCalculationTime"]) {
                     $timeLeft = FALSE;

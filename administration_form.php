@@ -38,11 +38,12 @@ echo '</select><br>
 
 $errorsQueue = ORM::for_table('osdb_errors_to_calculate') -> where("type", "errors") -> count();
 $statisticsQueue = ORM::for_table('osdb_errors_to_calculate') -> where("type", "statistics") -> count();
+$noRankings = ORM::for_table("osdb_ranking") -> count() == 0;
 
 if ($errorsQueue > 0) {
     echo '<input type="submit" name="choice" value="Calculate errors" class="redButton">';
 }
-elseif ($errorsQueue == 0 && $statisticsQueue == 0) {
+elseif ($errorsQueue == 0 && $statisticsQueue == 0 && $noRankings) {
     echo '<input type="submit" name="choice" value="Prepare statistics calculations" class="redButton"><br>';
     echo '<input type="submit" name="choice" value="Empty error table">';
 }
