@@ -23,8 +23,7 @@ $returnArray = array( array(
         "Compilation",
         "Date",
         "Value",
-        "plotParameter",
-        "Order"
+        "plotParameter"
     ));
 $compilationCounter = 0;
 foreach ($chosenCompilationIdArray as $key => $compilationId) {
@@ -38,7 +37,7 @@ foreach ($chosenCompilationIdArray as $key => $compilationId) {
         $plotParameter = "2";
     }
     else {
-        $plotParameter = "1";
+        $plotParameter = 2 - $compilationCounter / count($chosenCompilationIdArray);
     }
     if (!$newFileName && $compilationId == reset($chosenCompilationIdArray)) {
         $newFileName = $compilationName . '.csv';
@@ -56,8 +55,8 @@ foreach ($chosenCompilationIdArray as $key => $compilationId) {
                 preg_replace("%[\r\n]%", "", $compilationName),
                 $row["Date"],
                 $row["Value"],
-                $plotParameter,
-                $compilationCounter
+                $plotParameter
+                
             );
         }
         $i++;
