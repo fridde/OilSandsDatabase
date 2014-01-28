@@ -23,9 +23,12 @@ $returnArray = array( array(
         "Compilation",
         "Date",
         "Value",
-        "plotParameter"
+        "plotParameter",
+        "Order"
     ));
+$compilationCounter = 0;
 foreach ($chosenCompilationIdArray as $key => $compilationId) {
+    $compilationCounter++;
     $array = ORM::for_table("osdb_working") -> where("Compilation_Id", $compilationId) -> select_many("Date", "Value") -> order_by_asc('Date') -> find_array();
     $compilationName = Helper::shorten_names(ORM::for_table("osdb_compilations") -> find_one($compilationId) -> Name);
     /* the plot parameter is a parameter that can (but not must) be used to distinguish between different compilations.
@@ -53,7 +56,8 @@ foreach ($chosenCompilationIdArray as $key => $compilationId) {
                 preg_replace("%[\r\n]%", "", $compilationName),
                 $row["Date"],
                 $row["Value"],
-                $plotParameter
+                $plotParameter,
+                $compilationCounter
             );
         }
         $i++;
