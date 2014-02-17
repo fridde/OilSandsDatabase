@@ -1,0 +1,1 @@
+<iframe src="gallery/index.php" seamless width="1200px" height="2100px"></iframe>

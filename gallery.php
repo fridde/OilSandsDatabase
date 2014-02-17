@@ -1,5 +1,7 @@
 <?php
 
+link_for("index.php?page=image_gallery", "Pre-drawn graphs", "box");
+
 $galleryArray = ORM::for_table("osdb_gallery") -> find_array();
 
 foreach ($galleryArray as $object) {
