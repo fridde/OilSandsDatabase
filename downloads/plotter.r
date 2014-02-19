@@ -65,7 +65,7 @@ for (file.name in files){
           p = p + theme(legend.text = element_text(size = rel(1.5), hjust = 5, vjust= -5), 
                         axis.title.y = element_text(size = rel(1.5)), 
                         axis.text.y = element_text(size = rel(1.0), colour = "black", face = "bold"),
-                        axis.text.x = element_text(size = rel(1.2), colour = "black", face = "bold")
+                        axis.text.x = element_text(size = rel(1.2), colour = "black", face = "bold"),
                         legend.title = element_text(size = rel(1.5)), 
                         legend.direction ="vertical",
                         legend.position="bottom") 
