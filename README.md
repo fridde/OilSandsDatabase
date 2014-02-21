@@ -10,6 +10,9 @@ The Oil Sands Database is an online application written mainly in PHP and some J
 
 In case you are not viewing this document at its original place, the whole code can be found at [Github](https://github.com/fridde/OilSandsDatabase).
 
+### A note of caution
+This code has been built by a self-learned programmer. It's seldomly pleasant to read and there are some severe design-flaws regarding flexibility. If rebuilt from scratch, **OilSandsDatabase** would look different. If you intend on contributing or changing things, let me know! I'll be happy to rebuild any part that needs more transparency.
+
 ## Adding or updating content 
 
 Good tools to use are (in order of importance)
