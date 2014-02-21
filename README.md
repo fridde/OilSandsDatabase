@@ -1,4 +1,4 @@
-#Oil Sands Database
+#OilSandsDatabase
 
 [Introduction ](#introduction)
 | [Adding or updating content](#adding-or-updating-content)
@@ -6,9 +6,9 @@
 | [Exporting data](#exporting-data)
 
 ##Introduction ##
-The Oil Sands Database is an online application written mainly in PHP and some JavaScript including jQuery. Its purpose is to collect all available sources reporting and prognosing Oil Sands Production in Canada in one place, making it easier to compare and evaluate each data set. 
+The **OilSandsDatabase** is an online application written mainly in PHP and some JavaScript including jQuery. Its purpose is to collect all available sources reporting and prognosing Oil Sands Production in Canada in one place, making it easier to compare and evaluate each data set. 
 
-In case you are not viewing this document at its original place, the whole code can be found at [Github](https://github.com/fridde/OilSandsDatabase).
+In case you are not viewing this document embedded in the website, the whole code can be found at [Github](https://github.com/fridde/OilSandsDatabase).
 
 ### A note of caution
 This code has been built by a self-learned programmer. It's seldomly pleasant to read and there are some severe design-flaws regarding flexibility. The code resembles a learning process. If rebuilt from scratch, **OilSandsDatabase** would look different. If you intend on contributing or changing things, let me know! I'll be happy to rebuild any part that needs more transparency.
@@ -61,7 +61,7 @@ Generally, the steps to add a new source of data to the database are as follows:
 # Behind the scenes
 ## The different tables in the database
 
-The tables behind the scenes are stored in a MYSQL database. Within the database, all tables are prepended by a `osdb_`, so that the table __Sources__ actually is called __osdb_sources__.
+The tables behind the scenes are stored in a MySQL database. Within the database, all tables are prepended by a `osdb_`, so that the table __Sources__ actually is called __osdb_sources__.
 
 The tables within the database are: 
 * buttons
@@ -98,6 +98,8 @@ Contains the name for every compilation of data
 ###Working
 
 ## Route of data through the database
+
+![Flow of data](https://github.com/fridde/OilSandsDatabase/blob/master/downloads/flow_of_data.pdf)
 
 # Exporting data
 
