@@ -1,5 +1,12 @@
 <?php
 
+if (isset($_REQUEST["discipline"])) {
+    $discipline = $_REQUEST["discipline"];
+}
+else {
+    $discipline = FALSE;
+}
+
 $possibleMainIdArray = Helper::sql_select_columns(ORM::for_table("osdb_ranking") -> distinct() -> select("Main_Id") -> find_array(), "Main_Id");
 
 echo '<div id="tabs"> ';
@@ -29,11 +36,11 @@ foreach ($possibleMainIdArray as $mainId) {
             $csvFileName .= $day . "d";
         }
 
-        $compilationIdArray = ORM::for_table('osdb_ranking') -> where("Main_Id", $mainId) -> where("Day", $day) -> find_array();
+        $compilationIdArray = new TimeSeriesArray(ORM::for_table('osdb_ranking') -> where("Main_Id", $mainId) -> where("Day", $day) -> find_array());
 
         if (count($compilationIdArray) > 1) {
 
-            $compilationIdArray = Helper::create_tournament_ranking($compilationIdArray);
+            $compilationIdArray = $compilationIdArray -> create_tournament_ranking($discipline);
             $graphLinkText = '<a class="tinyLink" target="_blank" href="index.php?page=graphs&compilationId[]=' . $mainId;
             $csvLinkText = '<a class="tinyLink" target="_blank" href="csv_creater.php?fileName=' . $csvFileName . '&compilationId[]=' . $mainId;
             foreach ($compilationIdArray as $compilationId => $wins) {
@@ -50,9 +57,10 @@ foreach ($possibleMainIdArray as $mainId) {
     <tbody>
     ';
 
+            $maxWins = max($compilationIdArray);
             foreach ($compilationIdArray as $compilationId => $wins) {
                 $compilationIdName = ORM::for_table('osdb_compilations') -> find_one($compilationId) -> Name;
-                $thisTab["Content"] .= "<tr><td>$compilationIdName</td><td>$wins</td></tr>";
+                $thisTab["Content"] .= "<tr><td>$compilationIdName</td><td>" . round($wins / $maxWins) * 100 . "% </td></tr>";
             }
             $thisTab["Content"] .= "
     </tbody>
@@ -70,4 +78,11 @@ foreach ($tabs as $mainId => $tab) {
     echo '<div id="tabs_' . $mainId . '">' . $tab["Content"] . '</div>';
 }
 echo '</div>';
+
+$foo = new TimeSeriesArray( array(
+    364,
+    363,
+    362
+));
+echo print_r($foo -> get_institutions());
 ?>

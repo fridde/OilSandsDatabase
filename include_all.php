@@ -6,7 +6,8 @@ $filesToInclude = array(
     "idiorm.php",
     "idiorm_conf.php",
     "Markdown.php",
-    "simple_html_dom.php"
+    "simple_html_dom.php",
+    "TimeSeriesArray.php"
 );
 foreach ($filesToInclude as $filename) {
     include_once "include/" . $filename;

@@ -2389,33 +2389,7 @@ class Helper {
     }
 
     /*
-     /* ###################################################
-     /* create_tournament_ranking
-     /* ###################################################
-     */
-    public static function create_tournament_ranking($array) {
-        $returnArray = array();
-
-        foreach ($array as $row) {
-            $c1 = $row["Compilation_1"];
-            $c2 = $row["Compilation_2"];
-
-            if (!isset($returnArray[$c1])) {
-                $returnArray[$c1] = 0;
-            }
-            if (!isset($returnArray[$c2])) {
-                $returnArray[$c2] = 0;
-            }
-            if ($row["Mean_Differential"] < 0) {
-                $returnArray[$c1] = $returnArray[$c1] + 1;
-            }
-            else {
-                $returnArray[$c2] = $returnArray[$c2] + 1;
-            }
-        }
-        arsort($returnArray);
-        return $returnArray;
-    }
+     
 
     /*
      /* ###################################################
@@ -2666,4 +2640,6 @@ class Helper {
     }
 
 }
+
+
 ?>
