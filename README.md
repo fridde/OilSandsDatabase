@@ -99,7 +99,7 @@ Contains the name for every compilation of data
 
 ## Route of data through the database
 
-![Flow of data](https://github.com/fridde/OilSandsDatabase/blob/master/downloads/flow_of_data.pdf)
+![Flow of data](https://raw.github.com/fridde/OilSandsDatabase/master/downloads/flow_of_data001.jpg)
 
 # Exporting data
 
