@@ -22,6 +22,23 @@ class TimeSeriesArray {
         return $returnArray;
     }
 
+    public static function get_tags($idArray) {
+
+        $tagTable = ORM::for_table("osdb_tags") -> find_array();
+        $returnArray = array();
+
+        foreach ($idArray as $idKey => $id) {
+            $currentTags = array();
+            foreach ($tagTable as $rowKey => $row) {
+                if ($row["Compilation_Id"] == $id) {
+                    $currentTags[] = $row["Name"];
+                }
+            }
+            $returnArray[$id] = implode(",", $currentTags);
+        }
+        return $returnArray;
+    }
+
     public function filter_for_institution($institution, $type = "id") {
         /* will filter a list and only return those matching with right institution.
          * If type is "id", the id of the institution is given
@@ -34,13 +51,13 @@ class TimeSeriesArray {
 
     }
 
-    public function get_institutions($array = array()) {
+    public static function get_institutions($array = array()) {
 
         if (count($array) === 0) { $array = $this -> content;
         }
 
         $sourceTable = ORM::for_table("osdb_sources") -> find_array();
-        $sourceIdArray = new TimeSeriesArray($this -> content);
+        $sourceIdArray = new TimeSeriesArray($array);
         $sourceIdArray = $sourceIdArray -> get_sources();
 
         $returnArray = array();
@@ -51,6 +68,7 @@ class TimeSeriesArray {
                 }
             }
         }
+        $returnArray = array_combine($array, $returnArray);
         return $returnArray;
     }
 

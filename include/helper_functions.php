@@ -2007,6 +2007,7 @@ class Helper {
         //add the rest
         if (strlen($query) > 2) {
             $totalQuery = $queryStart . rtrim($query, ",") . ";";
+
             ORM::for_table($sqlTable) -> raw_execute($totalQuery);
         }
         if ($updateLog) {
@@ -2282,7 +2283,7 @@ class Helper {
             Helper::write_to_config($ini_array);
 
             $mainIdArray = array_unique(Helper::sql_select_columns($combinationIdArray, "Main_Id"));
-            
+
             foreach ($mainIdArray as $key => $mainCompId) {
                 $validErrorCompilations = Helper::filter_for_value($combinationIdArray, "Main_Id", $mainCompId);
                 $validErrorCompilations = Helper::sql_select_columns($validErrorCompilations, "Compilation_Id");
@@ -2389,9 +2390,8 @@ class Helper {
     }
 
     /*
-     
 
-    /*
+     /*
      /* ###################################################
      /* remove_source_from_database
      /* ###################################################
@@ -2640,6 +2640,4 @@ class Helper {
     }
 
 }
-
-
 ?>
