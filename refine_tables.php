@@ -70,7 +70,7 @@ switch ($_REQUEST["choice"]) {
         foreach ($_REQUEST["checked_source"] as $sourceId) {
             Helper::interpolate_table($sourceId);
         }
-        redirect("index.php?page=working_tables_form");
+        // redirect("index.php?page=working_tables_form");
         break;
     /*
      /* ###################################################

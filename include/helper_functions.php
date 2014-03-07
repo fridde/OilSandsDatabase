@@ -1133,6 +1133,8 @@ class Helper {
      /* ###################################################
      */
     public static function melt($array, $colsToSplit, $header) {
+            /* will "melt" an array according to Hadley Wickham's paper http://www.jstatsoft.org/v21/i12/paper */
+            
         // header contains only the words used for the value and the word of differentiation, for example "Value" and "Product"
         $colsToSplit = explode(",", $colsToSplit);
         $header = explode(",", $header);
@@ -1516,6 +1518,7 @@ class Helper {
         $unitFactors["Cubic metres per year"] = $barrel_per_cubic_meter * $years_per_day;
         $unitFactors["Thousand Cubic meters per day"] = $thousand * $barrel_per_cubic_meter;
         $unitFactors["Thousand Cubic metres per month"] = $thousand * $barrel_per_cubic_meter * $months_per_day;
+        $unitFactors["Billion barrels per year"] = $thousand * $thousand * $thousand * $years_per_day;
 
         $possibleUnits = array_keys($unitFactors);
 
@@ -1616,7 +1619,9 @@ class Helper {
 
                 $firstRow = reset($currentORM);
                 $lastRow = end($currentORM);
-                $timePeriod = reset(explode("-", $firstRow["Date"])) . "-" . reset(explode("-", $lastRow["Date"]));
+                $firstRowDate = explode("-", $firstRow["Date"]);
+                $lastRowDate = explode("-", $lastRow["Date"]);
+                $timePeriod = $firstRowDate[0] . "-" . $lastRowDate[0];
 
                 // At the same time, a new Compilation has to be defined for this subgroup
                 $newCompilation = ORM::for_table('osdb_compilations') -> create();
@@ -1715,15 +1720,8 @@ class Helper {
 
         if (gettype($values) != "array") {
             $values = array($values);
-            // $functionText = 'return (is_array($arrayRow) && $arrayRow["' . $key . '"] == ' . $values . ');';
         }
-        // else {
-        // $functionText = 'return (is_array($arrayRow) && in_array($arrayRow["' . $key . '"], array("' . implode('","', $values) . '")));';
-        // }
-        // $filterFunction = create_function('$arrayRow', $functionText);
-
-        // $newArray = array_filter($array, $filterFunction);
-
+        
         $newArray = array_filter($array, function($arrayRow) use ($key, $values) {
             return (is_array($arrayRow) && in_array($arrayRow[$key], $values));
         });

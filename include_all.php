@@ -8,7 +8,7 @@ $filesToInclude = array(
     "Markdown.php",
     "simple_html_dom.php",
     "TimeSeriesArray.php",
-    "Update.php"
+    "update.php"
 );
 foreach ($filesToInclude as $filename) {
     include_once "include/" . $filename;

@@ -39,22 +39,8 @@ class TimeSeriesArray {
         return $returnArray;
     }
 
-    public function filter_for_institution($institution, $type = "id") {
-        /* will filter a list and only return those matching with right institution.
-         * If type is "id", the id of the institution is given
-         * if type is "name", the actual name of the institution is given */
-        if (count($this -> content) == 0) {
-            return $this -> content;
-        }
 
-        //$compilationsTable
-
-    }
-
-    public static function get_institutions($array = array()) {
-
-        if (count($array) === 0) { $array = $this -> content;
-        }
+    public static function get_institutions($array) {
 
         $sourceTable = ORM::for_table("osdb_sources") -> find_array();
         $sourceIdArray = new TimeSeriesArray($array);

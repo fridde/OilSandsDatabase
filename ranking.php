@@ -18,12 +18,29 @@ foreach ($disciplines as $disciplineValue) {
 echo '</select>
 <input type="submit" value="Change discipline">
 </form></p>';
-
+/* Get the id's of all compilations containing reported values, tagged with "main" */
 $possibleMainIdArray = Helper::sql_select_columns(ORM::for_table("osdb_ranking") -> distinct() -> select("Main_Id") -> find_array(), "Main_Id");
 
+/* this array contains every time category. like 29 days, 2 months or 7 years. the time span is expressed in days */
+$dayArray = Helper::sql_select_columns(ORM::for_table('osdb_ranking') -> distinct() -> order_by_desc('Day') -> select("Day") -> find_array(), "Day");
+
 echo '<div id="tabs"> ';
+/* we'll create a new tab for each main-compilation (the one with the reported values) and fill that tab with it's
+ * associated content, $thisTab["Content"]. The actual display of the content happens later on */
 $tabs = array();
+
+$institution_translator_table = array_unique(Helper::sql_select_columns(ORM::for_table("osdb_tags")->where("Name", "analyzed")->find_array(), "Compilation_Id"));
+$institution_translator_table = TimeSeriesArray::get_institutions($institution_translator_table);
+
 foreach ($possibleMainIdArray as $mainId) {
+    /* this is the array that contains all the values of "osdb_ranking" that match the mainId, have the right day,
+     * and are tagged with the tagged given by the post-parameter "discipline" */
+    $filteredRankingTable = ORM::for_table("osdb_ranking") -> where("Main_Id", $mainId) -> where_like("tags", "%" . $discipline . "%") -> find_array();
+    $participatingInstitutions = array_merge(Helper::sql_select_columns($filteredRankingTable, "inst_1"), Helper::sql_select_columns($filteredRankingTable, "inst_2"));
+    $participatingInstitutions = array_unique($participatingInstitutions);
+
+    /* this array will be filled with scores of the institutions */
+    $institution_scores = array();
 
     $mainIdName = ORM::for_table('osdb_compilations') -> find_one($mainId) -> Name;
     $thisTab = array(
@@ -35,14 +52,9 @@ foreach ($possibleMainIdArray as $mainId) {
         $thisTab["Content"] .= '<h2>Subdiscipline: ' . ltrim($discipline, '@') . '</h2>';
     }
 
-    $dayArray = Helper::sql_select_columns(ORM::for_table('osdb_ranking') -> distinct() -> order_by_desc('Day') -> select("Day") -> find_array(), "Day");
-
-    $institutions = Helper::sql_select_columns(ORM::for_table("osdb_sources") -> select("Institution") -> distinct() -> find_array(), "Institution");
-    $institution_win_freq = array();
-    foreach ($institutions as $key => $value) {
-        $institution_win_freq[$value] = array();
-    }
     foreach ($dayArray as $day) {
+            
+        $filteredRankingArray = Helper::filter_for_value($filteredRankingTable, "Day", $day);
         $csvFileName = Helper::shorten_names($mainIdName);
         if ($day > 30 && $day <= 800) {
             $timeText = "~ " . floor($day / 30) . " months";
@@ -57,22 +69,32 @@ foreach ($possibleMainIdArray as $mainId) {
             $csvFileName .= $day . "d";
         }
 
-        $filteredRankingArray = ORM::for_table("osdb_ranking") -> where("Main_Id", $mainId) -> where("Day", $day) -> where_like("tags", "%" . $discipline . "%") -> find_array();
-
         if (count($filteredRankingArray) > 1) {
+            /* this algorithm calculates the probability of a certain prognosis to win against other prognoses within the same category and discipline */
+
             $participating_compilations = array_merge(Helper::sql_select_columns($filteredRankingArray, "Compilation_1"), Helper::sql_select_columns($filteredRankingArray, "Compilation_2"));
             $participating_compilations_unique = array_unique($participating_compilations);
             $participationFreq = array_count_values($participating_compilations);
-            $institutionArray = TimeSeriesArray::get_institutions($participating_compilations_unique);
+
+            /* the institution array contains all compilations as keys and their corresponding institute as value */
+
             $winnerFreq = array_count_values(Helper::sql_select_columns($filteredRankingArray, "winner"));
             arsort($winnerFreq);
             // you can't win against yourself
             $possibleWins = count($participationFreq) - 1;
             foreach ($winnerFreq as $compId => $wins) {
                 $winnerFreq[$compId] = $wins / $possibleWins;
-                $institution_win_freq[$institutionArray[$compId]][] = $winnerFreq[$compId];
+                
+                $currentInstitution = $institution_translator_table[$compId];
+                if(isset($institution_scores[$currentInstitution])){
+                    $institution_scores[$currentInstitution][] = $winnerFreq[$compId];
+                }
+                else {
+                    $institution_scores[$currentInstitution] = array($winnerFreq[$compId]);
+                }
+                
             }
-
+            
             $comp_to_view = $winnerFreq;
             foreach ($participating_compilations_unique as $key => $id) {
                 if (!isset($comp_to_view[$id])) {
@@ -105,19 +127,23 @@ foreach ($possibleMainIdArray as $mainId) {
     }
 
     $inst_to_view = array();
-    foreach ($institution_win_freq as $inst => $freq_array) {
-        $length = count($freq_array);
-        if ($length > 0) {
-            $inst_to_view[$inst] = round((array_sum($freq_array) / count($freq_array)) * 100);
+    
+    foreach($participatingInstitutions as $key => $institution){
+        if(isset($institution_scores[$institution])){
+            $freq_array = $institution_scores[$institution];
+            $inst_to_view[$institution] = round((array_sum($freq_array) / count($freq_array)) * 100);
         }
         else {
-            $inst_to_view[$inst] = FALSE;
+            $inst_to_view[$institution] = 0;
         }
     }
-    $inst_to_view = array_filter($inst_to_view, 'strlen');
     arsort($inst_to_view);
 
-    $thisTab["Content"] .= '<h2>Total ranking within subcategory "' . ltrim($discipline, '@') . '" </h2>
+    $thisTab["Content"] .= '<h2>Total ranking';
+    if ($discipline != "") {
+        $thisTab["Content"] .= ' within subcategory "' . ltrim($discipline, '@') . '"';
+    }
+    $thisTab["Content"] .= ' </h2>
     <table>
             <thead>
             <th>Institution</th><th>Average wins</th>
