@@ -7,13 +7,25 @@ else {
     $discipline = "";
 }
 
-$disciplines = array_unique(Helper::sql_select_columns(ORM::for_table("osdb_tags") -> where_like("Name", "@%") -> find_array(), "Name"));
+$disciplines = array_unique(Helper::sql_select_columns(ORM::for_table("osdb_tags") -> where_like("Name", "%@%") -> find_array(), "Name"));
+$disciplines = array_merge(array(""), $disciplines);
 
 echo '<p><form action="index.php?page=ranking" method="post">
 <select name="discipline">';
-echo '<option value="" selected >None</option>';
 foreach ($disciplines as $disciplineValue) {
-    echo '<option value="' . $disciplineValue . '">' . ltrim($disciplineValue, '@') . '</option>';
+    echo '<option value="' . $disciplineValue . '" ';
+    if ($disciplineValue == $discipline) {
+        echo ' selected ';
+    }
+    echo '>';
+    if ($disciplineValue == "") {
+        echo "All";
+    }
+    else {
+        echo ltrim($disciplineValue, '@');
+    }
+    echo '</option>';
+
 }
 echo '</select>
 <input type="submit" value="Change discipline">
@@ -29,13 +41,22 @@ echo '<div id="tabs"> ';
  * associated content, $thisTab["Content"]. The actual display of the content happens later on */
 $tabs = array();
 
-$institution_translator_table = array_unique(Helper::sql_select_columns(ORM::for_table("osdb_tags")->where("Name", "analyzed")->find_array(), "Compilation_Id"));
+$institution_translator_table = array_unique(Helper::sql_select_columns(ORM::for_table("osdb_tags") -> where("Name", "analyzed") -> find_array(), "Compilation_Id"));
 $institution_translator_table = TimeSeriesArray::get_institutions($institution_translator_table);
 
 foreach ($possibleMainIdArray as $mainId) {
     /* this is the array that contains all the values of "osdb_ranking" that match the mainId, have the right day,
      * and are tagged with the tagged given by the post-parameter "discipline" */
     $filteredRankingTable = ORM::for_table("osdb_ranking") -> where("Main_Id", $mainId) -> where_like("tags", "%" . $discipline . "%") -> find_array();
+    $temporaryFilteredRankingTable = $filteredRankingTable;
+    $filteredRankingTable = array();
+    foreach ($temporaryFilteredRankingTable as $rowKey => $row) {
+        $currentTags = explode(",", $row["tags"]);
+        if (in_array($discipline, $currentTags) || $discipline == "") {
+            $filteredRankingTable[$rowKey] = $row;
+        }
+    }
+
     $participatingInstitutions = array_merge(Helper::sql_select_columns($filteredRankingTable, "inst_1"), Helper::sql_select_columns($filteredRankingTable, "inst_2"));
     $participatingInstitutions = array_unique($participatingInstitutions);
 
@@ -53,7 +74,7 @@ foreach ($possibleMainIdArray as $mainId) {
     }
 
     foreach ($dayArray as $day) {
-            
+
         $filteredRankingArray = Helper::filter_for_value($filteredRankingTable, "Day", $day);
         $csvFileName = Helper::shorten_names($mainIdName);
         if ($day > 30 && $day <= 800) {
@@ -84,17 +105,17 @@ foreach ($possibleMainIdArray as $mainId) {
             $possibleWins = count($participationFreq) - 1;
             foreach ($winnerFreq as $compId => $wins) {
                 $winnerFreq[$compId] = $wins / $possibleWins;
-                
+
                 $currentInstitution = $institution_translator_table[$compId];
-                if(isset($institution_scores[$currentInstitution])){
+                if (isset($institution_scores[$currentInstitution])) {
                     $institution_scores[$currentInstitution][] = $winnerFreq[$compId];
                 }
                 else {
                     $institution_scores[$currentInstitution] = array($winnerFreq[$compId]);
                 }
-                
+
             }
-            
+
             $comp_to_view = $winnerFreq;
             foreach ($participating_compilations_unique as $key => $id) {
                 if (!isset($comp_to_view[$id])) {
@@ -127,9 +148,9 @@ foreach ($possibleMainIdArray as $mainId) {
     }
 
     $inst_to_view = array();
-    
-    foreach($participatingInstitutions as $key => $institution){
-        if(isset($institution_scores[$institution])){
+
+    foreach ($participatingInstitutions as $key => $institution) {
+        if (isset($institution_scores[$institution])) {
             $freq_array = $institution_scores[$institution];
             $inst_to_view[$institution] = round((array_sum($freq_array) / count($freq_array)) * 100);
         }

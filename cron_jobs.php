@@ -6,13 +6,13 @@ $lastUpdate = ORM::for_table("osdb_logs") -> order_by_desc('Timestamp') -> find_
 $lastUpdateTime = strtotime($lastUpdate -> Timestamp);
 $now = time();
 $olderThan = $now - $lastUpdateTime > 60 * 60 * 24 * 2;
-$errorsToCalculateLeft = ORM::for_table("osdb_errors_to_calculate")->count() > 0 ;
+// $errorsToCalculateLeft = ORM::for_table("osdb_errors_to_calculate")->count() > 0 ;
 
 if (!$olderThan) {
 
-    if ($lastUpdate -> Table != "osdb_ranking" && !$errorsToCalculateLeft) {
+    // if ($lastUpdate -> Table != "osdb_ranking") {
         Update::update_ranking_table();
-    }
+    // }
     redirect("index.php?page=refine_tables&choice=Calculate errors");
 }
 else {
