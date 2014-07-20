@@ -143,7 +143,7 @@ Now you can _"convert"_ every csv file into plotted graphs by using the single c
 
 [OpenRefine]: http://openrefine.org/
 [WebPlotDigitizer]: http://arohatgi.info/WebPlotDigitizer/app/
-[EnvironmentFile]: https://github.com/fridde/OilSandsDatabase/blob/master/helper_files/Environment%20Alberta%20Sources.txt
+[EnvironmentFile]: https://raw.githubusercontent.com/fridde/OilSandsDatabase/master/downloads/Environment%20Alberta%20Sources.txt
 [TableauPublic]: https://www.tableausoftware.com/products/public
 [R]: http://cran.r-project.org/
 [RStudio]: http://www.rstudio.com/
