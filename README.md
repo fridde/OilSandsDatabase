@@ -34,10 +34,10 @@ Generally, the steps to add a new source of data to the database are as follows:
 
 ### Environment Alberta
 
-* Open [a multiple tab opener](http://www.openurls.eu/)
-* Add the links from [this file][EnvironmentFile]
+* Open [a multiple tab opener](http://www.rapidlinkr.com/)
+* Add the links from the upper part of [this file][EnvironmentFile]
 * Click on submit while pressing the ctrl-key
-* Download every file as an excel-file into the same folder
+* Now a large collection of excel-files should be downloaded to your computer. The tabs that are still open will probably show errors. In this case the excel file could not be downloaded. Check manually for these files.
 * Convert all files into csv-format using [a converter](http://xls2csv.genxcrowd.com/download).
 * Merge these files into one single file by opening your console, navigating to your folder using `cd "path\to\folder"`, and then entering `copy *.csv collected.txt`
 * Make sure all projects mentioned at the end of [this file][EnvironmentFile] are included
