@@ -5,7 +5,7 @@
 | [Table description](#the-different-tables-in-the-database)
 | [Exporting data](#exporting-data)
 
-##Introduction ##
+## Introduction
 The **OilSandsDatabase** is an online application written mainly in PHP and some JavaScript including jQuery. Its purpose is to collect all available sources reporting and prognosing Oil Sands Production in Canada in one place, making it easier to compare and evaluate each data set. 
 
 In case you are viewing this document embedded in the website, the whole code can be found at [Github](https://github.com/fridde/OilSandsDatabase).
