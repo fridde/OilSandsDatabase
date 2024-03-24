@@ -1,4 +1,4 @@
-#OilSandsDatabase
+# OilSandsDatabase
 
 [Introduction ](#introduction)
 | [Adding or updating content](#adding-or-updating-content)
