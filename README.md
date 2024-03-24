@@ -78,24 +78,24 @@ The tables within the database are:
 * tags
 * working
 
-###Sources
+### Sources
 This is the most basic table. Here all values that are important for a certain _Source_ are entered as well as the data itself. 
 
 The data can be in any shape and will initially be stored as a text. By using the buttons, the data should be shaped into a format that better suits the insertion into the database. 
 
-###Buttons
+### Buttons
 This table contains the code to all the buttons that appear on the __Add sources to database__ page
 
-###Compilations
+### Compilations
 Contains the name for every compilation of data
-###Data
-###Errors
-###Headers
-###Ranking
+### Data
+### Errors
+### Headers
+### Ranking
 
-###Synonyms
-###Tags
-###Working
+### Synonyms
+### Tags
+### Working
 
 ## Route of data through the database
 
@@ -134,7 +134,7 @@ Now you can _"convert"_ every csv file into plotted graphs by using the single c
 
 ## Using Excel or Google docs to analyze data
 
-##Things to do
+## Things to do
 
 
 ---
